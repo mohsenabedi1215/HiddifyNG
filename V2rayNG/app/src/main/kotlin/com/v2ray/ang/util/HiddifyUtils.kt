@@ -248,7 +248,10 @@ class HiddifyUtils {
         }
 
         fun getCountry():String {
-            return settingsStorage?.decodeString(AppConfig.PREF_COUNTRY)!!
+            val country= settingsStorage?.decodeString(AppConfig.PREF_COUNTRY)
+            if(country.isNullOrEmpty())
+                return "cn"
+            return country!!
         }
 
         fun getPerAppProxyMode(): PerAppProxyMode {
