@@ -13,6 +13,7 @@ import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.dto.SubscriptionItem
 import com.v2ray.ang.extension.*
 import com.v2ray.ang.util.Utils.getLocale
+import java.net.InetAddress
 import java.util.Locale
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -360,6 +361,16 @@ class HiddifyUtils {
         }
         fun socksProxy():Proxy{
             return Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", socksPort()))
+        }
+
+        fun getIP(host:String): String? {
+            try {
+                val inetAddress = InetAddress.getByName(host)
+                val ipAddress = inetAddress.hostAddress
+                return ipAddress
+            } catch (e: Exception) {
+                println("Failed to get IP address: ${e.message}")
+            }
         }
     }
 

@@ -73,7 +73,15 @@ object V2rayConfigUtil {
 
 
         var serversConfigs=MmkvManager.getServerConfigs(proxyItem.subscriptionId?:"").shuffled()
-
+        serversConfigs=serversConfigs.sortedBy { s ->
+            var delay = MmkvManager.decodeServerAffiliationInfo(s.first)?.testDelayMillis ?: 0L
+            if (delay <= 0L) {
+                delay = 999998
+                if (HiddifyUtils.getIP(s.second.getProxyOutbound()?.getServerAddress().orEmpty()) == null)
+                    delay +=1
+            }
+            delay
+        }
         v2rayConfig.outbounds.clear()
         var balancerSelectors=ArrayList<String>()
 
