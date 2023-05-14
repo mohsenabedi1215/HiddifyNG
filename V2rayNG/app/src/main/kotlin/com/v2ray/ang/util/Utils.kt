@@ -1,19 +1,18 @@
 package com.v2ray.ang.util
 
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.text.Editable
-import android.util.Base64
-import java.util.*
-import android.content.ClipData
 import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.icu.util.Calendar
 import android.net.Uri
 import android.os.Build
 import android.os.LocaleList
+import android.provider.Settings
+import android.text.Editable
 import android.text.format.DateUtils
+import android.util.Base64
 import android.util.Log
 import android.util.Patterns
 import android.webkit.URLUtil
@@ -24,13 +23,14 @@ import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.extension.toast
-import java.net.*
 import com.v2ray.ang.service.V2RayServiceManager
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.conscrypt.Conscrypt
 import java.io.IOException
+import java.net.*
 import java.security.Security
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 object Utils {
@@ -81,6 +81,10 @@ object Utils {
      * get text from clipboard
      */
     fun getClipboard(context: Context): String {
+        if(isTestDevice()){
+            context.toast("As a test device, we use a test link for you.")
+            return "https://141.145.215.95.sslip.io/GoZXG3E8K17Gwf8R/6ebd2ea8-4d41-48b7-8fc2-7d6570da30a9/#Google"
+        }
         return try {
             val cmb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             cmb.primaryClip?.getItemAt(0)?.text.toString()
@@ -89,7 +93,14 @@ object Utils {
             ""
         }
     }
-
+    private fun isTestDevice(): Boolean {
+        try {
+            val testLabSetting: String = Settings.System.getString(AngApplication.appContext.contentResolver, "firebase.test.lab")
+            return "true" == testLabSetting
+        }catch (e:Exception){
+            return false
+        }
+    }
     /**
      * set text to clipboard
      */
