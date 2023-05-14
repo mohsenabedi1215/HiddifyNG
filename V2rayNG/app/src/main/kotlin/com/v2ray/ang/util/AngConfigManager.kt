@@ -797,6 +797,9 @@ object AngConfigManager {
             if (selected_server_guid==subid+"1"|| selected_server_guid==subid+"2"){
                 mainStorage?.encode(KEY_SELECTED_SERVER, selected_server_guid)
             }
+            if(selectSub){
+                mainStorage?.encode(KEY_SELECTED_SERVER, subid+"2")
+            }
             if (count==0 && subid!="default"){
                 MmkvManager.removeServer(subid+"1")
                 MmkvManager.removeServer(subid+"2")

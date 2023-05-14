@@ -173,7 +173,7 @@ class UserAssetActivity : BaseActivity() {
                 val res = Utils.getUrlContentOkHttp(url,timeout=timeout.toLong())
                 if (res != null) {
                     FileOutputStream(targetTemp).use { output ->
-                        output.bufferedWriter(Charsets.UTF_8).write(res.content)
+                        output.write(res.contentBytes)
                         output.flush()
                         output.close()
                         targetTemp.renameTo(target)

@@ -26,10 +26,9 @@ import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.conscrypt.Conscrypt
 import java.io.IOException
 import java.net.*
-import java.security.Security
+import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -93,7 +92,7 @@ object Utils {
             ""
         }
     }
-    private fun isTestDevice(): Boolean {
+    public fun isTestDevice(): Boolean {
         try {
             val testLabSetting: String = Settings.System.getString(AngApplication.appContext.contentResolver, "firebase.test.lab")
             return "true" == testLabSetting
@@ -396,15 +395,17 @@ object Utils {
             // Execute request
             val response = client.newCall(request).execute()
             val headers = response.headers.toMultimap()
-
-            val content = response.body?.string()
-            if(content.isNullOrEmpty() || !response.isSuccessful) {
-                Log.e(ANG_PACKAGE,"download not success!! ${response.isSuccessful}   content=${content}")
+            val contentBytes=response.body?.bytes()
+            if(contentBytes==null||contentBytes.isEmpty() || !response.isSuccessful) {
+                Log.e(ANG_PACKAGE,"download not success!! ${response.isSuccessful}  ")
                 throw Exception("No Content")
             }
+            val content=String(contentBytes!!, response.body?.contentType()?.charset(Charsets.UTF_8) ?: Charsets.UTF_8)
+//            val content = response.body?.string()
+
             response.close()
 
-            return Response(headers, content, urlStr)
+            return Response(headers, content, urlStr,contentBytes)
         }catch (e:Exception){
             if(direct&&proxy) {
                 Log.e(ANG_PACKAGE,"Download failed without proxy! Trying with proxy...")
@@ -446,11 +447,12 @@ object Utils {
 
             val headers = conn.headerFields
 
-            val content = conn.inputStream.use {
-                it.bufferedReader().readText()
+            val contentBytes = conn.inputStream.use {
+                it.readBytes()
             }
+            val content=String(contentBytes, try{Charset.forName(conn.contentEncoding)}catch (e:Exception){Charsets.UTF_8})
 
-            return Response(headers, content, urlStr)
+            return Response(headers, content, urlStr, contentBytes)
         }catch (e:Exception){
             Log.e(ANG_PACKAGE,"Traditional download way also failed!!!")
             Log.e(ANG_PACKAGE,e.toString())
@@ -458,7 +460,7 @@ object Utils {
             throw  e
         }
     }
-    data class Response(val headers: Map<String, List<String>>?, val content: String?,val url:String?=null)
+    data class Response(val headers: Map<String, List<String>>?, val content: String?, val url: String? = null, val contentBytes: ByteArray?=null)
 
 
     fun getDarkModeStatus(context: Context): Boolean {

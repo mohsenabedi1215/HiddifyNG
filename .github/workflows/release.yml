@@ -18,6 +18,7 @@ jobs:
 
       - name: Download latest lists
         run: |
+          rm ./V2rayNG/app/src/main/assets/*.dat
           curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_ir https://github.com/hiddify/androidpackagenamelist/blob/master/direct_ir
           curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_ir https://github.com/hiddify/androidpackagenamelist/blob/master/proxy_ir
           curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_cn https://github.com/hiddify/androidpackagenamelist/blob/master/direct_cn
@@ -26,6 +27,7 @@ jobs:
           curl -L -o ./V2rayNG/app/src/main/assets/geosite.dat https://github.com/hiddify/domain-list-community/releases/latest/download/hiddify-geosite.dat
           curl -L -o ./V2rayNG/app/libs/libv2ray.aar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray.aar
           curl -L -o ./V2rayNG/app/libs/libv2ray-sources.jar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray-sources.jar
+          ls -lah ./V2rayNG/app/src/main/assets/
 
       - name: Setup Java
         uses: actions/setup-java@v3

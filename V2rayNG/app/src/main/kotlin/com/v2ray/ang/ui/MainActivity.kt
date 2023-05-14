@@ -43,8 +43,6 @@ import com.v2ray.ang.util.*
 import com.v2ray.ang.viewmodel.MainViewModel
 import kotlinx.coroutines.*
 import me.drakeet.support.toast.ToastCompat
-import java.io.File
-import java.io.FileOutputStream
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
@@ -430,7 +428,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun importBatchConfig(server: String?, subid: String = "",selectSub:Boolean=false) {//hiddify
-        return importBatchConfig(Utils.Response(null,server),subid,selectSub)//hiddify
+        return importBatchConfig(Utils.Response(null, server),subid,selectSub)//hiddify
     }//hiddify
     fun importBatchConfig(response: Utils.Response?, subid: String = "", selectSub:Boolean=false) {//hiddify
         var server=response?.content//hiddify
@@ -624,7 +622,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
      * import customize config
      */
     fun importCustomizeConfig(server: String?) {
-        return importCustomizeConfig(Utils.Response(null,server))//hiddify
+        return importCustomizeConfig(Utils.Response(null, server))//hiddify
     }
     fun importCustomizeConfig(response: Utils.Response) {
         var server=response?.content

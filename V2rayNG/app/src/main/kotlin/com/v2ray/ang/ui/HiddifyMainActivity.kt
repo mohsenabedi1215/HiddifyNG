@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 
 import com.tbruyelle.rxpermissions.RxPermissions
@@ -44,8 +43,6 @@ import kotlinx.coroutines.launch
 import me.drakeet.support.toast.ToastCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
-import java.io.File
-import java.io.FileOutputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -132,7 +129,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
     }
 
     fun showLangDialog(){
-        if (settingsStorage?.containsKey(AppConfig.PREF_LANGUAGE)==true) {
+        if (settingsStorage?.containsKey(AppConfig.PREF_LANGUAGE)==true || Utils.isTestDevice()) {
             showCountryDialog()
             return
         }
@@ -587,7 +584,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         append: Boolean = false
     ) {
 
-        return importBatchConfig(Utils.Response(null,server),subid,append,selectSub)
+        return importBatchConfig(Utils.Response(null, server),subid,append,selectSub)
     }
 
     private fun importBatchConfig(
@@ -630,7 +627,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                 toast(R.string.toast_none_data_clipboard)
                 return false
             }
-            importCustomizeConfig(Utils.Response(null,configText))
+            importCustomizeConfig(Utils.Response(null, configText))
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -685,7 +682,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                         toast(getString(R.string.toast_failure)+" "+e.toString())
 //                            toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
                     }
-                    Utils.Response(null,"")
+                    Utils.Response(null, "")
                 }
                 launch(Dispatchers.Main) {
                     importCustomizeConfig(configText)
@@ -794,7 +791,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
      * import customize config
      */
     private fun importCustomizeConfig(response: String?) {
-        return importCustomizeConfig(Utils.Response(null,response))
+        return importCustomizeConfig(Utils.Response(null, response))
     }
 
     private fun importCustomizeConfig(response: Utils.Response) {

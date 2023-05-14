@@ -50,7 +50,7 @@ class AngApplication : MultiDexApplication() {
         //Logger.init().logLevel(if (BuildConfig.DEBUG) LogLevel.FULL else LogLevel.NONE)
         MMKV.initialize(this)
         MmkvManager.getDefaultSubscription()
-        Security.addProvider(Conscrypt.newProvider())
+        Security.insertProviderAt(Conscrypt.newProvider(),1)
 
     }
 
@@ -62,7 +62,7 @@ class AngApplication : MultiDexApplication() {
                 val geo = arrayOf("geosite.dat", "geoip.dat")
                 assets.list("")
                     ?.filter { geo.contains(it) }
-                    ?.filter { !File(extFolder, it).exists() || File(extFolder, it).lastModified()<File(it).lastModified()}
+//                    ?.filter { !File(extFolder, it).exists() || File(extFolder, it).lastModified()<=File(it).lastModified()}
                     ?.forEach {
                         val target = File(extFolder, it)
                         assets.open(it).use { input ->

@@ -74,9 +74,15 @@ class SettingsActivity : BaseActivity() {
 //            }
 
             perAppProxy?.setOnPreferenceClickListener {
-                startActivity(Intent(activity, PerAppProxyActivity::class.java))
-                perAppProxy?.isChecked = true
-                false
+                if(perAppProxy?.isChecked!=true){
+//                    perAppProxy?.isChecked = false
+                    true
+                }else {
+                    startActivity(Intent(activity, PerAppProxyActivity::class.java))
+                    perAppProxy?.isChecked = true
+                    true
+//                    false
+                }
             }
 
             remoteDns?.setOnPreferenceChangeListener { _, any ->

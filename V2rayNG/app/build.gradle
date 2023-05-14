@@ -19,8 +19,8 @@ android {
         minSdkVersion 21
         targetSdkVersion Integer.parseInt("$targetSdkVer")
         multiDexEnabled true
-        versionCode 5100548 //hiddify when comes to version 5 change it
-        versionName "4.8.0" //hiddify
+        versionCode 5100549 //hiddify when comes to version 5 change it
+        versionName "4.9.0" //hiddify
     }
 
     signingConfigs {
@@ -103,9 +103,9 @@ android {
             else
                 output.outputFileName = "HiddifyNG_" + output.getFilter(com.android.build.OutputFile.ABI) + ".apk"
 
-            output.versionCodeOverride =
-                    project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) *
-                            1000000 + android.defaultConfig.versionCode
+            output.versionCodeOverride =android.defaultConfig.versionCode
+//                    project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) *
+//                            1000000 + android.defaultConfig.versionCode
         }
     }
 
