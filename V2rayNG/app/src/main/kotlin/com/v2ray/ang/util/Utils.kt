@@ -369,7 +369,7 @@ object Utils {
 
     fun getUrlContentOkHttp(urlStr: String?, timeout: Long=10000, direct:Boolean=true,proxy:Boolean=true,tryold:Boolean=true): Response {
         try {
-            Security.insertProviderAt(Conscrypt.newProvider(), 1);
+
             // Create OkHttp Client
             var clientBuilder = OkHttpClient.Builder()
                 .readTimeout(timeout, TimeUnit.MILLISECONDS)
@@ -377,7 +377,10 @@ object Utils {
                 .connectTimeout(timeout, TimeUnit.MILLISECONDS)
 
             if(!direct&&proxy) {
+                Log.d(ANG_PACKAGE,"Trying to download the content using proxy")
                 clientBuilder.proxy(HiddifyUtils.socksProxy())
+            }else{
+                Log.d(ANG_PACKAGE,"Trying to download the content direct")
             }
             val client=clientBuilder.build()
 
@@ -395,18 +398,25 @@ object Utils {
             val headers = response.headers.toMultimap()
 
             val content = response.body?.string()
-            if(content.isNullOrEmpty() || !response.isSuccessful)
+            if(content.isNullOrEmpty() || !response.isSuccessful) {
+                Log.e(ANG_PACKAGE,"download not success!! ${response.isSuccessful}   content=${content}")
                 throw Exception("No Content")
+            }
             response.close()
 
             return Response(headers, content, urlStr)
         }catch (e:Exception){
             if(direct&&proxy) {
+                Log.e(ANG_PACKAGE,"Download failed without proxy! Trying with proxy...")
                 AngApplication.appContext.toast(R.string.msg_downloading_content_failed_no_proxy)
                 return getUrlContentOkHttp(urlStr, timeout, direct = false, proxy = true, tryold=tryold)
             }
-            if(tryold)
-                return getUrlContentWithCustomUserAgent_old(urlStr,timeout)
+            if(tryold) {
+                Log.e(ANG_PACKAGE,"Download failed with OkHttp ! fallback to use traditional request")
+                return getUrlContentWithCustomUserAgent_old(urlStr, timeout)
+            }
+            Log.e(ANG_PACKAGE,e.toString())
+            Log.e(ANG_PACKAGE,e.stackTraceToString())
             throw e
         }
 
@@ -417,25 +427,36 @@ object Utils {
     }
     @Throws(IOException::class)
     fun getUrlContentWithCustomUserAgent_old(urlStr: String?,timeout:Long=10000): Response {
-        val url = URL(urlStr)
-        val conn = url.openConnection()
-        conn.connectTimeout = timeout.toInt()
-        conn.readTimeout = timeout.toInt()
-        conn.setRequestProperty("Connection", "close")
-        conn.setRequestProperty("User-agent", "HiddifyNG/${BuildConfig.VERSION_NAME}")
-        url.userInfo?.let {
-            conn.setRequestProperty("Authorization",
-                "Basic ${encode(urlDecode(it))}")
+        try {
+
+
+            val url = URL(urlStr)
+            val conn = url.openConnection()
+            conn.connectTimeout = timeout.toInt()
+            conn.readTimeout = timeout.toInt()
+            conn.setRequestProperty("Connection", "close")
+            conn.setRequestProperty("User-agent", "HiddifyNG/${BuildConfig.VERSION_NAME}")
+            url.userInfo?.let {
+                conn.setRequestProperty(
+                    "Authorization",
+                    "Basic ${encode(urlDecode(it))}"
+                )
+            }
+            conn.useCaches = false
+
+            val headers = conn.headerFields
+
+            val content = conn.inputStream.use {
+                it.bufferedReader().readText()
+            }
+
+            return Response(headers, content, urlStr)
+        }catch (e:Exception){
+            Log.e(ANG_PACKAGE,"Traditional download way also failed!!!")
+            Log.e(ANG_PACKAGE,e.toString())
+            Log.e(ANG_PACKAGE,e.stackTraceToString())
+            throw  e
         }
-        conn.useCaches = false
-
-        val headers = conn.headerFields
-
-        val content = conn.inputStream.use {
-            it.bufferedReader().readText()
-        }
-
-        return Response(headers, content,urlStr)
     }
     data class Response(val headers: Map<String, List<String>>?, val content: String?,val url:String?=null)
 

@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import androidx.lifecycle.lifecycleScope
+import org.conscrypt.Conscrypt
+import java.security.Security
+
 class AngApplication : MultiDexApplication() {
     companion object {
         const val PREF_LAST_VERSION = "pref_last_version"
@@ -47,6 +50,8 @@ class AngApplication : MultiDexApplication() {
         //Logger.init().logLevel(if (BuildConfig.DEBUG) LogLevel.FULL else LogLevel.NONE)
         MMKV.initialize(this)
         MmkvManager.getDefaultSubscription()
+        Security.addProvider(Conscrypt.newProvider())
+
     }
 
 
