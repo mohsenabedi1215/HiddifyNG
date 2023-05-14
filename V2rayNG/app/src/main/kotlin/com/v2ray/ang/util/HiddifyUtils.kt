@@ -371,6 +371,7 @@ class HiddifyUtils {
             } catch (e: Exception) {
                 println("Failed to get IP address: ${e.message}")
             }
+            return null
         }
     }
 
