@@ -383,8 +383,9 @@ object Utils {
             val response = client.newCall(request).execute()
             val headers = response.headers.toMultimap()
 
-            val content = response.body?.string() ?: ""
-
+            val content = response.body?.string()
+            if(content.isNullOrEmpty() || !response.isSuccessful)
+                throw Exception("No Content")
             response.close()
 
             return Response(headers, content, urlStr)
