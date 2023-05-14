@@ -2,7 +2,9 @@ package com.v2ray.ang.util
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.text.SpannableString
+import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
@@ -179,22 +181,22 @@ class HiddifyUtils {
                 if (!json.isNullOrBlank()) {
                     var sub = Gson().fromJson(json, SubscriptionItem::class.java)
                     sub.lastUpdateTime=System.currentTimeMillis()
-                    var userinfo = response.headers.getOrDefault("Subscription-Userinfo", null)?.firstOrNull()
-                    var dns = response.headers.getOrDefault("DNS", null)?.firstOrNull()
+                    var userinfo = response.headers["Subscription-Userinfo"]?.firstOrNull()
+                    var dns = response.headers["DNS"]?.firstOrNull()
                     if(!dns.isNullOrEmpty()) {
                         sub.dns = dns //URLDecoder.decode(dns)
                     }
-                    var newLink = response.headers.getOrDefault("Moved-Permanently-To", null)?.firstOrNull()
+                    var newLink = response.headers["Moved-Permanently-To"]?.firstOrNull()
                     if(!newLink.isNullOrEmpty()) {
                         AngApplication.appContext.toast(R.string.sub_moved_to_another_address)
                         sub.url = newLink
                     }
 
-                    var homepage = response.headers.getOrDefault("Profile-Web-Page-Url", null)?.firstOrNull()
-                    var supportLink = response.headers.getOrDefault("Support-Url", null)?.firstOrNull()
-                    var content_disposition = response.headers.getOrDefault("Content-Disposition", null)?.firstOrNull()
-                    var profile_title = response.headers.getOrDefault("Profile-Title", null)?.firstOrNull()
-                    var profile_update_interval = response.headers.getOrDefault("Profile-Update-Interval", null)?.firstOrNull()
+                    var homepage = response.headers["Profile-Web-Page-Url"]?.firstOrNull()
+                    var supportLink = response.headers["Support-Url"]?.firstOrNull()
+                    var content_disposition = response.headers["Content-Disposition"]?.firstOrNull()
+                    var profile_title = response.headers["Profile-Title"]?.firstOrNull()
+                    var profile_update_interval = response.headers["Profile-Update-Interval"]?.firstOrNull()
                     if (!profile_update_interval.isNullOrEmpty()) {
                         sub.update_interval = profile_update_interval.toInt();
                     }
