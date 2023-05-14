@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <include
-                android:id="@+id/toolbar"
+                android:id="@+id/toolbar_main"
                 layout="@layout/hiddify_toolbar"/>
         </com.google.android.material.appbar.AppBarLayout>
 

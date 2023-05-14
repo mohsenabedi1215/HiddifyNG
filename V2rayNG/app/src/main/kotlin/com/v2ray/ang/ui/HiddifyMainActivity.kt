@@ -82,7 +82,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         val view = binding.root
         setContentView(view)
         title = ""
-        setSupportActionBar(binding.toolbar.toolbar)
+        setSupportActionBar(binding.toolbarMain.toolbar)
 
         //val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         //binding.drawerLayout.addDrawerListener(toggle)
@@ -211,11 +211,11 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             }
         }
 
-        binding.toolbar.setting.click {
+        binding.toolbarMain.setting.click {
             bottomSheetPresenter.show(supportFragmentManager, AddConfigBottomSheets.newInstance())
         }
 
-        binding.toolbar.test.click {
+        binding.toolbarMain.test.click {
             open_old_v2ray()
         }
         
