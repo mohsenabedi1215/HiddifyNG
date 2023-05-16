@@ -90,11 +90,19 @@ object V2rayConfigUtil {
                 pair.second.configType==EConfigType.LowestPing||
                 pair.second.configType==EConfigType.LoadBalance)
                 continue
+
             var outbound = pair.second.getProxyOutbound() ?: continue
             httpRequestObject(outbound)
-            outbound.tag="P"+pair.first
-            balancerSelectors.add(outbound.tag)
-            v2rayConfig.outbounds.add(outbound)
+            val ips=HiddifyUtils.getAllIP(outbound.getServerAddress()?:"")
+
+            ips.forEach {
+                val newoutbound=outbound.copy()
+                newoutbound.setServerAddress(it)
+                newoutbound.tag="P"+pair.first+it
+                balancerSelectors.add(newoutbound.tag)
+                v2rayConfig.outbounds.add(newoutbound)
+            }
+
         }
 
         var balancer=V2rayConfig.BalancerBean(tag="balancer",selector=balancerSelectors,strategy= V2rayConfig.BalancerStrategyBean(type="optimal", settings = V2rayConfig.OptimalBalancerStrategySetting(load_balancing =proxyItem.configType==EConfigType.LoadBalance )))

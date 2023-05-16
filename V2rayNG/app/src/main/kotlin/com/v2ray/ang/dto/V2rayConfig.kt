@@ -322,6 +322,20 @@ data class V2rayConfig(
             }
             return null
         }
+        fun setServerAddress(addr:String) {
+            if (protocol.equals(EConfigType.VMESS.name, true)
+                || protocol.equals(EConfigType.VLESS.name, true)) {
+                settings?.vnext?.get(0)?.address=addr
+            } else if (protocol.equals(EConfigType.SHADOWSOCKS.name, true)
+                || protocol.equals(EConfigType.SOCKS.name, true)
+                || protocol.equals(EConfigType.TROJAN.name, true)) {
+                settings?.servers?.get(0)?.address=addr
+            } else if (protocol.equals(EConfigType.WIREGUARD.name, true)) {
+                val p=settings?.peers?.get(0)?.endpoint?:return
+                settings?.peers?.get(0)?.endpoint=p.replace(p.substringBeforeLast(":"),addr)
+            }
+            return
+        }
 
         fun getServerPort(): Int? {
             if (protocol.equals(EConfigType.VMESS.name, true)

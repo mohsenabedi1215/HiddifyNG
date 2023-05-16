@@ -375,6 +375,19 @@ class HiddifyUtils {
             }
             return null
         }
+        fun getAllIP(host:String): MutableSet<String>? {
+            try {
+                val addresses = mutableSetOf<String>()
+                val inetAddresses = InetAddress.getAllByName(host)
+                for (address in inetAddresses) {
+                    addresses.add(address.hostAddress)
+                }
+                return if (addresses.isEmpty())null else addresses
+            } catch (e: Exception) {
+                println("Failed to get IP address: ${e.message}")
+            }
+            return null
+        }
     }
 
     enum class PerAppProxyMode{
