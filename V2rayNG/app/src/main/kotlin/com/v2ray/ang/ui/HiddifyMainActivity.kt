@@ -26,6 +26,7 @@ import com.google.gson.Gson
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
+import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.ActivityHiddifyMainBinding
 import com.v2ray.ang.dto.EConfigType
@@ -177,6 +178,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             .show()
     }
     private fun init() {
+        binding.toolbarMain.title.text=getString(R.string.title_hiddify)+" "+BuildConfig.VERSION_NAME.toPersianDigit(this)
         binding.pingLayout.click {
             binding.ping.text="..."
             hiddifyMainViewModel.testCurrentServerRealPing()
