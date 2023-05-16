@@ -19,8 +19,8 @@ android {
         minSdkVersion 21
         targetSdkVersion Integer.parseInt("$targetSdkVer")
         multiDexEnabled true
-        versionCode 5100549 //hiddify when comes to version 5 change it
-        versionName "4.9.0" //hiddify
+        versionCode 5100550 //hiddify when comes to version 5 change it
+        versionName "5.0.0" //hiddify
     }
 
     signingConfigs {
@@ -177,7 +177,7 @@ dependencies {
 //     https://mvnrepository.com/artifact/org.achartengine/achartengine
 //    implementation("org.achartengine:achartengine:1.2.0")
     implementation files('libs/achartengine-1.2.0.jar')
-    implementation 'org.conscrypt:conscrypt-android:2.2.1'
+    implementation 'org.conscrypt:conscrypt-android:2.5.2'
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
 

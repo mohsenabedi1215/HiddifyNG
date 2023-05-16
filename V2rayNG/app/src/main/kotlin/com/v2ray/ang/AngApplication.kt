@@ -1,6 +1,7 @@
 package com.v2ray.ang
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import androidx.multidex.MultiDexApplication
@@ -50,8 +51,9 @@ class AngApplication : MultiDexApplication() {
         //Logger.init().logLevel(if (BuildConfig.DEBUG) LogLevel.FULL else LogLevel.NONE)
         MMKV.initialize(this)
         MmkvManager.getDefaultSubscription()
-        Security.insertProviderAt(Conscrypt.newProvider(),1)
-
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            Security.insertProviderAt(Conscrypt.newProvider(), 1)
+        }
     }
 
 

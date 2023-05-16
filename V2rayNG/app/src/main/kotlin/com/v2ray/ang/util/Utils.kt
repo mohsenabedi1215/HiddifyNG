@@ -24,6 +24,7 @@ import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -368,16 +369,22 @@ object Utils {
 
     fun getUrlContentOkHttp(urlStr: String?, timeout: Long=10000, direct:Boolean=true,proxy:Boolean=true,tryold:Boolean=true): Response {
         try {
-
+            val spec: ConnectionSpec = ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                .allEnabledCipherSuites()
+                .allEnabledTlsVersions()
+                .build()
             // Create OkHttp Client
             var clientBuilder = OkHttpClient.Builder()
                 .readTimeout(timeout, TimeUnit.MILLISECONDS)
                 .writeTimeout(timeout, TimeUnit.MILLISECONDS)
                 .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                .connectionSpecs(Arrays.asList(spec))
+
 
             if(!direct&&proxy) {
                 Log.d(ANG_PACKAGE,"Trying to download the content using proxy")
                 clientBuilder.proxy(HiddifyUtils.socksProxy())
+                //todo use proxyselector
             }else{
                 Log.d(ANG_PACKAGE,"Trying to download the content direct")
             }
@@ -391,6 +398,7 @@ object Utils {
             url.userInfo?.let {
                 requestBuilder.header("Authorization", "Basic ${encode(urlDecode(it))}")
             }
+
             val request = requestBuilder.build()
             // Execute request
             val response = client.newCall(request).execute()
