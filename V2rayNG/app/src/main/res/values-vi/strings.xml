@@ -146,8 +146,8 @@
     <string name="title_pref_confirm_remove">Hiển thị thông báo xác nhận xoá cấu hình</string>
     <string name="summary_pref_confirm_remove">Hiển thị thông báo xác nhận xoá cấu hình khi bạn xoá một cấu hình.</string>
 
-    <string name="title_pref_start_scan_immediate">Start scanning immediately</string>
-    <string name="summary_pref_start_scan_immediate">Open the camera to scan immediately at startup, otherwise you can choose to scan the code or select a photo in the toolbar</string>
+    <string name="title_pref_start_scan_immediate">Bắt đầu quét ngay lập tứcy</string>
+    <string name="summary_pref_start_scan_immediate">Mở camera để quét ngay khi khởi động, nếu không bạn có thể chọn quét mã hoặc chọn ảnh trên thanh công cụ</string>
 
     <string name="title_pref_feedback">Phản hồi lỗi</string>
     <string name="summary_pref_feedback">Phản hồi cải tiến hoặc lỗi lên GitHub</string>
@@ -168,7 +168,7 @@
     <string name="logcat_clear">Xoá nhật ký</string>
     <string name="title_service_restart">Kết nối lại HiddifyNG</string>
     <string name="title_del_all_config">Xoá tất cả cấu hình</string>
-    <string name="title_del_duplicate_config">Delete duplicate config</string>
+    <string name="title_del_duplicate_config">Xóa cấu hình trùng lặp</string>
     <string name="title_del_invalid_config">Xoá cấu hình lỗi (Kiểm tra trước)</string>
     <string name="title_export_all">Xuất và sao chép tất cả cấu hình</string>
     <string name="title_sub_setting">Các gói đăng ký</string>
@@ -182,7 +182,7 @@
     <string name="title_sort_by_test_results">Sắp xếp lại theo lần kiểm tra cuối cùng</string>
     <string name="title_filter_config">Lọc cấu hình theo các gói đăng ký</string>
     <string name="filter_config_all">Hiển thị tất cả các gói đăng ký</string>
-    <string name="title_del_duplicate_config_count">Delete %d duplicate configurations</string>
+    <string name="title_del_duplicate_config_count">Xoá %d cấu hình trùng lặp</string>
 
     <string name="tasker_start_service">Bắt đầu HiddifyNG</string>
     <string name="tasker_setting_confirm">Xác nhận</string>
@@ -222,9 +222,9 @@
     </string-array>
 
     <string-array name="routing_mode">
-        <item>Global proxy</item>
-        <item>Foreign Sites</item>
-        <item>Blocked Sites</item>
+        <item>proxy toàn cầu</item>
+        <item>Trang web ngoài</item>
+        <item>Trang web bị chặn</item>
     </string-array>
 
     <string-array name="mode_entries">
@@ -233,29 +233,28 @@
     </string-array>
 
     <!-- hiddify -->
-    <string name="default_layout_description">برای استفاده از برنامه نیاز است که حتما
-یک سرور پروکسی راه اندازی کرده باشید
-و آن پروفایل را در برنامه وارد کنید.</string>
-    <string name="add_profile_description">Add New Profile</string>
-    <string name="import_from_clipboard">Import from Clipboard</string>
+    <string name="default_layout_description">Để sử dụng chương trình, bạn cần chắc chắn
+Thiết lập máy chủ proxy và nhập hồ sơ đó vào chương trình.</string>
+    <string name="add_profile_description">Thêm Hồ Sơ Mới</string>
+    <string name="import_from_clipboard">Nhập từ Clipboard</string>
     <string name="scan_qr_code">Scan QRcode</string>
-    <string name="advanced">Advanced</string>
-    <string name="tab_to_connect">Click to connect.</string>
-    <string name="connected">Connected</string>
-    <string name="connecting">Connecting...</string>
+    <string name="advanced">Chuyên sâu</string>
+    <string name="tab_to_connect">Ấn để kết nối.</string>
+    <string name="connected">Đã kết nối</string>
+    <string name="connecting">Đang kết nối...</string>
     <string name="proxy">Proxy</string>
-    <string name="connection_mode">Connection mode</string>
-    <string name="filtered_sites">سایت‌های فیلتر</string>
-    <string name="external_sites">سایت‌های خارجی</string>
-    <string name="sites_all">همه سایت‌ها</string>
-    <string name="smart">هوشمند</string>
-    <string name="load_balance">لودبالانس</string>
-    <string name="manual">دستی</string>
-    <string name="new_profile">New Profile</string>
-    <string name="consumer_traffic">Consumer traffic</string>
-    <string name="show">Show</string>
-    <string name="profiles">Profiles</string>
-    <string name="add_profile">Add Profile</string>
-    <string name="updated_sub_time">Updated %s %s ago</string>
-    <string name="title_sub_update_list">Updating subscriptions list</string>
+    <string name="connection_mode">Chế độ kết nối</string>
+    <string name="filtered_sites">Lọc các trang web</string>
+    <string name="external_sites">Các trang web ngoài</string>
+    <string name="sites_all">Tất cả trang web</string>
+    <string name="smart">thông minh</string>
+    <string name="load_balance">Cân bằng tải</string>
+    <string name="manual">Thủ công</string>
+    <string name="new_profile">Hồ sơ mới</string>
+    <string name="consumer_traffic">Lưu lượng truy cập</string>
+    <string name="show">Hiện</string>
+    <string name="profiles">Hồ sơ</string>
+    <string name="add_profile">Thêm hồ sơ</string>
+    <string name="updated_sub_time">Đã cập nhật %s %s trước</string>
+    <string name="title_sub_update_list">Cập nhật danh sách đăng ký</string>
 </resources>
