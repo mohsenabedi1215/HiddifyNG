@@ -203,7 +203,6 @@ fun Context?.toast(s: String?, length : Int = Toast.LENGTH_SHORT) {
     text.text = s
 
     val toast = Toast(this)
-    toast.setGravity(Gravity.BOTTOM, 0, 150)
     toast.duration = length
     toast.view = layout
     toast.show()
@@ -232,7 +231,6 @@ fun Context?.toast(i: Int?, length : Int = Toast.LENGTH_LONG) {
         text.text = s
 
         val toast = Toast(this)
-        toast.setGravity(Gravity.BOTTOM, 0, 150)
         toast.duration = length
         toast.view = layout
         toast.show()
