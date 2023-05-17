@@ -95,7 +95,7 @@ object V2rayConfigUtil {
             httpRequestObject(outbound)
             val ips=HiddifyUtils.getAllIP(outbound.getServerAddress()?:"")
 
-            ips.forEach {
+            ips?.forEach {
                 val newoutbound=outbound.copy()
                 newoutbound.setServerAddress(it)
                 newoutbound.tag="P"+pair.first+it

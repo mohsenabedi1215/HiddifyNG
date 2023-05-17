@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit
 
 class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSelectedListener,*/
     AddConfigBottomSheets.Callback, ProfilesBottomSheets.Callback,SettingBottomSheets.Callback {
+    private var state: String=""
     private lateinit var binding: ActivityHiddifyMainBinding
     private val subStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SUB, MMKV.MULTI_PROCESS_MODE) }
     private val adapter by lazy { HiddifyMainRecyclerAdapter(this) }
@@ -196,8 +197,9 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 
         binding.startButtonIcon.click {
 
-            if (hiddifyMainViewModel.isRunning.value == true) {
+            if (hiddifyMainViewModel.isRunning.value == true || state=="loading") {
                 Utils.stopVService(this)
+                updateCircleState("ready")
             } else if (settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" == "VPN") {
                 val intent = VpnService.prepare(this)
                 if (intent == null) {
@@ -843,6 +845,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
     fun updateCircleState(state: String) {
         binding.pingLayout.showHide(state=="connected")
         binding.ping.text="..."
+        this.state=state
         when(state) {
             "loading" -> {
                 binding.importButtons.gone()
