@@ -231,7 +231,8 @@ object V2rayConfigUtil {
                 v2rayConfig.routing.balancers=arrayListOf(balancer)
 
             routingUserRule(settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED)?: "", AppConfig.TAG_BLOCKED, v2rayConfig)
-
+            routingUserRule(settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_DIRECT)?: "", AppConfig.TAG_DIRECT, v2rayConfig)
+            routingUserRule(settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_AGENT)?: "", AppConfig.TAG_AGENT, v2rayConfig,balancer?.tag)
             v2rayConfig.routing.domainStrategy = settingsStorage?.decodeString(AppConfig.PREF_ROUTING_DOMAIN_STRATEGY)?: "AsIs"
 //            v2rayConfig.routing.domainMatcher = "mph"
             val routingMode = settingsStorage?.decodeString(AppConfig.PREF_ROUTING_MODE) ?: ERoutingMode.GLOBAL_PROXY.value
@@ -253,7 +254,7 @@ object V2rayConfigUtil {
 //                    routingGeo("ip", "private", AppConfig.TAG_DIRECT, v2rayConfig)
                     routingGeo("domain", HiddifyUtils.getCountry(), AppConfig.TAG_DIRECT, v2rayConfig)
                     v2rayConfig.routing.rules.add(0, googleapisRoute)
-                    routingUserRule(settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_DIRECT)?: "", AppConfig.TAG_DIRECT, v2rayConfig)
+
 
 //                    v2rayConfig.routing.rules.add(0, googleapisRoute)
                 }
@@ -269,7 +270,7 @@ object V2rayConfigUtil {
                         }
                         routingGeo("domain", "gfw-" + HiddifyUtils.getCountry(), AppConfig.TAG_AGENT, v2rayConfig, balancer?.tag)
                     }
-                    routingUserRule(settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_AGENT)?: "", AppConfig.TAG_AGENT, v2rayConfig,balancer?.tag)
+
                     val globalDirect = V2rayConfig.RoutingBean.RulesBean(
                         type = "field",
                         outboundTag = AppConfig.TAG_DIRECT,
