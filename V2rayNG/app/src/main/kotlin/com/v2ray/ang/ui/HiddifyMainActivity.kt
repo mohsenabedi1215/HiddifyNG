@@ -1019,6 +1019,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         restartV2Ray()
     }
 
+    override fun onFragmentModeChange(mode: HiddifyUtils.FragmentMode) {
+        HiddifyUtils.setFragmentMode(mode)
+        restartV2Ray()
+    }
 
     fun showAlarmIfnotSublink(content1: String) {
         if (content1.isNullOrEmpty()){

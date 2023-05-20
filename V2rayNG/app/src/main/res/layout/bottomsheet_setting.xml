@@ -37,13 +37,44 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="16dp"/>
 
-    <TextView
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="18dp"
+        >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/vazirmatn_regular"
-        android:textColor="@color/colorText"
         android:textSize="16sp"
+        android:textColor="@color/colorText"
+        android:layout_weight="1"
+
         android:text="@string/proxyAppAndSites" />
+        <ImageButton
+            android:id="@+id/proxymode_help"
+            android:layout_width="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_help"
+            android:background="?selectableItemBackground"
+
+            android:layout_height="match_parent"></ImageButton>
+
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/proxyToggleButton"
@@ -103,15 +134,122 @@
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="18dp"
+        >
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/vazirmatn_regular"
         android:textSize="16sp"
         android:textColor="@color/colorText"
-        android:layout_marginTop="18dp"
-        android:text="@string/connection_mode"/>
+        android:layout_weight="1"
+        android:text="@string/fragment" />
+        <ImageButton
+            android:id="@+id/fragment_help"
+            android:layout_width="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_help"
+            android:background="?selectableItemBackground"
 
+            android:layout_height="match_parent"></ImageButton>
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:checkedButton="@id/filteredSites"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fragment_default"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/vazirmatn_regular"
+            android:lines="1"
+            android:text="@string/fragment_default"
+            android:textColor="@color/btn_text_color_selector"
+            app:backgroundTint="@color/btn_bg_color_selector"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/btn_stroke_color_selector" />
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fragment_random"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+
+            android:ellipsize="none"
+            android:fontFamily="@font/vazirmatn_regular"
+            android:singleLine="true"
+            android:text="@string/fragment_random"
+            android:textColor="@color/btn_text_color_selector"
+            app:backgroundTint="@color/btn_bg_color_selector"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/btn_stroke_color_selector" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fragment_sni"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/vazirmatn_regular"
+            android:lines="1"
+            android:text="@string/fragment_sni"
+            android:textColor="@color/btn_text_color_selector"
+            app:backgroundTint="@color/btn_bg_color_selector"
+            app:cornerRadius="16dp"
+            app:strokeColor="@color/btn_stroke_color_selector" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="18dp"
+        >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/vazirmatn_regular"
+        android:textSize="16sp"
+        android:textColor="@color/colorText"
+        android:layout_weight="1"
+        android:text="@string/connection_mode"/>
+        <ImageButton
+            android:id="@+id/connection_mode_help"
+            android:layout_width="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_help"
+            android:background="?selectableItemBackground"
+
+            android:layout_height="match_parent"></ImageButton>
+    </LinearLayout>
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/connectToggleButton"
         android:layout_width="match_parent"
@@ -166,4 +304,5 @@
             android:fontFamily="@font/vazirmatn_regular"
             android:text="@string/manual" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
 </LinearLayout>

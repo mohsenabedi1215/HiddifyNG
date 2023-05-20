@@ -14,6 +14,7 @@ import com.v2ray.ang.extension.click
 import com.v2ray.ang.ui.PerAppProxyActivity
 import com.v2ray.ang.util.CallbackUtil
 import com.v2ray.ang.util.HiddifyUtils
+import com.v2ray.ang.util.Utils
 
 class SettingBottomSheets(var mode: Int) : BaseExpandedBottomSheet() {
     public lateinit var binding: BottomsheetSettingBinding
@@ -21,6 +22,7 @@ class SettingBottomSheets(var mode: Int) : BaseExpandedBottomSheet() {
     interface Callback {
         fun onModeChange(mode: Int)
         fun onPerAppProxyModeChange(mode: HiddifyUtils.PerAppProxyMode)
+        fun onFragmentModeChange(mode: HiddifyUtils.FragmentMode)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,6 +115,34 @@ class SettingBottomSheets(var mode: Int) : BaseExpandedBottomSheet() {
                     else -> binding.sitesAll.id
                 })
             }
+        }
+        binding.fragment.check(when (HiddifyUtils.getFragmentMode()) {
+            HiddifyUtils.FragmentMode.SNI -> binding.fragmentSni.id
+            HiddifyUtils.FragmentMode.Random -> binding.fragmentRandom.id
+            else -> binding.fragmentDefault.id
+        })
+        binding.fragment.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                val mode = when (checkedId) {
+                    binding.fragmentSni.id->HiddifyUtils.FragmentMode.SNI
+                    binding.fragmentRandom.id->HiddifyUtils.FragmentMode.Random
+                    else -> HiddifyUtils.FragmentMode.Default
+                }
+                callback()?.onFragmentModeChange(mode)
+            }else if (group.checkedButtonIds.isEmpty()) {
+                // No buttons are selected, select the first one by default
+//                callback()?.onFragmentModeChange(mode)
+            }
+        }
+
+        binding.proxymodeHelp.click {
+            Utils.openUri(requireContext(),requireContext().getString(R.string.proxymode_help_url))
+        }
+        binding.fragmentHelp.click {
+            Utils.openUri(requireContext(),requireContext().getString(R.string.fragment_help_url))
+        }
+        binding.connectionModeHelp.click {
+            Utils.openUri(requireContext(),requireContext().getString(R.string.connection_mode_help_url))
         }
         return binding.root
     }

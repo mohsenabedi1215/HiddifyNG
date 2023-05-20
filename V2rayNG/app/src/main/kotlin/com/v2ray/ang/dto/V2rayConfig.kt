@@ -7,6 +7,7 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import com.v2ray.ang.util.HiddifyUtils
 import java.lang.reflect.Type
 
 data class V2rayConfig(
@@ -479,7 +480,14 @@ data class V2rayConfig(
         outbounds?.forEach { outbound ->
             EConfigType.values().forEach {
                 if (outbound.protocol.equals(it.name, true)) {
-                    return outbound
+                    if(HiddifyUtils.getFragmentMode()==HiddifyUtils.FragmentMode.Default)
+                        return outbound
+                    else{
+                        val outbound2=outbound.copy()
+                        val str= if(HiddifyUtils.getFragmentMode()==HiddifyUtils.FragmentMode.SNI) "sni" else "random"
+                        outbound2?.streamSettings?.sockopt=Sockopt(dialer_proxy = "fragment_$str")
+                        outbound2?.streamSettings?.wsSettings?.fragmentation=OutboundBean.StreamSettingsBean.FragmentationConfig(enabled = true, strategy = str)
+                    }
                 }
             }
         }
