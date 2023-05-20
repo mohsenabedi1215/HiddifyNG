@@ -19,10 +19,10 @@ jobs:
       - name: Download latest lists
         run: |
           rm ./V2rayNG/app/src/main/assets/*.dat
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_ir https://github.com/hiddify/androidpackagenamelist/blob/master/direct_ir
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_ir https://github.com/hiddify/androidpackagenamelist/blob/master/proxy_ir
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_cn https://github.com/hiddify/androidpackagenamelist/blob/master/direct_cn
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_cn https://github.com/hiddify/androidpackagenamelist/blob/master/proxy_cn
+          curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_ir https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/direct_ir
+          curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_ir https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/proxy_ir
+          curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_cn https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/direct_cn
+          curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_cn https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/proxy_cn
           curl -L -o ./V2rayNG/app/src/main/assets/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
           curl -L -o ./V2rayNG/app/src/main/assets/geosite.dat https://github.com/hiddify/domain-list-community/releases/latest/download/hiddify-geosite.dat
           curl -L -o ./V2rayNG/app/libs/libv2ray.aar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray.aar
