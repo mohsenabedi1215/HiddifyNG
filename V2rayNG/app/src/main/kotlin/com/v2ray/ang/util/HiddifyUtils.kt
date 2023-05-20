@@ -18,6 +18,7 @@ import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.dto.SubscriptionItem
 import com.v2ray.ang.extension.*
 import com.v2ray.ang.util.Utils.getLocale
+import java.net.Inet4Address
 import java.net.InetAddress
 import java.util.Locale
 import java.net.InetSocketAddress
@@ -394,9 +395,15 @@ class HiddifyUtils {
             try {
                 val addresses = mutableSetOf<String>()
                 val inetAddresses = InetAddress.getAllByName(host)
+                val ipv4=mutableSetOf<String>()
                 for (address in inetAddresses) {
-                    addresses.add(address.hostAddress)
+                    if(address is Inet4Address)
+                        ipv4.add(address.hostAddress)
+                    else
+                        addresses.add(address.hostAddress)
                 }
+                if(ipv4.isNotEmpty())
+                    return ipv4
                 return if (addresses.isEmpty())null else addresses
             } catch (e: Exception) {
                 println("Failed to get IP address: ${e.message}")
