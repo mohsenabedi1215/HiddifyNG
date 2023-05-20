@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.hiddify.ang.downloader.MixedDownloader
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
@@ -170,7 +171,7 @@ class UserAssetActivity : BaseActivity() {
         val target = File(extDir, name)
         if(true){
             try {
-                val res = Utils.getUrlContentOkHttp(url,timeout=timeout.toLong())
+                val res = MixedDownloader().download(url,timeout=timeout)
                 if (res != null) {
                     FileOutputStream(targetTemp).use { output ->
                         output.write(res.contentBytes)

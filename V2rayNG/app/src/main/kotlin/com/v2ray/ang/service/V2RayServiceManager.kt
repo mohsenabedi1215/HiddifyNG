@@ -23,10 +23,7 @@ import com.v2ray.ang.extension.toSpeedString
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.ui.HiddifyMainActivity
 import com.v2ray.ang.ui.MainActivity
-import com.v2ray.ang.util.MessageUtil
-import com.v2ray.ang.util.MmkvManager
-import com.v2ray.ang.util.Utils
-import com.v2ray.ang.util.V2rayConfigUtil
+import com.v2ray.ang.util.*
 import go.Seq
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -76,7 +73,7 @@ object V2RayServiceManager {
             Intent(context.applicationContext, V2RayProxyOnlyService::class.java)
         }
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            Handler(Looper.getMainLooper()).post{
+            HiddifyUtils.runOnUiThread{
                 context.startForegroundService(intent)
             }
         } else {

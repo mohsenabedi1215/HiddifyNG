@@ -266,9 +266,10 @@ object V2rayConfigUtil {
                         routingGeo("", HiddifyUtils.getCountry(), AppConfig.TAG_DIRECT, v2rayConfig)
                         if (HiddifyUtils.getCountry() == "ir") {
                             routingUserRule("10.10.34.34,10.10.34.35,10.10.34.36", AppConfig.TAG_AGENT, v2rayConfig)
-                            routingGeo("domain", "hiddify-sanction-" + HiddifyUtils.getCountry(), AppConfig.TAG_AGENT, v2rayConfig, balancer?.tag)
+//not need                            routingGeo("domain", "hiddify-sanction-" + HiddifyUtils.getCountry(), AppConfig.TAG_AGENT, v2rayConfig, balancer?.tag)
                         }
-                        routingGeo("domain", "gfw-" + HiddifyUtils.getCountry(), AppConfig.TAG_AGENT, v2rayConfig, balancer?.tag)
+//not need                        routingGeo("domain", "gfw-" + HiddifyUtils.getCountry(), AppConfig.TAG_AGENT, v2rayConfig, balancer?.tag)
+
                     }
 
                     val globalDirect = V2rayConfig.RoutingBean.RulesBean(
@@ -507,6 +508,7 @@ object V2rayConfigUtil {
             // DNS dns对象
             v2rayConfig.dns = V2rayConfig.DnsBean(
                     servers = servers,
+                    queryStrategy="UseIPv4",
                     hosts = hosts)
 
             // DNS routing

@@ -89,9 +89,9 @@ class V2RayVpnService : VpnService(), ServiceControl {
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Debug.waitForDebugger()
             quickNotification()//we should show notification within 5 seconds
         }
+
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         V2RayServiceManager.serviceControl = SoftReference(this)

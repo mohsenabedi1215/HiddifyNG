@@ -16,6 +16,7 @@ object AppConfig {
     // Preferences mapped to MMKV
     const val FIRST_SETUP_DONE = "first_setup_done"//hiddify
     const val PREF_COUNTRY="pref_country"//hiddify
+    const val FRAGMENT_MODE = "fragment_mode"//
     const val PREF_MODE = "pref_mode"
     const val PREF_SPEED_ENABLED = "pref_speed_enabled"
     const val PREF_SNIFFING_ENABLED = "pref_sniffing_enabled"

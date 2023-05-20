@@ -1,9 +1,12 @@
 package com.v2ray.ang.util
 
+import android.os.Handler
+import android.os.Looper
 import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.text.SpannableString
+import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
@@ -265,6 +268,18 @@ class HiddifyUtils {
             return PerAppProxyMode.NotOpened
         }
 
+        fun getFragmentMode(): FragmentMode {
+            val mode=defaultSharedPreferences.getString(AppConfig.FRAGMENT_MODE, "")
+            if (mode==FragmentMode.Random.toString())
+                return FragmentMode.Random
+            if (mode==FragmentMode.SNI.toString())
+                return FragmentMode.SNI
+            return FragmentMode.Default
+        }
+        fun setFragmentMode(mode:FragmentMode) {
+            defaultSharedPreferences.edit().putString(AppConfig.FRAGMENT_MODE, mode.toString()).apply()
+        }
+
         fun setPerAppProxyMode(mode: PerAppProxyMode){ //1 disable 2: filtered , 3: foreign
             setDefaultProxyModes()
             defaultSharedPreferences.edit().putBoolean(AppConfig.PREF_PER_APP_PROXY, mode!=PerAppProxyMode.Global).apply()
@@ -388,6 +403,15 @@ class HiddifyUtils {
             }
             return null
         }
+
+
+
+// ...
+
+        fun runOnUiThread(action: () -> Unit) {
+            Handler(Looper.getMainLooper()).post(action)
+        }
+
     }
 
     enum class PerAppProxyMode{
@@ -395,4 +419,11 @@ class HiddifyUtils {
         Blocked,
         NotOpened
     }
+
+    enum class FragmentMode{
+        Default,
+        SNI,
+        Random
+    }
+
 }

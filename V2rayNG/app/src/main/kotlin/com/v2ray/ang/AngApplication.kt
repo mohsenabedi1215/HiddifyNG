@@ -3,7 +3,6 @@ package com.v2ray.ang
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import androidx.lifecycle.lifecycleScope
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
 import com.google.firebase.FirebaseApp
@@ -13,13 +12,13 @@ import com.google.firebase.messaging.ktx.messaging
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import org.conscrypt.Conscrypt
+//import org.conscrypt.Conscrypt
 import java.io.File
 import java.io.FileOutputStream
-import androidx.lifecycle.lifecycleScope
-import org.conscrypt.Conscrypt
 import java.security.Security
+
+
 
 class AngApplication : MultiDexApplication() {
     companion object {
@@ -52,8 +51,13 @@ class AngApplication : MultiDexApplication() {
         MMKV.initialize(this)
         MmkvManager.getDefaultSubscription()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            Security.insertProviderAt(Conscrypt.newProvider(), 1)
+            Security.insertProviderAt(Conscrypt.newProvider(), 0)
         }
+//        System.setProperty("javax.net.debug", "ssl")
+
+//        val sslContext: SSLContext = SSLContext.getInstance("TLSv1.3")
+//        sslContext.init(null, null, null)
+//        val engine: SSLEngine = sslContext.createSSLEngine()
     }
 
 

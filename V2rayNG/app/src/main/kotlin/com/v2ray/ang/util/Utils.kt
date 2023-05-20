@@ -16,6 +16,8 @@ import android.util.Base64
 import android.util.Log
 import android.util.Patterns
 import android.webkit.URLUtil
+
+import com.hiddify.ang.downloader.MixedDownloader
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
@@ -24,14 +26,14 @@ import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
-import okhttp3.ConnectionSpec
-import okhttp3.OkHttpClient
-import okhttp3.Request
+
 import java.io.IOException
 import java.net.*
 import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLSession
 
 object Utils {
 
@@ -344,8 +346,8 @@ object Utils {
 
     fun getUrlContext(url: String, timeout: Int): String {
         if(true) {
-            val content = getUrlContentOkHttp(url, timeout.toLong()).content ?: ""
-            if(!content.isNullOrEmpty())return content
+            val res= MixedDownloader().download(url,timeout)
+            if(!res.content.isNullOrEmpty())return res.content
         }
         var result: String
         var conn: HttpURLConnection? = null
@@ -367,72 +369,11 @@ object Utils {
         return result
     }
 
-    fun getUrlContentOkHttp(urlStr: String?, timeout: Long=10000, direct:Boolean=true,proxy:Boolean=true,tryold:Boolean=true): Response {
-        try {
-            val spec: ConnectionSpec = ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
-                .allEnabledCipherSuites()
-                .allEnabledTlsVersions()
-                .build()
-            // Create OkHttp Client
-            var clientBuilder = OkHttpClient.Builder()
-                .readTimeout(timeout, TimeUnit.MILLISECONDS)
-                .writeTimeout(timeout, TimeUnit.MILLISECONDS)
-                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
-                .connectionSpecs(Arrays.asList(spec))
 
-
-            if(!direct&&proxy) {
-                Log.d(ANG_PACKAGE,"Trying to download the content using proxy")
-                clientBuilder.proxy(HiddifyUtils.socksProxy())
-                //todo use proxyselector
-            }else{
-                Log.d(ANG_PACKAGE,"Trying to download the content direct")
-            }
-            val client=clientBuilder.build()
-
-
-            // Create URL
-            val url = URL(urlStr)
-            // Build request
-            val requestBuilder = Request.Builder().url(url).header("User-Agent", "HiddifyNG/${BuildConfig.VERSION_NAME}").header("Connection", "close")
-            url.userInfo?.let {
-                requestBuilder.header("Authorization", "Basic ${encode(urlDecode(it))}")
-            }
-
-            val request = requestBuilder.build()
-            // Execute request
-            val response = client.newCall(request).execute()
-            val headers = response.headers.toMultimap()
-            val contentBytes=response.body?.bytes()
-            if(contentBytes==null||contentBytes.isEmpty() || !response.isSuccessful) {
-                Log.e(ANG_PACKAGE,"download not success!! ${response.isSuccessful}  ")
-                throw Exception("No Content")
-            }
-            val content=String(contentBytes!!, response.body?.contentType()?.charset(Charsets.UTF_8) ?: Charsets.UTF_8)
-//            val content = response.body?.string()
-
-            response.close()
-
-            return Response(headers, content, urlStr,contentBytes)
-        }catch (e:Exception){
-            if(direct&&proxy) {
-                Log.e(ANG_PACKAGE,"Download failed without proxy! Trying with proxy...")
-                AngApplication.appContext.toast(R.string.msg_downloading_content_failed_no_proxy)
-                return getUrlContentOkHttp(urlStr, timeout, direct = false, proxy = true, tryold=tryold)
-            }
-            if(tryold) {
-                Log.e(ANG_PACKAGE,"Download failed with OkHttp ! fallback to use traditional request")
-                return getUrlContentWithCustomUserAgent_old(urlStr, timeout)
-            }
-            Log.e(ANG_PACKAGE,e.toString())
-            Log.e(ANG_PACKAGE,e.stackTraceToString())
-            throw e
-        }
-
-    }
     @Throws(IOException::class)
     fun getUrlContentWithCustomUserAgent(urlStr: String?): Response {
-        return getUrlContentOkHttp(urlStr)
+        return MixedDownloader().download(urlStr!!)
+//        return getUrlContentOkHttp(urlStr)
     }
     @Throws(IOException::class)
     fun getUrlContentWithCustomUserAgent_old(urlStr: String?,timeout:Long=10000): Response {
