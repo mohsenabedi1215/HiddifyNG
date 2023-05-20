@@ -47,6 +47,7 @@ object AppConfig {
     const val PREF_START_SCAN_IMMEDIATE = "pref_start_scan_immediate"
 
     const val PREF_REVIEW_TIME = "pref_review_time"
+    const val PREF_UPDATE_TIME = "pref_update_time"
 
     const val HTTP_PROTOCOL: String = "http://"
     const val HTTPS_PROTOCOL: String = "https://"
