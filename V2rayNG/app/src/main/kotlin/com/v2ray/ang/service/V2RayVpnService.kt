@@ -222,6 +222,7 @@ class V2RayVpnService : VpnService(), ServiceControl {
         val perAppProxy=settingsStorage?.decodeBool(AppConfig.PREF_PER_APP_PROXY) == true
         if (perAppProxy) {
             val apps = settingsStorage?.decodeStringSet(AppConfig.PREF_PER_APP_PROXY_SET)
+            val proxySet= mutableSetOf<String>()
             apps?.forEach {
                 try {
                     if (it!=BuildConfig.APPLICATION_ID) {
@@ -229,11 +230,13 @@ class V2RayVpnService : VpnService(), ServiceControl {
                             builder.addDisallowedApplication(it)
                         else
                             builder.addAllowedApplication(it)
+                        proxySet.add(it)
                     }
                 } catch (e: PackageManager.NameNotFoundException) {
                     //Logger.d(e)
                 }
             }
+            settingsStorage?.edit()?.putStringSet(AppConfig.PREF_PER_APP_PROXY_SET,proxySet)?.apply()
         }
         if (!perAppProxy || bypassApps) {
             builder.addDisallowedApplication(BuildConfig.APPLICATION_ID)
