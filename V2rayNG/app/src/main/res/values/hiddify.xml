@@ -37,7 +37,7 @@
     <string name="no_server_selected">No server is selected!</string>
     <string name="expired">Expired</string>
     <string name="title_country">Country</string>
-    <string name="proxyAppAndSites">Proxy which applications and sites</string>
+    <string name="proxyAppAndSites">Proxy Applications</string>
     <string name="hiddify_notification">Hiddify Notifications</string>
     <string name="toast_services_failure_config_error">One config has error. Please remove it. It can be one of configs that has -1.</string>
     <string name="speedtest">Speed Test</string>

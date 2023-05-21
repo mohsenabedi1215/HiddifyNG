@@ -82,7 +82,9 @@ object V2rayConfigUtil {
             }
             delay
         }
-        v2rayConfig.outbounds.clear()
+
+        v2rayConfig.outbounds.removeAt(0)
+
         var balancerSelectors=ArrayList<String>()
 
         for (pair in serversConfigs){
