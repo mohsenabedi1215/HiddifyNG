@@ -16,6 +16,7 @@ import com.v2ray.ang.R
 import com.v2ray.ang.databinding.FragmentRoutingSettingsBinding
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.extension.v2RayApplication
+import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -128,10 +129,10 @@ class RoutingSettingsFragment : Fragment() {
         var tag = ""
         when (requireArguments().getString(routing_arg)) {
             AppConfig.PREF_V2RAY_ROUTING_AGENT -> {
-                tag = AppConfig.TAG_AGENT
+                tag = AppConfig.TAG_AGENT+"_"+HiddifyUtils.getCountry()
             }
             AppConfig.PREF_V2RAY_ROUTING_DIRECT -> {
-                tag = AppConfig.TAG_DIRECT
+                tag = AppConfig.TAG_DIRECT+"_"+HiddifyUtils.getCountry()
             }
             AppConfig.PREF_V2RAY_ROUTING_BLOCKED -> {
                 tag = AppConfig.TAG_BLOCKED
@@ -141,7 +142,7 @@ class RoutingSettingsFragment : Fragment() {
 
         activity?.toast(R.string.msg_downloading_content)
         lifecycleScope.launch(Dispatchers.IO) {
-            val content = Utils.getUrlContext(url, 5000)
+            val content = try{Utils.getUrlContext(url, 5000)}catch (e:java.lang.Exception){""}
             launch(Dispatchers.Main) {
                 val routingList = if (TextUtils.isEmpty(content)) {
                     Utils.readTextFromAssets(activity?.v2RayApplication!!, "custom_routing_$tag")
