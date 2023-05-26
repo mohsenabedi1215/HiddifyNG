@@ -48,5 +48,7 @@
     <string name="fragment_default">پیش فرض</string>
     <string name="fragment_random">تصادفی</string>
     <string name="fragment_sni">دامنه</string>
+    <string name="summary_mux_enabled">Mux برای کاهش تأخیر در دست دادن TCP طراحی شده است، نه برای افزایش توان اتصال. استفاده از Mux برای تماشای فیلم، دانلود یا تست سرعت معمولاً نتیجه‌ای ندارد. اگر سرور از Mux پشتیبانی نکند، نمی توانیم به آن متصل شویم.</string>
+    <string name="title_mux_enabled">فعال کردن Mux</string>
 
 </resources>

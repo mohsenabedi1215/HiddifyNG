@@ -221,7 +221,7 @@
     <string name="msg_enter_group_name">Enter group name</string>
     <string name="updated_sub_time">Updated %s %s ago</string>
     <string name="title_sub_update_list">Updating subscriptions list</string>
-    <string name="fragment_help_url">https://t.me/hiddify_board/103416/129287</string>
+
 
     <string-array name="share_method">
         <item>QRcode</item>

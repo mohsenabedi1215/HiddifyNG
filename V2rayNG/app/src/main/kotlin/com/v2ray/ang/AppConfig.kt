@@ -33,6 +33,7 @@ object AppConfig {
     const val PREF_LOGLEVEL = "pref_core_loglevel"
     const val PREF_LANGUAGE = "pref_language"
     const val PREF_PREFER_IPV6 = "pref_prefer_ipv6"
+    const val PREF_MUX = "pref_mux"//hiddify
     const val PREF_ROUTING_DOMAIN_STRATEGY = "pref_routing_domain_strategy"
     const val PREF_ROUTING_MODE = "pref_routing_mode"
     const val PREF_V2RAY_ROUTING_AGENT = "pref_v2ray_routing_agent"

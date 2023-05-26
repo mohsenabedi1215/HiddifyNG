@@ -67,7 +67,7 @@ data class V2rayConfig(
                             var streamSettings: StreamSettingsBean? = null,
                             val proxySettings: Any? = null,
                             val sendThrough: String? = null,
-                            val mux: MuxBean? = MuxBean(false)) {
+                            var mux: MuxBean? = MuxBean(false)) {
 
         data class OutSettingsBean(var vnext: List<VnextBean>? = null,
                                    var servers: List<ServersBean>? = null,
@@ -480,6 +480,8 @@ data class V2rayConfig(
         outbounds?.forEach { outbound ->
             EConfigType.values().forEach {
                 if (outbound.protocol.equals(it.name, true)) {
+                    if (HiddifyUtils.isMuxEnabled())
+                        outbound?.mux=OutboundBean.MuxBean(true)
                     if(HiddifyUtils.getFragmentMode()==HiddifyUtils.FragmentMode.Default)
                         return outbound
                     else{

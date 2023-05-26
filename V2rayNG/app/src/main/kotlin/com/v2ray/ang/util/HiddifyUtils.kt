@@ -268,7 +268,9 @@ class HiddifyUtils {
                 return PerAppProxyMode.Blocked
             return PerAppProxyMode.NotOpened
         }
-
+        fun isMuxEnabled():Boolean{
+            return settingsStorage?.decodeBool(AppConfig.PREF_MUX,false)?:false
+        }
         fun getFragmentMode(): FragmentMode {
             val mode=defaultSharedPreferences.getString(AppConfig.FRAGMENT_MODE, "")
             if (mode==FragmentMode.Random.toString())
@@ -402,7 +404,7 @@ class HiddifyUtils {
                     else
                         addresses.add(address.hostAddress)
                 }
-                if(ipv4.isNotEmpty())
+                if ((settingsStorage?.decodeBool(AppConfig.PREF_PREFER_IPV6) != true) && ipv4.isNotEmpty())
                     return ipv4
                 return if (addresses.isEmpty())null else addresses
             } catch (e: Exception) {

@@ -49,6 +49,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             AppConfig.PREF_FAKE_DNS_ENABLED,
             AppConfig.PREF_ALLOW_INSECURE,
             AppConfig.PREF_PREFER_IPV6,
+            AppConfig.PREF_MUX,
             AppConfig.PREF_PER_APP_PROXY,
             AppConfig.PREF_BYPASS_APPS,
             AppConfig.PREF_CONFIRM_REMOVE,
