@@ -1,21 +1,25 @@
 package com.v2ray.ang.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.*
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
-import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextUtils
+import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,6 +29,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.gson.Gson
+import com.tapadoo.alerter.Alerter
 
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tencent.mmkv.MMKV
@@ -44,19 +49,18 @@ import com.v2ray.ang.util.*
 import com.v2ray.ang.viewmodel.HiddifyMainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.drakeet.support.toast.ToastCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSelectedListener,*/
+class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Fragment(), /*NavigationView.OnNavigationItemSelectedListener,*/
     AddConfigBottomSheets.Callback, ProfilesBottomSheets.Callback,SettingBottomSheets.Callback {
     private var state: String=""
     private lateinit var binding: ActivityHiddifyMainBinding
     private val subStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SUB, MMKV.MULTI_PROCESS_MODE) }
-    private val adapter by lazy { HiddifyMainRecyclerAdapter(this) }
+    private val adapter by lazy { HiddifyMainRecyclerAdapter(this, this.hiddifyMainViewModel) }
     private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
     private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -66,30 +70,40 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
     }
     private var connect_mode=HiddifyUtils.getMode();//1=smart 2=loadbalance 3=manual
     private var mItemTouchHelper: ItemTouchHelper? = null
-    val hiddifyMainViewModel: HiddifyMainViewModel by viewModels()
+
     private val bottomSheetPresenter = BottomSheetPresenter()
 
-    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            importConfigViaSub(HiddifyUtils.getSelectedSubId())
-        }
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+    fun setTitleVersion(){
+        val title=requireActivity().getString(R.string.title_hiddify)
 
+        val spannableString = SpannableString(title+" "+ BuildConfig.VERSION_NAME.toPersianDigit(activity))
 
-        registerReceiver(receiver, IntentFilter(AppConfig.BROADCAST_ACTION_UPDATE_UI))
+        spannableString.setSpan(RelativeSizeSpan(0.6f), title.length+1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//        spannableString.setSpan(BackgroundColorSpan(getColorEx(R.color.colorAccent)),binding.toolbar.title.length+1,spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-        binding = ActivityHiddifyMainBinding.inflate(layoutInflater)
+        (requireActivity() as BaseActivity)?.supportActionBar?.title=spannableString
+
+    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        super.onCreateView(inflater, container, savedInstanceState)
+        setTitleVersion()
+
+        binding = ActivityHiddifyMainBinding.inflate(inflater)
         val view = binding.root
-        setContentView(view)
-        title = ""
-        setSupportActionBar(binding.toolbarMain.toolbar)
+//        setContentView(view)
+//        title = ""
 
-        //val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+
+        //val toggle = ActionBarDrawerToggle(requireActivity(), binding.drawerLayout, binding.toolbar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         //binding.drawerLayout.addDrawerListener(toggle)
         //toggle.syncState()
-        //binding.navView.setNavigationItemSelectedListener(this)
+        //binding.navView.setNavigationItemSelectedListener(requireActivity())
         //binding.version.text = "v${BuildConfig.VERSION_NAME} (${SpeedtestUtil.getLibVersion()})"
 
         setupViewModel()
@@ -98,15 +112,8 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         init()
 
         showLangDialog()
-        if (hiddifyMainViewModel.serverList.isNotEmpty() &&Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            RxPermissions(this)
-                .request(Manifest.permission.POST_NOTIFICATIONS)
-                .subscribe {
-//                    if (!it)
-//                        toast(R.string.toast_permission_denied)
-                }
-        }
 
+        return  binding.root
     }
 
     private fun showGooglePlayReview() {
@@ -115,13 +122,13 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         }
 
         settingsStorage?.encode(AppConfig.PREF_REVIEW_TIME, System.currentTimeMillis())
-        val manager = ReviewManagerFactory.create(this)
+        val manager = ReviewManagerFactory.create(requireActivity())
         val request = manager.requestReviewFlow()
         request.addOnCompleteListener { request ->
             if (request.isSuccessful) {
                 // We got the ReviewInfo object
                 val reviewInfo = request.result
-                val flow = manager.launchReviewFlow(this, reviewInfo)
+                val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
                 flow.addOnCompleteListener { _ ->
                     // The flow has finished. The API does not indicate whether the user
                     // reviewed or not, or even whether the review dialog was shown. Thus, no
@@ -138,18 +145,18 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             showCountryDialog()
             return
         }
-        MaterialAlertDialogBuilder(this,R.style.AppTheme_ThemeOverlay_MaterialComponents_MaterialAlertDialog)
+        MaterialAlertDialogBuilder(requireActivity(),R.style.AppTheme_ThemeOverlay_MaterialComponents_MaterialAlertDialog)
             .setTitle(R.string.title_language)
             .setCancelable(false)
             .setItems(R.array.language_select) { dialog, which ->
                 val lang = resources.getStringArray(R.array.language_select_value)[which]
                 settingsStorage?.encode(AppConfig.PREF_LANGUAGE, lang)
                 dialog.dismiss()
-                val locale=Utils.getLocale(this);
+                val locale=Utils.getLocale(requireActivity());
                 Locale.setDefault(locale)
 
 
-                val resources = baseContext.resources
+                val resources = context?.resources!!
                 val configuration = resources.configuration
                 configuration.locale = locale
                 configuration.setLayoutDirection(locale)
@@ -157,8 +164,8 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                 resources.updateConfiguration(configuration, resources.displayMetrics)
 //                setContentView(R.layout.activity_hiddify_main);
 //                recreate()
-                finish();
-                startActivity(intent);
+                requireActivity().finish();
+                startActivity(requireActivity().intent);
 
 //
 //                  restartActivity();
@@ -172,13 +179,13 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         }
         settingsStorage?.edit()?.putLong(AppConfig.PREF_UPDATE_TIME,System.currentTimeMillis())?.apply()
 
-        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateManager = AppUpdateManagerFactory.create(requireActivity())
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
 
     // Checks that the platform will allow the specified type of update.
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                // This example applies an immediate update. To apply a flexible update
+                // requireActivity() example applies an immediate update. To apply a flexible update
                 // instead, pass in AppUpdateType.FLEXIBLE
                 && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
             ) {
@@ -188,8 +195,8 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                     // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
                     AppUpdateType.IMMEDIATE,
                     // The current activity making the update request.
-                    this,
-                    // Include a request code to later monitor this update request.
+                    requireActivity(),
+                    // Include a request code to later monitor requireActivity() update request.
                     0)
             }
         }
@@ -198,7 +205,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         if (settingsStorage?.containsKey(AppConfig.PREF_COUNTRY)==true) {
             return
         }
-        MaterialAlertDialogBuilder(this,R.style.AppTheme_ThemeOverlay_MaterialComponents_MaterialAlertDialog)
+        MaterialAlertDialogBuilder(requireActivity(),R.style.AppTheme_ThemeOverlay_MaterialComponents_MaterialAlertDialog)
             .setTitle(R.string.title_country)
             .setCancelable(false)
 
@@ -210,7 +217,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             .show()
     }
     private fun init() {
-        binding.toolbarMain.title.text=getString(R.string.title_hiddify)+" "+BuildConfig.VERSION_NAME.toPersianDigit(this)
+
         binding.pingLayout.click {
             binding.ping.text="..."
             hiddifyMainViewModel.testCurrentServerRealPing()
@@ -229,10 +236,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         binding.startButtonIcon.click {
 
             if (hiddifyMainViewModel.isRunning.value == true || state=="loading") {
-                Utils.stopVService(this)
+                Utils.stopVService(requireActivity())
                 updateCircleState("ready")
             } else if (settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" == "VPN") {
-                val intent = VpnService.prepare(this)
+                val intent = VpnService.prepare(requireActivity())
                 if (intent == null) {
                     startV2Ray()
                 } else {
@@ -243,30 +250,39 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             }
         }
 
-        binding.toolbarMain.setting.click {
-            bottomSheetPresenter.show(supportFragmentManager, AddConfigBottomSheets.newInstance())
-        }
 
-        binding.toolbarMain.test.click {
-            open_old_v2ray()
-        }
         
         binding.advanced.click {
-            var current=hiddifyMainViewModel.currentSubscription()
+            var current= hiddifyMainViewModel.currentSubscription()
             connect_mode=HiddifyUtils.getMode()
-            bottomSheetPresenter.show(supportFragmentManager, SettingBottomSheets.newInstance(connect_mode))
+            bottomSheetPresenter.show(parentFragmentManager, SettingBottomSheets.newInstance(connect_mode))
         }
 
     }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.setting -> {
+//                // Handle custom menu item 1 click
+//                bottomSheetPresenter.show(parentFragmentManager, AddConfigBottomSheets.newInstance())
+//                return true
+//            }
+//            R.id.test -> {
+//                open_old_v2ray()
+//                return true
+//            }
+//            // Handle other custom menu items similarly
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
     fun open_old_v2ray(){
-        runOnUiThread{
-            val intent = Intent(this, MainActivity::class.java)
+    requireActivity().runOnUiThread{
+            val intent = Intent(requireActivity(), MainActivity::class.java)
             startActivity(intent)
         }
     }
     override fun onClipBoard() {
-        importClipboard()
-        importConfigViaSub(HiddifyUtils.getSelectedSubId())
+        if(importClipboard())
+            importConfigViaSub(HiddifyUtils.getSelectedSubId())
     }
 
     override fun onQrCode() {
@@ -300,21 +316,21 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             if (!check) {
                 updateCircleState("default")
             } else {
-                val enableSubscription =hiddifyMainViewModel.currentSubscription()
+                val enableSubscription = hiddifyMainViewModel.currentSubscription()
 
                 enableSubscription?.let { subscription ->
                     binding.profileName.text = subscription.second.remarks
 
                     binding.time.text = HiddifyUtils.timeToRelativeDate(
                         subscription.second.expire, subscription.second.total,
-                        subscription.second.used, this
+                        subscription.second.used, requireActivity()
                     )
-                    binding.time.showGone(subscription.second.expire > (0).toLong())
+                    binding.time.showGone(subscription.second.expire > (0).toLong() && (subscription.second.expire-System.currentTimeMillis()<1000L*60*60*24*1000))
 
                     binding.consumerTrafficValue.text = HiddifyUtils.toTotalUsedGig(
                         subscription.second.total,
                         subscription.second.used,
-                        this
+                        requireActivity()
                     )
                     binding.consumerTrafficValue.showGone(subscription.second.total > (0).toLong())
                     binding.consumerTraffic.showGone(subscription.second.total > (0).toLong())
@@ -326,13 +342,13 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                     binding.show.click {
                         if (subscription.second.home_link.isNullOrEmpty())
                             return@click
-                        Utils.openUri(this,subscription.second.home_link)
+                        Utils.openUri(requireActivity(),subscription.second.home_link)
 
                     }
                     binding.supportLink.click {
                         if (subscription.second.support_link.isNullOrEmpty())
                             return@click
-                        Utils.openUri(this,subscription.second.support_link)
+                        Utils.openUri(requireActivity(),subscription.second.support_link)
 
                     }
                     binding.show.showGone(!subscription.second.home_link.isNullOrEmpty())
@@ -340,13 +356,13 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 
                     binding.profileName.click {
                         bottomSheetPresenter.show(
-                            supportFragmentManager,
+                            parentFragmentManager,
                             ProfilesBottomSheets.newInstance()
                         )
                     }
                     binding.addProfile.click {
                         bottomSheetPresenter.show(
-                            supportFragmentManager,
+                            parentFragmentManager,
                             AddConfigBottomSheets.newInstance()
                         )
                     }
@@ -370,12 +386,12 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 
     private fun startV2Ray() {
         if (mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER).isNullOrEmpty()) {
-            toast(R.string.no_server_selected)
+            context.toast(R.string.no_server_selected)
             return
         }
         updateCircleState("loading")
-//        toast(R.string.toast_services_start)
-        val enableSubscription =hiddifyMainViewModel.currentSubscription()
+//        context.toast(R.string.toast_services_start)
+        val enableSubscription = hiddifyMainViewModel.currentSubscription()
         MmkvManager.sortByTestResults()
         enableSubscription?.let { subscription ->
             if (connect_mode != 3) {
@@ -383,17 +399,14 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             }
         }
 
-        V2RayServiceManager.startV2Ray(this)
+        V2RayServiceManager.startV2Ray(requireActivity())
         hideCircle()
     }
 
-    override fun onResumeFragments() {
-        super.onResumeFragments()
-    }
 
     private fun restartV2Ray() {
         if (hiddifyMainViewModel.isRunning.value == true) {
-            Utils.stopVService(this)
+            Utils.stopVService(requireActivity())
         }
         Observable.timer(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -404,6 +417,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 
     public override fun onResume() {
         super.onResume()
+
         onSelectSub(HiddifyUtils.getSelectedSubId(),false)
 //        HiddifyUtils.setMode(connect_mode)
         hiddifyMainViewModel.reloadServerList()
@@ -418,19 +432,25 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 
 
 
-
+        setTitleVersion()
+        if(hiddifyMainViewModel.serverList.isEmpty())
+            bottomSheetPresenter.show(parentFragmentManager,AddConfigBottomSheets())
     }
 
     public override fun onPause() {
         super.onPause()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        //menuInflater.inflate(R.menu.menu_main, menu)
-        return false
-    }
+    
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.menu_add_profile->{
+                bottomSheetPresenter.show(
+                    parentFragmentManager,
+                    AddConfigBottomSheets.newInstance()
+                )
+            true
+        }
         R.id.import_qrcode -> {
             importQRcode(true)
             importConfigViaSub(HiddifyUtils.getSelectedSubId())
@@ -489,10 +509,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         }
 
         R.id.export_all -> {
-            if (AngConfigManager.shareNonCustomConfigsToClipboard(this, hiddifyMainViewModel.serverList) == 0) {
-                toast(R.string.toast_success)
+            if (AngConfigManager.shareNonCustomConfigsToClipboard(requireActivity(), hiddifyMainViewModel.serverList) == 0) {
+                context.toast(R.string.toast_success)
             } else {
-                toast(R.string.toast_failure)
+                context.toast(R.string.toast_failure)
             }
             true
         }
@@ -513,9 +533,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         }
 
         R.id.del_all_config -> {
-            AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    MmkvManager.removeAllServer()
+
+                    MmkvManager.removeSubscription(HiddifyUtils.getSelectedSubId())
                     hiddifyMainViewModel.reloadServerList()
                     hiddifyMainViewModel.reloadSubscriptionsState()
                 }
@@ -523,7 +544,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             true
         }
         R.id.del_duplicate_config-> {
-            AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     hiddifyMainViewModel.removeDuplicateServer()
                 }
@@ -531,7 +552,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             true
         }
         R.id.del_invalid_config -> {
-            AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     MmkvManager.removeInvalidServer()
                     hiddifyMainViewModel.reloadServerList()
@@ -547,7 +568,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             true
         }
         R.id.filter_config -> {
-            hiddifyMainViewModel.filterConfig(this)
+            hiddifyMainViewModel.filterConfig(requireActivity())
             true
         }
 
@@ -558,8 +579,8 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         startActivity(
             Intent()
                 .putExtra("createConfigType", createConfigType)
-                .putExtra("subscriptionId", hiddifyMainViewModel.subscriptionId)
-                .setClass(this, ServerActivity::class.java)
+                .putExtra("subscriptionId", hiddifyMainViewModel.subscriptionId.value)
+                .setClass(requireActivity(), ServerActivity::class.java)
         )
     }
 
@@ -572,16 +593,16 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 //                    .addCategory(Intent.CATEGORY_DEFAULT)
 //                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP), requestCode)
 //        } catch (e: Exception) {
-        RxPermissions(this)
+        RxPermissions(requireActivity())
             .request(Manifest.permission.CAMERA)
             .subscribe {
                 if (it)
                     if (forConfig)
-                        scanQRCodeForConfig.launch(Intent(this, ScannerActivity::class.java))
+                        scanQRCodeForConfig.launch(Intent(requireActivity(), ScannerActivity::class.java))
                     else
-                        scanQRCodeForUrlToCustomConfig.launch(Intent(this, ScannerActivity::class.java))
+                        scanQRCodeForUrlToCustomConfig.launch(Intent(requireActivity(), ScannerActivity::class.java))
                 else
-                    toast(R.string.toast_permission_denied)
+                    context.toast(R.string.toast_permission_denied)
             }
 //        }
         return true
@@ -599,12 +620,15 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_home, menu)
+    }
     /**
      * import config from clipboard
      */
     private fun importClipboard(): Boolean {
         try {
-            val clipboard = Utils.getClipboard(this)
+            val clipboard = Utils.getClipboard(requireActivity())
             showAlarmIfnotSublink(clipboard)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -647,19 +671,30 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                 onSelectSub(subid)
             }
             hiddifyMainViewModel.testAllRealPing()
-            toast(R.string.toast_success)
+            Alerter.create(requireActivity())
+                .setIcon(com.google.android.material.R.drawable.mtrl_ic_check_mark)
+                .setBackgroundResource(R.drawable.bg_h_green)
+                .enableSwipeToDismiss()
+
+                .setText(R.string.import_success).show()
             hiddifyMainViewModel.reloadServerList()
             hiddifyMainViewModel.reloadSubscriptionsState()
         } else {
-            toast(R.string.toast_failure)
+
+            Alerter.create(requireActivity())
+                .setIcon(com.google.android.material.R.drawable.mtrl_ic_error)
+//                .setBackgroundColorRes(com.google.android.material.R.color.design_error)
+                .setBackgroundResource(R.drawable.bg_h_red)
+                .enableSwipeToDismiss()
+                .setText(R.string.paste_failed).show()
         }
     }
 
     private fun importConfigCustomClipboard(): Boolean {
         try {
-            val configText = Utils.getClipboard(this)
+            val configText = Utils.getClipboard(requireActivity())
             if (TextUtils.isEmpty(configText)) {
-                toast(R.string.toast_none_data_clipboard)
+                context.toast(R.string.toast_none_data_clipboard)
                 return false
             }
             importCustomizeConfig(Utils.Response(null, configText))
@@ -686,9 +721,9 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
     private fun importConfigCustomUrlClipboard()
             : Boolean {
         try {
-            val url = Utils.getClipboard(this)
+            val url = Utils.getClipboard(requireActivity())
             if (TextUtils.isEmpty(url)) {
-                toast(R.string.toast_none_data_clipboard)
+                context.toast(R.string.toast_none_data_clipboard)
                 return false
             }
             return importConfigCustomUrl(url)
@@ -704,7 +739,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
     private fun importConfigCustomUrl(url: String?): Boolean {
         try {
             if (!Utils.isValidUrl(url)) {
-                toast(R.string.toast_invalid_url)
+                context.toast(R.string.toast_invalid_url)
                 return false
             }
             lifecycleScope.launch(Dispatchers.IO) {
@@ -712,10 +747,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                     Utils.getUrlContentWithCustomUserAgent(url)
                 } catch (e: Exception) {
                     launch(Dispatchers.Main) {
-                        Log.e(packageName,e.toString())
-                        Log.e(packageName,e.stackTraceToString())
-                        toast(getString(R.string.toast_failure)+" "+e.toString())
-//                            toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
+                        Log.e(context?.packageName,e.toString())
+                        Log.e(context?.packageName,e.stackTraceToString())
+                        context.toast(getString(R.string.toast_failure)+" "+e.toString())
+//                            context.toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
                     }
                     Utils.Response(null, "")
                 }
@@ -735,7 +770,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
      */
     fun importConfigViaSub(subid: String?=null) : Boolean {
         try {
-//            toast(R.string.title_sub_update)
+//            context.toast(R.string.title_sub_update)
             MmkvManager.decodeSubscriptions().forEach {
                 if (subid!=null&&it.first!=subid)return@forEach
                 if (TextUtils.isEmpty(it.first)
@@ -757,10 +792,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                         Utils.getUrlContentWithCustomUserAgent(url)
                     } catch (e: Exception) {
                         launch(Dispatchers.Main) {
-                            Log.e(packageName,e.toString())
-                            Log.e(packageName,e.stackTraceToString())
-                            toast(getString(R.string.toast_failure)+" "+e.toString())
-//                            toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
+                            Log.e(context?.packageName,e.toString())
+                            Log.e(context?.packageName,e.stackTraceToString())
+                            context.toast(getString(R.string.toast_failure)+" "+e.toString())
+//                            context.toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
                         }
                         return@launch
                     }
@@ -772,7 +807,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            toast(R.string.title_sub_update_failed)
+            context.toast(R.string.title_sub_update_failed)
             hiddifyMainViewModel. testAllRealPing()
             return false
         }
@@ -790,7 +825,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         try {
             chooseFileForCustomConfig.launch(Intent.createChooser(intent, getString(R.string.title_file_chooser)))
         } catch (ex: ActivityNotFoundException) {
-            toast(R.string.toast_require_file_manager)
+            context.toast(R.string.toast_require_file_manager)
         }
     }
 
@@ -805,12 +840,12 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
      * read content from uri
      */
     private fun readContentFromUri(uri: Uri) {
-        RxPermissions(this)
+        RxPermissions(requireActivity())
             .request(Manifest.permission.READ_EXTERNAL_STORAGE)
             .subscribe {
                 if (it) {
                     try {
-                        contentResolver.openInputStream(uri).use { input ->
+                        context?.contentResolver?.openInputStream(uri)?.use { input ->
 
                             importCustomizeConfig(input?.bufferedReader()?.readText())
                         }
@@ -818,7 +853,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
                         e.printStackTrace()
                     }
                 } else
-                    toast(R.string.toast_permission_denied)
+                    context.toast(R.string.toast_permission_denied)
             }
     }
 
@@ -833,16 +868,16 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         val server=response?.content
         try {
             if (server == null || TextUtils.isEmpty(server)) {
-                toast(R.string.toast_none_data)
+                context.toast(R.string.toast_none_data)
                 return
             }
             hiddifyMainViewModel.appendCustomConfigServer(response)
             hiddifyMainViewModel.reloadServerList()
             hiddifyMainViewModel.reloadSubscriptionsState()
-            toast(R.string.toast_success)
+            context.toast(R.string.toast_success)
             //adapter.notifyItemInserted(hiddifyMainViewModel.serverList.lastIndex)
         } catch (e: Exception) {
-            ToastCompat.makeText(this, "${getString(R.string.toast_malformed_josn)} ${e.cause?.message}", Toast.LENGTH_LONG).show()
+            context.toast("${getString(R.string.toast_malformed_josn)} ${e.cause?.message}", Toast.LENGTH_LONG)
             e.printStackTrace()
             return
         }
@@ -852,7 +887,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         //binding.tvTestState.text = content
         if (content==null)return
 
-        var text=if (content!!.first>=0)content!!.first.toString().toPersianDigit(this)+" ms" else getString(R.string.toast_failure)
+        var text=if (content!!.first>=0)content!!.first.toString().toPersianDigit(requireActivity())+" ms" else getString(R.string.toast_failure)
         binding.ping.text=text
     }
 
@@ -865,64 +900,65 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 //        }
 //    }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(false)
-            return true
-        }
-        return super.onKeyDown(keyCode, event)
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            moveTaskToBack(false)
+//            return true
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
 
     fun updateCircleState(state: String) {
+        if(activity==null)return
         binding.pingLayout.showHide(state=="connected")
         binding.ping.text="..."
         this.state=state
         when(state) {
             "loading" -> {
                 binding.importButtons.gone()
-                binding.startButton.background = ContextCompat.getDrawable(this, R.drawable.ic_circle_connecting)
+                binding.startButton.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_circle_connecting)
 
-                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(this.getColorEx(R.color.colorYellow))
+                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorYellow))
                 binding.connectState.text = getString(R.string.connecting)
-                binding.connectState.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorYellow)))
-                binding.advanced.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorText)))
-                binding.advanced.iconTint = ColorStateList.valueOf(this.getColorEx(R.color.colorText))
+                binding.connectState.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorYellow)))
+                binding.advanced.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorText)))
+                binding.advanced.iconTint = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorText))
                 binding.advanced.isEnabled = true
             }
             "connected" -> {
                 binding.importButtons.gone()
 
-                binding.startButton.background = ContextCompat.getDrawable(this, R.drawable.ic_circle_connect)
-                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(this.getColorEx(R.color.colorGreen))
+                binding.startButton.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_circle_connect)
+                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorGreen))
                 binding.connectState.text = getString(R.string.connected)
-                binding.connectState.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorGreen)))
-                binding.advanced.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorText)))
-                binding.advanced.iconTint = ColorStateList.valueOf(this.getColorEx(R.color.colorText))
+                binding.connectState.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorGreen)))
+                binding.advanced.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorText)))
+                binding.advanced.iconTint = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorText))
                 binding.advanced.isEnabled = true
             }
             "ready" -> {
                 binding.importButtons.gone()
-                binding.startButton.background = ContextCompat.getDrawable(this, R.drawable.ic_circle_ready)
-//                binding.startButton.backgroundTintList= ColorStateList.valueOf(this.getColorEx(R.color.colorPrimary2))
+                binding.startButton.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_circle_ready)
+//                binding.startButton.backgroundTintList= ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorPrimary2))
 //                binding.startButton.backgroundTintBlendMode=BlendMode.MULTIPLY;
-                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(this.getColorEx(R.color.colorPrimary2))
+                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorPrimary2))
 
 
 
                 binding.connectState.text = getString(R.string.tab_to_connect)
-                binding.connectState.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorPrimary2)))
-//                binding.advanced.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorText)))
-//                binding.advanced.iconTint = ColorStateList.valueOf(this.getColorEx(R.color.colorText))
+                binding.connectState.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorPrimary2)))
+//                binding.advanced.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorText)))
+//                binding.advanced.iconTint = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorText))
                 binding.advanced.isEnabled = true
             }
             else -> {
                 binding.importButtons.show()
-                binding.startButton.background = ContextCompat.getDrawable(this, R.drawable.ic_circle_default)
-                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(this.getColorEx(R.color.colorDisable))
+                binding.startButton.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_circle_default)
+                binding.startButtonIcon.imageTintList = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorDisable))
                 binding.connectState.text = getString(R.string.default_layout_description)
-                binding.connectState.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorPrimary2)))
-//                binding.advanced.setTextColor(ColorStateList.valueOf(this.getColorEx(R.color.colorBorder)))
-//                binding.advanced.iconTint = ColorStateList.valueOf(this.getColorEx(R.color.colorBorder))
+                binding.connectState.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorPrimary2)))
+//                binding.advanced.setTextColor(ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorBorder)))
+//                binding.advanced.iconTint = ColorStateList.valueOf(requireActivity().getColorEx(R.color.colorBorder))
                 binding.advanced.isEnabled = false
                 binding.profileBox.gone()
             }
@@ -952,23 +988,23 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         when (item.itemId) {
             //R.id.server_profile -> activityClass = MainActivity::class.java
             R.id.sub_setting -> {
-                startActivity(Intent(this, SubSettingActivity::class.java))
+                startActivity(Intent(requireActivity(), SubSettingActivity::class.java))
             }
             R.id.settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java)
+                startActivity(Intent(requireActivity(), SettingsActivity::class.java)
                     .putExtra("isRunning", hiddifyMainViewModel.isRunning.value == true))
             }
             R.id.user_asset_setting -> {
-                startActivity(Intent(this, UserAssetActivity::class.java))
+                startActivity(Intent(requireActivity(), UserAssetActivity::class.java))
             }
             R.id.feedback -> {
-                Utils.openUri(this, AppConfig.v2rayNGIssues)
+                Utils.openUri(requireActivity(), AppConfig.v2rayNGIssues)
             }
             R.id.promotion -> {
-                Utils.openUri(this, "${Utils.decode(AppConfig.promotionUrl)}")
+                Utils.openUri(requireActivity(), "${Utils.decode(AppConfig.promotionUrl)}")
             }
             R.id.logcat -> {
-                startActivity(Intent(this, LogcatActivity::class.java))
+                startActivity(Intent(requireActivity(), LogcatActivity::class.java))
             }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -976,7 +1012,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
     }
 */
     override fun onAddProfile() {
-        bottomSheetPresenter.show(supportFragmentManager, AddConfigBottomSheets.newInstance())
+        bottomSheetPresenter.show(parentFragmentManager, AddConfigBottomSheets.newInstance())
     }
 
     override fun onImportQrCode() {
@@ -998,13 +1034,13 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
             HiddifyUtils.setMode(connect_mode)
         }
 
-        hiddifyMainViewModel.subscriptionId = subid
+        hiddifyMainViewModel.subscriptionId.value = subid
 
 
         hiddifyMainViewModel.reloadServerList()
         hiddifyMainViewModel.reloadSubscriptionsState()
 
-        val enableSubscription =hiddifyMainViewModel.currentSubscription()
+        val enableSubscription = hiddifyMainViewModel.currentSubscription()
         if (enableSubscription?.second?.needUpdate() == true){
             importConfigViaSub(HiddifyUtils.getSelectedSubId())
         }else if (do_ping){
@@ -1015,25 +1051,21 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 
     override fun onRemoveSelectSub(subid: String) {
         if (subid=="default")return
-        AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+        Alerter.create(requireActivity()).setTitle(R.string.del_config_comfirm)
+            .addButton(getText(android.R.string.ok)) {
                 MmkvManager.removeSubscription(subid)
-                if (subid==HiddifyUtils.getSelectedSubId())
+                if (subid == HiddifyUtils.getSelectedSubId())
                     HiddifyUtils.setSelectedSub("default")
                 hiddifyMainViewModel.reloadServerList()
                 hiddifyMainViewModel.reloadSubscriptionsState()
+            }
+            .addButton(getText(android.R.string.no)) {
+
             }
             .show()
 
     }
 
-    override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
 
     override fun onModeChange(mode: Int) {
         connect_mode=mode;
@@ -1055,9 +1087,10 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         restartV2Ray()
     }
 
+    @SuppressLint("ResourceAsColor")
     fun showAlarmIfnotSublink(content1: String) {
         if (content1.isNullOrEmpty()){
-            toast(R.string.title_sub_update_failed)
+            context.toast(R.string.title_sub_update_failed)
             return
         }
         var content=if(content1.startsWith("hiddify"))Uri.parse(content1.trim()).getQueryParameter("url")?:"" else content1.trim()
@@ -1067,12 +1100,20 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
 //            importConfigViaSub(subid)
             return
         }
+        if(content1.length<20) {
+            Alerter.create(requireActivity())
+                .setIcon(com.google.android.material.R.drawable.mtrl_ic_error)
+                .setBackgroundResource(R.drawable.bg_h_red)
+                .enableSwipeToDismiss()
+                .setText(R.string.paste_failed).show()
+            return
+        }
         val subscriptions = MmkvManager.decodeSubscriptions().filter { it.second.enabled &&!Utils.isValidUrl(it.second.url) }
         val listId = subscriptions.map { it.first }.toList().toMutableList()
         val listRemarks = subscriptions.map { it.second.remarks }.toList().toMutableList()
         listId.add(0,"")
         listRemarks.add(0,getString(R.string.new_item))
-        val context=this
+        val context=requireActivity()
         var actv = Spinner(context)
         var ll=LinearLayout(context)
         ll.orientation=LinearLayout.VERTICAL
@@ -1083,7 +1124,7 @@ class HiddifyMainActivity : BaseActivity(), /*NavigationView.OnNavigationItemSel
         params.setMargins(24, 0, 24, 0)
         tv.layoutParams = params
         ll.addView(actv)
-        val customName=TextInputEditText(this)
+        val customName=TextInputEditText(requireActivity())
         ll.addView(customName)
         customName.hint=getString(R.string.msg_enter_group_name)
         customName.visibility=View.GONE

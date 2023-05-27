@@ -27,7 +27,7 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     style="?attr/materialAlertDialogBodyTextStyle"
     android:gravity="center_vertical"
-    android:fontFamily="@font/vazirmatn_regular"
+
     android:paddingLeft="?attr/listPreferredItemPaddingLeft"
     android:paddingRight="?attr/listPreferredItemPaddingRight"
     android:ellipsize="marquee" />

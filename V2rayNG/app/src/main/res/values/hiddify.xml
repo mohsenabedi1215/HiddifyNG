@@ -26,7 +26,7 @@
     <string name="fragment" translatable="false">Fragment</string>
     <!-- hiddify -->
 
-    <string name="import_from_clipboard">Import from Clipboard</string>
+    <string name="import_from_clipboard">Clipboard</string>
 
 
 
@@ -56,5 +56,12 @@
     <string name="fragment_help_url">https://t.me/hiddify_board/103416/129287</string>
     <string name="summary_mux_enabled">Mux is designed to reduce TCP handshake latency, not to increase connection throughput. Using Mux to watch videos, download or speed test is usually counter productive. If the server does not support Mux, we will not be able to connect to it.</string>
     <string name="title_mux_enabled">Enable Multiplexer</string>
+
+
+
+    <string name="home">Connection</string>
+    <string name="configs">Configs</string>
+    <string name="paste_failed">Import Config Failed</string>
+    <string name="import_success">Configs are Successfully Imported</string>
 
 </resources>

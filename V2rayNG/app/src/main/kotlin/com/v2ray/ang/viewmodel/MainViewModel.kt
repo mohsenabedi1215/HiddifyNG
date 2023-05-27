@@ -29,10 +29,11 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
     private var lastPing=0L;
     var subscriptions = MmkvManager.decodeSubscriptions()
     var serverList = MmkvManager.decodeServerList()
-    var subscriptionId: String = HiddifyUtils.getSelectedSubId()
+
     var keywordFilter: String = ""
         public set
     val serversCache = mutableListOf<ServersCache>()
+    val subscriptionId by lazy { MutableLiveData<String>() }
     val isRunning by lazy { MutableLiveData<Boolean>() }
     val updateListAction by lazy { MutableLiveData<Int>() }
     val updateTestResultAction by lazy { MutableLiveData<Pair<Long,String>>() }
@@ -76,7 +77,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         val server=response.content;
         val config = ServerConfig.create(EConfigType.CUSTOM)
         config.remarks = System.currentTimeMillis().toString()
-        config.subscriptionId = subscriptionId
+        config.subscriptionId = subscriptionId.value?:""
         config.fullConfig = Gson().fromJson(server, V2rayConfig::class.java)
         val key = MmkvManager.encodeServerConfig("", config)
         serverRawStorage?.encode(key, server)
@@ -95,7 +96,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         serversCache.clear()
         for (guid in serverList) {
             val config = MmkvManager.decodeServerConfig(guid) ?: continue
-            if (subscriptionId.isNotEmpty() && subscriptionId != config.subscriptionId) {
+            if (subscriptionId.value?.isNotEmpty()==true && subscriptionId.value != config.subscriptionId) {
                 continue
             }
 
@@ -124,7 +125,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
                     tcpingTestScope.launch {
                         val testResult = SpeedtestUtil.tcping(serverAddress, serverPort)
                         launch(Dispatchers.Main) {
-                            MmkvManager.encodeServerTestDelayMillis(item.guid, testResult,subscriptionId)
+                            MmkvManager.encodeServerTestDelayMillis(item.guid, testResult,subscriptionId.value?:"")
                             updateListAction.value =  getPosition(item.guid)
                         }
                     }
@@ -142,7 +143,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
 //        getApplication<AngApplication>().toast(R.string.connection_test_testing)
         viewModelScope.launch(Dispatchers.Default) { // without Dispatchers.Default viewModelScope will launch in main thread
             for (item in ArrayList(serversCache)) {
-                if (!subscriptionId.isNullOrEmpty() && item.config.subscriptionId!=subscriptionId)
+                if (!subscriptionId.value.isNullOrEmpty() && item.config.subscriptionId!=subscriptionId.value)
                     continue
                 val config = V2rayConfigUtil.getV2rayConfig(getApplication(), item.guid)
                 if (config.status) {
@@ -162,8 +163,8 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         val listId = subscriptions.map { it.first }.toList().toMutableList()
         val listRemarks = subscriptions.map { it.second.remarks }.toList().toMutableList()
         listRemarks += context.getString(R.string.filter_config_all)
-        val checkedItem = if (subscriptionId.isNotEmpty()) {
-            listId.indexOf(subscriptionId)
+        val checkedItem = if (subscriptionId.value?.isNotEmpty()==true) {
+            listId.indexOf(subscriptionId.value)
         } else {
             listRemarks.count() - 1
         }
@@ -177,12 +178,12 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         builder.setPositiveButton(R.string.tasker_setting_confirm) { dialogInterface: DialogInterface?, _: Int ->
             try {
                 val position = ivBinding.spSubscriptionId2.selectedItemPosition
-                subscriptionId = if (listRemarks.count() - 1 == position) {
+                subscriptionId.value = if (listRemarks.count() - 1 == position) {
                     ""
                 } else {
                     subscriptions[position].first
                 }
-                HiddifyUtils.setSelectedSub(subscriptionId)
+                HiddifyUtils.setSelectedSub(subscriptionId.value?:"")
                 keywordFilter = ivBinding.etKeyword.text.toString()
                 reloadServerList()
 
@@ -220,6 +221,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
     fun removeDuplicateServer() {
         val deleteServer = mutableListOf<String>()
         serversCache.forEachIndexed { index, it ->
+            if((it.config.configType as Int)>100)return@forEachIndexed
             val outbound = it.config.getProxyOutbound()
             serversCache.forEachIndexed { index2, it2 ->
                 if(index2 > index){
@@ -267,7 +269,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
                 }
                 AppConfig.MSG_MEASURE_CONFIG_SUCCESS -> {
                     val resultPair = intent.getSerializableExtra("content") as Pair<String, Long>
-                    MmkvManager.encodeServerTestDelayMillis(resultPair.first, resultPair.second,subscriptionId)
+                    MmkvManager.encodeServerTestDelayMillis(resultPair.first, resultPair.second,subscriptionId.value?:"")
                     updateListAction.value = getPosition(resultPair.first)
                 }
                 AppConfig.MSG_HIDDIFY_DO_TEST_PING->{

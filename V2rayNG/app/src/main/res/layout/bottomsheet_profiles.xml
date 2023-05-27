@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/vazirmatn_regular"
+        
         android:gravity="center"
         android:text="@string/profiles"
         android:textColor="@color/colorDarkGray"
@@ -31,7 +31,7 @@
             android:paddingHorizontal="16dp"
             android:text="@string/add_profile"
             android:textColor="@color/colorPrimary2"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             style="?android:attr/borderlessButtonStyle"
             android:textAlignment="viewStart"
             app:icon="@drawable/ic_plus"
@@ -53,7 +53,7 @@
             android:paddingHorizontal="16dp"
             android:text="@string/scan_qr_code"
             android:textColor="@color/colorPrimary2"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             style="?android:attr/borderlessButtonStyle"
             android:textAlignment="viewEnd"
             app:icon="@drawable/ic_qr_code"
@@ -73,7 +73,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/title_sub_update_list"
         android:textColor="@color/colorPrimary2"
-        android:fontFamily="@font/vazirmatn_regular"
+        
         android:backgroundTint="@color/colorBright"
         app:icon="@drawable/ic_refresh"
         app:iconTint="@color/colorPrimary2"

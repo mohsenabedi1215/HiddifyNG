@@ -22,7 +22,15 @@ object CallbackUtil {
         return if (callback.isInstance(fragment.activity)) {
 
             fragment.activity as T
-        } else null
+        } else {
+            var item: Fragment? = null;
+            for (f in fragment.parentFragmentManager.fragments)
+                if (callback.isInstance(f)) {
+                    item = f
+                }
+            return item as T
+        }
+
     }
 
     fun <T> getCallback(activity: Activity, callback: Class<T>): T? {

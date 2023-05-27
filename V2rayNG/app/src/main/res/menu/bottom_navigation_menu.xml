@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_home"
+        android:icon="@drawable/aic_hiddify_selector"
+        android:title="@string/home" />
+    <item
+        android:id="@+id/action_configs"
+        android:icon="@drawable/ic_vpn_lock_24"
+        android:title="@string/configs" />
+    <item
+        android:id="@+id/action_advanced"
+        android:icon="@drawable/baseline_flash_on_24"
+        android:title="@string/advanced" />
+</menu>

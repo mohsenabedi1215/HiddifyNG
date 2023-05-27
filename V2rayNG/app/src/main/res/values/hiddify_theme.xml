@@ -1,0 +1,88 @@
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="BaseAppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="materialAlertDialogTheme">@style/AppTheme_ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
+        <item name="android:textViewStyle">@style/MyTextViewStyle</item>
+        <item name="android:buttonStyle">@style/MyButtonStyle</item>
+        <item name="buttonStyle">@style/MyButtonStyle</item>
+
+        <item name="navigationViewStyle">@style/MyAppNavigationViewStyle</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="tabStyle">@style/MyTabLayout</item>
+        <item name="android:tabWidgetStyle">@style/MyTabLayout</item>
+
+        <item name="android:statusBarColor">@color/colorBackground</item>
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+
+    </style>
+
+
+
+    <style name="MyTabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabTextAppearance">@style/MyTabItem</item>
+    </style>
+    <style name="MyTabItem" parent="TextAppearance.Design.Tab">
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+        <item name="fontFamily">@font/shabnam_regular</item>
+
+        <!-- Other tab item style attributes -->
+    </style>
+
+
+
+
+
+    <style name="MyTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+    </style>
+
+    <style name="MyButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+    </style>
+
+
+
+    <style name="MyAppNavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">
+        <item name="itemTextAppearance">@style/MyAppNavigationViewItemTextAppearance</item>
+    </style>
+    <style name="MyAppNavigationViewItemTextAppearance" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+        <item name="fontFamily">@font/shabnam_regular</item>
+
+    </style>
+
+    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
+    </style>
+
+
+
+    <style name="AppTheme_ThemeOverlay.MaterialComponents.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogTitleTextStyle">@style/AppTheme_MaterialAlertDialog.MaterialComponents.Title.Text</item>
+
+
+        <item name="materialAlertDialogBodyTextStyle">@style/AppTheme_MaterialAlertDialog.MaterialComponents.NormalText</item>
+
+    </style>
+    <style name="AppTheme_MaterialAlertDialog.MaterialComponents.Title.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textAppearance">@style/AppTheme_TextAppearance.MaterialComponents.Subtitle1</item>
+
+
+    </style>
+    <style name="AppTheme_MaterialAlertDialog.MaterialComponents.NormalText" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="textAppearanceBody2">@font/shabnam_regular</item>
+        <item name="fontFamily">@font/shabnam_regular</item>
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+
+
+    </style>
+
+    <style name="AppTheme_TextAppearance.MaterialComponents.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="fontFamily">@font/shabnam_bold</item>
+        <item name="android:fontFamily">@font/shabnam_bold</item>
+        <!--        <item name="android:textStyle">.....</item>-->
+        <item name="android:textSize">20sp</item>
+    </style>
+</resources>

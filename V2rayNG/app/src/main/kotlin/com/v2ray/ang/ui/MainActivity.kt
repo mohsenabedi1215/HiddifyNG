@@ -1,53 +1,55 @@
 package com.v2ray.ang.ui
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.*
 import android.net.Uri
 import android.net.VpnService
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.view.Menu
-import android.view.MenuItem
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.ang.R
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.KeyEvent
 import com.v2ray.ang.AppConfig
 import android.content.res.ColorStateList
 import android.os.Build
-import com.google.android.material.navigation.NavigationView
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.recyclerview.widget.ItemTouchHelper
 import android.util.Log
-import android.view.View
+import android.view.*
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.tapadoo.alerter.Alerter
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
-import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.databinding.ActivityMainBinding
 import com.v2ray.ang.dto.EConfigType
+import com.v2ray.ang.extension.click
 import com.v2ray.ang.extension.toast
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import com.v2ray.ang.helper.SimpleItemTouchHelperCallback
 import com.v2ray.ang.service.V2RayServiceManager
+import com.v2ray.ang.ui.bottomsheets.AddConfigBottomSheets
+import com.v2ray.ang.ui.bottomsheets.BottomSheetPresenter
+import com.v2ray.ang.ui.bottomsheets.ProfilesBottomSheets
 import com.v2ray.ang.util.*
+import com.v2ray.ang.viewmodel.HiddifyMainViewModel
 import com.v2ray.ang.viewmodel.MainViewModel
 import kotlinx.coroutines.*
 import me.drakeet.support.toast.ToastCompat
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity(val mainViewModel: HiddifyMainViewModel) : Fragment(){
     private lateinit var binding: ActivityMainBinding
+    private val bottomSheetPresenter = BottomSheetPresenter()
 //    private var subAdapter by lazy {  }//hiddify
-    private val adapter by lazy { MainRecyclerAdapter(this) }
+    private val adapter by lazy { MainRecyclerAdapter(requireActivity(),mainViewModel) }
     private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
     private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -56,7 +58,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
     private var mItemTouchHelper: ItemTouchHelper? = null
-    val mainViewModel: MainViewModel by viewModels()
+
 
     //Hiddify
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -68,18 +70,30 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        registerReceiver(receiver, IntentFilter(AppConfig.BROADCAST_ACTION_UPDATE_UI))//hiddify
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-        title = getString(R.string.title_server)
-        setSupportActionBar(binding.toolbar)
+        setHasOptionsMenu(true)
+    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
+        super.onCreateView(inflater, container, savedInstanceState)
+
+//        (requireActivity() as BaseActivity).supportActionBar?.subtitle="Dd"
+        activity?.registerReceiver(receiver, IntentFilter(AppConfig.BROADCAST_ACTION_UPDATE_UI))//hiddify
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        mainViewModel.subscriptionId.observe(this){
+            onSelectSub(it,true)
+        }
+        val view = binding.root
+//        setContentView(view)
+//        title = getString(R.string.title_server)
+//        setSupportActionBar(binding.toolbar)
+        binding.selectedSubNew.click {
+            bottomSheetPresenter.show(parentFragmentManager,ProfilesBottomSheets.newInstance())
+        }
         binding.fab.setOnClickListener {
             if (mainViewModel.isRunning.value == true) {
-                Utils.stopVService(this)
+                Utils.stopVService(requireActivity())
             } else if (settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" == "VPN") {
-                val intent = VpnService.prepare(this)
+                val intent = VpnService.prepare(requireActivity())
                 if (intent == null) {
                     startV2Ray()
                 } else {
@@ -99,7 +113,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         binding.recyclerView.adapter = adapter
 
         val callback = SimpleItemTouchHelperCallback(adapter)
@@ -107,51 +121,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         mItemTouchHelper?.attachToRecyclerView(binding.recyclerView)
 
 
-        val toggle = ActionBarDrawerToggle(
-            this,
-            binding.drawerLayout,
-            binding.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-        binding.navView.setNavigationItemSelectedListener(this)
-        binding.version.text = "v${BuildConfig.VERSION_NAME} (${SpeedtestUtil.getLibVersion()})"
 
         setupViewModel()
 //        copyAssets()
-        migrateLegacy()
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            RxPermissions(this)
+            RxPermissions(requireActivity())
                 .request(Manifest.permission.POST_NOTIFICATIONS)
                 .subscribe {
 //                    if (!it)
-//                        toast(R.string.toast_permission_denied)
+//                        requireActivity().toast(R.string.toast_permission_denied)
                 }
         }
 
         //hiddify
-        binding.spSubscriptionId.adapter = MainSubAdapter(this) //hiddify
-        binding.spSubscriptionId.onItemSelectedListener = //hiddify
-            object : AdapterView.OnItemSelectedListener { //hiddify
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View?, position: Int, id: Long
-                ) {
-                    // called when an item is selected in the Spinner
-//                    val selectedItem = parent.getItemAtPosition(position).toString()
-                    val selected=mainViewModel.subscriptions[position].first
-                    if (selected!=HiddifyUtils.getSelectedSubId())
-                        onSelectSub(selected)
-                }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // called when no item is selected in the Spinner
-                }
-            }
+
             //hiddify}
+        return binding.root
     }
 
     private fun setupViewModel() {
@@ -166,14 +154,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         mainViewModel.isRunning.observe(this) { isRunning ->
             adapter.isRunning = isRunning
             if (isRunning) {
-                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorSelected))
+                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.colorSelected))
                 setTestState(getString(R.string.connection_connected))
                 binding.layoutTest.isFocusable = true
                 binding.fab.text=getString(R.string.fab_connected) //hiddify
                 setTestState(getString(R.string.connection_test_testing)) //hiddify
                 mainViewModel.testCurrentServerRealPing()//hiddify
             } else {
-                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorUnselected))
+                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.colorBtnBg))
                 setTestState(getString(R.string.connection_not_connected))
                 binding.layoutTest.isFocusable = false
                 binding.fab.text=getString(R.string.fab_start)//hiddify
@@ -185,35 +173,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
 
-    private fun migrateLegacy() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val result = AngConfigManager.migrateLegacyConfig(this@MainActivity)
-            if (result != null) {
-                launch(Dispatchers.Main) {
-                    if (result) {
-                        toast(getString(R.string.migration_success))
-                        mainViewModel.reloadServerList()
-                    } else {
-                        toast(getString(R.string.migration_fail))
-                    }
-                }
-            }
-        }
-    }
+
 
     fun startV2Ray() {
         if (mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER).isNullOrEmpty()) {
             return
         }
         showCircle()
-//        toast(R.string.toast_services_start)
-        V2RayServiceManager.startV2Ray(this)
+//        requireActivity().toast(R.string.toast_services_start)
+        V2RayServiceManager.startV2Ray(requireActivity())
         hideCircle()
     }
 
     fun restartV2Ray() {
         if (mainViewModel.isRunning.value == true) {
-            Utils.stopVService(this)
+            Utils.stopVService(requireActivity())
         }
         Observable.timer(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -225,7 +199,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     public override fun onResume() {
         super.onResume()
 //        mainViewModel.reloadServerList()
-        binding.spSubscriptionId.adapter = MainSubAdapter(this)
+
         onSelectSub(HiddifyUtils.getSelectedSubId(),false)
         if (V2RayServiceManager.v2rayPoint.isRunning) {
             mainViewModel.testCurrentServerRealPing()
@@ -236,10 +210,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         super.onPause()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
     }
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+        requireActivity().menuInflater.inflate(R.menu.menu_main, menu)
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.import_qrcode -> {
@@ -303,10 +280,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         R.id.export_all -> {
-            if (AngConfigManager.shareNonCustomConfigsToClipboard(this, mainViewModel.serverList) == 0) {
-                toast(R.string.toast_success)
+            if (AngConfigManager.shareNonCustomConfigsToClipboard(requireActivity(), mainViewModel.serverList) == 0) {
+                requireActivity().toast(R.string.toast_success)
             } else {
-                toast(R.string.toast_failure)
+                requireActivity().toast(R.string.toast_failure)
             }
             true
         }
@@ -327,7 +304,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         R.id.del_all_config -> {
-            AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
 //                    MmkvManager.removeAllServer()
                     MmkvManager.removeSubscription(HiddifyUtils.getSelectedSubId())
@@ -338,7 +315,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             true
         }
         R.id.del_duplicate_config-> {
-            AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     mainViewModel.removeDuplicateServer()
                 }
@@ -346,7 +323,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             true
         }
         R.id.del_invalid_config -> {
-            AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     MmkvManager.removeInvalidServer()
                     mainViewModel.reloadServerList()
@@ -360,7 +337,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             true
         }
         R.id.filter_config -> {
-            mainViewModel.filterConfig(this)
+            mainViewModel.filterConfig(requireActivity())
             true
         }
 
@@ -371,8 +348,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         startActivity(
             Intent()
                 .putExtra("createConfigType", createConfigType)
-                .putExtra("subscriptionId", mainViewModel.subscriptionId)
-                .setClass(this, ServerActivity::class.java)
+                .putExtra("subscriptionId", mainViewModel.subscriptionId.value)
+                .setClass(requireActivity(), ServerActivity::class.java)
         )
     }
 
@@ -385,16 +362,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //                    .addCategory(Intent.CATEGORY_DEFAULT)
 //                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP), requestCode)
 //        } catch (e: Exception) {
-        RxPermissions(this)
+        RxPermissions(requireActivity())
             .request(Manifest.permission.CAMERA)
             .subscribe {
                 if (it)
                     if (forConfig)
-                        scanQRCodeForConfig.launch(Intent(this, ScannerActivity::class.java))
+                        scanQRCodeForConfig.launch(Intent(requireActivity(), ScannerActivity::class.java))
                     else
-                        scanQRCodeForUrlToCustomConfig.launch(Intent(this, ScannerActivity::class.java))
+                        scanQRCodeForUrlToCustomConfig.launch(Intent(requireActivity(), ScannerActivity::class.java))
                 else
-                    toast(R.string.toast_permission_denied)
+                    requireActivity().toast(R.string.toast_permission_denied)
             }
 //        }
         return true
@@ -418,7 +395,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     fun importClipboard()
             : Boolean {
         try {
-            val clipboard = Utils.getClipboard(this)
+            val clipboard = Utils.getClipboard(requireActivity())
             importBatchConfig(clipboard, selectSub = true)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -444,20 +421,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             count = AngConfigManager.importBatchConfig(Utils.decode(server!!), subid2, append, selectSub = selectSub)
         }
         if (count > 0) {
-//            toast(R.string.toast_success)
+//            requireActivity().toast(R.string.toast_success)
             mainViewModel.reloadServerList()
             mainViewModel.testAllRealPing()
         } else {
-            toast(R.string.toast_failure)
+            requireActivity().toast(R.string.toast_failure)
         }
     }
 
     fun importConfigCustomClipboard()
             : Boolean {
         try {
-            val configText = Utils.getClipboard(this)
+            val configText = Utils.getClipboard(requireActivity())
             if (TextUtils.isEmpty(configText)) {
-                toast(R.string.toast_none_data_clipboard)
+                requireActivity().toast(R.string.toast_none_data_clipboard)
                 return false
             }
             importCustomizeConfig(configText)
@@ -484,9 +461,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     fun importConfigCustomUrlClipboard()
             : Boolean {
         try {
-            val url = Utils.getClipboard(this)
+            val url = Utils.getClipboard(requireActivity())
             if (TextUtils.isEmpty(url)) {
-                toast(R.string.toast_none_data_clipboard)
+                requireActivity().toast(R.string.toast_none_data_clipboard)
                 return false
             }
             return importConfigCustomUrl(url)
@@ -502,7 +479,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     fun importConfigCustomUrl(url: String?): Boolean {
         try {
             if (!Utils.isValidUrl(url)) {
-                toast(R.string.toast_invalid_url)
+                requireActivity().toast(R.string.toast_invalid_url)
                 return false
             }
             lifecycleScope.launch(Dispatchers.IO) {
@@ -528,8 +505,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
      */
     fun importConfigViaSub(subid: String?=null) : Boolean {
         try {
-//            binding.spSubscriptionId.adapter = MainSubAdapter(this) //hiddify
-            toast(R.string.title_sub_update)
+//            binding.spSubscriptionId.adapter = MainSubAdapter(requireActivity()) //hiddify
+            requireActivity().toast(R.string.title_sub_update)
             MmkvManager.decodeSubscriptions().forEach {
                 if (subid!=null&&it.first!=subid)return@forEach
                 if (TextUtils.isEmpty(it.first)
@@ -552,7 +529,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     } catch (e: Exception) {
                         e.printStackTrace()
                         launch(Dispatchers.Main) {
-                            toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
+                            requireActivity().toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
                         }
                         return@launch
                     }
@@ -581,7 +558,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         try {
             chooseFileForCustomConfig.launch(Intent.createChooser(intent, getString(R.string.title_file_chooser)))
         } catch (ex: ActivityNotFoundException) {
-            toast(R.string.toast_require_file_manager)
+            requireActivity().toast(R.string.toast_require_file_manager)
         }
     }
 
@@ -601,19 +578,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         } else {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
-        RxPermissions(this)
+        RxPermissions(requireActivity())
             .request(Manifest.permission.READ_EXTERNAL_STORAGE)
             .subscribe {
                 if (it) {
                     try {
-                        contentResolver.openInputStream(uri).use { input ->
+                        requireActivity().contentResolver.openInputStream(uri).use { input ->
                             importCustomizeConfig(input?.bufferedReader()?.readText())
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 } else
-                    toast(R.string.toast_permission_denied)
+                    requireActivity().toast(R.string.toast_permission_denied)
             }
 
     }
@@ -628,15 +605,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         var server=response?.content
         try {
             if (server == null || TextUtils.isEmpty(server)) {
-                toast(R.string.toast_none_data)
+                requireActivity().toast(R.string.toast_none_data)
                 return
             }
             mainViewModel.appendCustomConfigServer(response)
             mainViewModel.reloadServerList()
-            toast(R.string.toast_success)
+            requireActivity().toast(R.string.toast_success)
             //adapter.notifyItemInserted(mainViewModel.serverList.lastIndex)
         } catch (e: Exception) {
-            ToastCompat.makeText(this, "${getString(R.string.toast_malformed_josn)} ${e.cause?.message}", Toast.LENGTH_LONG).show()
+            ToastCompat.makeText(requireActivity(), "${getString(R.string.toast_malformed_josn)} ${e.cause?.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
             return
         }
@@ -658,14 +635,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        }
 //    }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            moveTaskToBack(false)
-            finish()
-            return true
-        }
-        return super.onKeyDown(keyCode, event)
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+////            moveTaskToBack(false)
+//            finish()
+//            return true
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
 
     fun showCircle() {
 //        binding.fabProgressCircle.show()//hiddify commented
@@ -689,56 +666,31 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            //super.onBackPressed()
-//            onBackPressedDispatcher.onBackPressed()
-            finish()
-        }
+//    @Deprecated("Deprecated in Java")
+//    override fun onBackPressed() {
+//        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+//            binding.drawerLayout.closeDrawer(GravityCompat.START)
+//        } else {
+//            //super.onBackPressed()
+////            onBackPressedDispatcher.onBackPressed()
+//            finish()
+//        }
+//
+//    }
 
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            //R.id.server_profile -> activityClass = MainActivity::class.java
-            R.id.sub_setting -> {
-                startActivity(Intent(this, SubSettingActivity::class.java))
-            }
-            R.id.settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java)
-                    .putExtra("isRunning", mainViewModel.isRunning.value == true))
-            }
-            R.id.user_asset_setting -> {
-                startActivity(Intent(this, UserAssetActivity::class.java))
-            }
-            R.id.feedback -> {
-                Utils.openUri(this, AppConfig.v2rayNGIssues)
-            }
-            R.id.promotion -> {
-//                Utils.openUri(this, "${Utils.decode(AppConfig.promotionUrl)}?t=${System.currentTimeMillis()}")
-                if (!Utils.openUri(this,"tg://resolve?domain=hiddify"))
-                    Utils.openUri(this,"https://t.me/hiddify")
-            }
-            R.id.logcat -> {
-                startActivity(Intent(this, LogcatActivity::class.java))
-            }
-        }
-        binding.drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
 
 
     fun onSelectSub(subid: String,do_ping:Boolean=true){
 
-        if (mainViewModel.subscriptionId!=subid) {
-            mainViewModel.subscriptionId = subid
-            HiddifyUtils.setSelectedSub(mainViewModel.subscriptionId)
-        }
-        binding.spSubscriptionId.setSelection(mainViewModel.subscriptions.indexOfFirst { it.first == subid })
+//        if (mainViewModel.subscriptionId.value!=subid) {
+//            mainViewModel.subscriptionId.value = subid
+//            HiddifyUtils.setSelectedSub(mainViewModel.subscriptionId.value)
+//        }
+
+//        binding.selectedSubNew.text=
+        if(isResumed)
+            (requireActivity() as BaseActivity).supportActionBar?.title=(HiddifyUtils.getSelectedSub()?.second?.remarks)
+
         mainViewModel.reloadServerList()
         val selected=HiddifyUtils.getSelectedSub()
         if (selected?.second?.needUpdate() == true){
@@ -749,4 +701,26 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     }
+
+//    override fun onAddProfile() {
+//        importClipboard()
+//        importConfigViaSub(HiddifyUtils.getSelectedSubId())
+//    }
+//
+//    override fun onImportQrCode() {
+//        importQRcode(true)
+//    }
+//
+//    override fun onSelectSub(subid: String) {
+//        onSelectSub(subid,true)
+//    }
+//
+//    override fun onRemoveSelectSub(subid: String) {
+//        if (subid=="default")return
+//
+//    }
+//
+//    override fun onUpdateSubList() {
+//
+//    }
 }

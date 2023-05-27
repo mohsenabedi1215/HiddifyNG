@@ -21,7 +21,7 @@ class AddConfigBottomSheets : BaseExpandedBottomSheet() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogCurveStyle)
+//        setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogCurveStyle)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

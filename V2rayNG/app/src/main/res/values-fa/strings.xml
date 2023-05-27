@@ -173,7 +173,7 @@
     <string name="title_service_restart">راه‌اندازی مجدد خدمات</string>
     <string name="title_del_all_config">حذف تمام پیکربندی</string>
     <string name="title_del_duplicate_config">حذف کانفیگ های تکراری</string>
-    <string name="title_del_invalid_config">تنظیمات نامعتبر را حذف کنید (ابتدا آزمایش کنید)</string>
+    <string name="title_del_invalid_config">حذف تنظیمات نامعتبر پس از آزمایش</string>
     <string name="title_export_all">خروجی گرفتن پیکربندی‌های غیرسفارشی در کلیپ‌بورد</string>
     <string name="title_sub_setting">تنظیمات گروه‌ی اشتراک</string>
     <string name="sub_setting_remarks">ملاحظات</string>

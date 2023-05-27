@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:icon="@drawable/ic_add_white_24dp"
+        android:iconTint="@color/colorText"
         android:title="@string/menu_item_add_config"
         app:showAsAction="always">
         <menu>
@@ -66,9 +67,16 @@
         android:title="@string/title_filter_config"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/export_all"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/title_export_all"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/service_restart"
         android:title="@string/title_service_restart"
+        android:visible="false"
         app:showAsAction="never" />
+
     <item
         android:id="@+id/del_all_config"
         android:icon="@drawable/ic_delete_white_24dp"
@@ -84,15 +92,12 @@
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/title_del_invalid_config"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/export_all"
-        android:icon="@drawable/ic_share_white_24dp"
-        android:title="@string/title_export_all"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/sub_update"
         android:title="@string/title_sub_update"
         android:icon="@drawable/ic_refresh"
+
         app:showAsAction="always" />
     <item
         android:id="@+id/ping_all"

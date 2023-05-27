@@ -2,6 +2,7 @@ package com.v2ray.ang.ui.bottomsheets
 
 import android.app.Dialog
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 
 class BottomSheetPresenter {
@@ -13,6 +14,7 @@ class BottomSheetPresenter {
         }
         dismiss(manager)
         currentDialog=dialog
+
         dialog.show(manager, BOTTOM_SHEET_FRAGMENT_TAG)
     }
 

@@ -38,7 +38,7 @@ class HiddifyMainSubAdapter(val context: Context, val callback: (Int,Boolean) ->
 
             time.text =
                 HiddifyUtils.timeToRelativeDate(subItem.expire, subItem.total, subItem.used, context)
-            time.showGone(subItem.expire > (0).toLong())
+            time.showGone(subItem.expire > (0).toLong() && ((subItem.expire-System.currentTimeMillis())<1000L*60*60*24*1000))
 
             //todo: if lastUpdateTime have value u comment it
             //lastUpdate.text = HiddifyUtils.timeToRelativeTime(subItem.lastUpdateTime, context)

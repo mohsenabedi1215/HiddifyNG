@@ -9,7 +9,7 @@
 یک سرور پروکسی راه اندازی کرده باشید
 و آن پروفایل را در برنامه وارد کنید.</string>
     <string name="add_profile_description">افزودن پروفایل جدید</string>
-    <string name="import_from_clipboard">افزودن از کلیپ برد</string>
+    <string name="import_from_clipboard">کلیپ برد</string>
     <string name="scan_qr_code">اسکن کد</string>
     <string name="advanced">پیشرفته</string>
     <string name="tab_to_connect">جهت اتصال کلیک کنید.</string>
@@ -50,5 +50,11 @@
     <string name="fragment_sni">دامنه</string>
     <string name="summary_mux_enabled">Mux برای کاهش تأخیر در دست دادن TCP طراحی شده است، نه برای افزایش توان اتصال. استفاده از Mux برای تماشای فیلم، دانلود یا تست سرعت معمولاً نتیجه‌ای ندارد. اگر سرور از Mux پشتیبانی نکند، نمی توانیم به آن متصل شویم.</string>
     <string name="title_mux_enabled">فعال کردن Mux</string>
+
+
+    <string name="home">اتصال سریع</string>
+    <string name="configs">کانفیگ ها</string>
+    <string name="paste_failed">ورود کانفیگ با خطا مواجه شد.</string>
+    <string name="import_success">کانفیگ ها با موفقیت وارد شد</string>
 
 </resources>

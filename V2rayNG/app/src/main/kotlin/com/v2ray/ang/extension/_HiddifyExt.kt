@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.tapadoo.alerter.Alerter
 import com.v2ray.ang.AngApplication
 import com.v2ray.ang.R
 import com.v2ray.ang.util.Utils
@@ -196,7 +197,10 @@ fun Context?.toast(s: String?, length : Int = Toast.LENGTH_SHORT) {
     if (s == null || s.isBlank()) {
         return
     }
-
+    Alerter.create(this as Activity)
+//        .setTitle("Alert Title")
+        .setText(s)
+        .show()
     val inflater = LayoutInflater.from(this)
     val layout = inflater.inflate(R.layout.custom_toast, null)
     val text = layout.findViewById<TextView>(R.id.text)

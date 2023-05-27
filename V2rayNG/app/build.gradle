@@ -34,8 +34,8 @@ android {
         minSdkVersion 21
         targetSdkVersion Integer.parseInt("$targetSdkVer")
         multiDexEnabled true
-        versionCode 5100554 //hiddify when comes to version 5 change it
-        versionName "5.5.4" //hiddify
+        versionCode 5100600 //hiddify when comes to version 5 change it
+        versionName "6.0.0" //hiddify
     }
 
     signingConfigs {
@@ -70,7 +70,7 @@ android {
             ndk.abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
 //            applicationIdSuffix '.debug'
 //            android.defaultConfig.applicationId "ang.hiddify.com.debug"
-            versionNameSuffix '-DEBUG'
+            versionNameSuffix 'd'
         }
     }
 
@@ -133,6 +133,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     testImplementation 'junit:junit:4.13.2'
 
     // Androidx
@@ -238,6 +239,12 @@ dependencies {
 //    implementation("com.github.jkcclemens:khttp:0.1.0")
 
 //    implementation("org.symphonyoss.symphony:jcurl:0.9.18")
+
+    implementation 'com.github.tapadoo:alerter:7.2.4'
+//    implementation 'com.github.Yalantis:Context-Menu.Android:1.1.4'
+//    implementation 'com.github.dmytrodanylyk:circular-progress-button:1.3'
+//    compile 'com.github.dmytrodanylyk:android-morphing-button:1.0'
+    implementation 'com.github.anastr:speedviewlib:1.6.0'
 
 
 

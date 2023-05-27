@@ -1,5 +1,6 @@
 package com.v2ray.ang.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.text.TextUtils
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
@@ -22,21 +24,30 @@ import com.v2ray.ang.extension.toast
 import com.v2ray.ang.helper.ItemTouchHelperAdapter
 import com.v2ray.ang.helper.ItemTouchHelperViewHolder
 import com.v2ray.ang.service.V2RayServiceManager
-import com.v2ray.ang.util.AngConfigManager
-import com.v2ray.ang.util.MmkvManager
-import com.v2ray.ang.util.Utils
+import com.v2ray.ang.ui.bottomsheets.SettingBottomSheets
+import com.v2ray.ang.util.*
+import com.v2ray.ang.viewmodel.HiddifyMainViewModel
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
-class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerView.Adapter<HiddifyMainRecyclerAdapter.BaseViewHolder>()
+class HiddifyMainRecyclerAdapter(val fragment: Fragment, hiddifyMainViewModel: HiddifyMainViewModel) : RecyclerView.Adapter<HiddifyMainRecyclerAdapter.BaseViewHolder>()
         , ItemTouchHelperAdapter {
+
+    private fun callback(): HiddifyMainRecyclerAdapter.Callback? {
+        return CallbackUtil.getCallback(fragment, HiddifyMainRecyclerAdapter.Callback::class.java)
+    }
     companion object {
         private const val VIEW_TYPE_ITEM = 1
         private const val VIEW_TYPE_FOOTER = 2
     }
+    interface Callback {
+        fun onSubscriptionChange(subid:String)
 
-    private var mActivity: HiddifyMainActivity = activity
+    }
+
+    private var hiddifyMainViewModel: HiddifyMainViewModel=hiddifyMainViewModel
+    private var mActivity: Context = fragment.requireContext()
     private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
     private val subStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SUB, MMKV.MULTI_PROCESS_MODE) }
     private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
@@ -45,15 +56,15 @@ class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerVi
     }
     var isRunning = false
 
-    override fun getItemCount() = mActivity.hiddifyMainViewModel.serversCache.size + 1
+    override fun getItemCount() = hiddifyMainViewModel.serversCache.size + 1
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         if (holder is MainViewHolder) {
-            val guid = mActivity.hiddifyMainViewModel.serversCache[position].guid
-            val config = mActivity.hiddifyMainViewModel.serversCache[position].config
+            val guid = hiddifyMainViewModel.serversCache[position].guid
+            val config = hiddifyMainViewModel.serversCache[position].config
 //            //filter
-//            if (mActivity.hiddifyMainViewModel.subscriptionId.isNotEmpty()
-//                && mActivity.hiddifyMainViewModel.subscriptionId != config.subscriptionId
+//            if (hiddifyMainViewModel.subscriptionId.isNotEmpty()
+//                && hiddifyMainViewModel.subscriptionId != config.subscriptionId
 //            ) {
 //                holder.itemMainBinding.cardView.visibility = View.GONE
 //            } else {
@@ -170,18 +181,19 @@ class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerVi
                 if (guid != selected) {
                     mainStorage?.encode(MmkvManager.KEY_SELECTED_SERVER, guid)
                     if (!TextUtils.isEmpty(selected)) {
-                        notifyItemChanged(mActivity.hiddifyMainViewModel.getPosition(selected!!))
+                        notifyItemChanged(hiddifyMainViewModel.getPosition(selected!!))
                     }
-                    notifyItemChanged(mActivity.hiddifyMainViewModel.getPosition(guid))
+                    notifyItemChanged(hiddifyMainViewModel.getPosition(guid))
                     if (isRunning) {
-                        mActivity.updateCircleState("loading")
-                        Utils.stopVService(mActivity)
-                        Observable.timer(500, TimeUnit.MILLISECONDS)
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe {
-                                    V2RayServiceManager.startV2Ray(mActivity)
-                                    mActivity.hideCircle()
-                                }
+                        callback()?.onSubscriptionChange(guid)
+//                        mActivity.updateCircleState("loading")
+//                        Utils.stopVService(mActivity)
+//                        Observable.timer(500, TimeUnit.MILLISECONDS)
+//                                .observeOn(AndroidSchedulers.mainThread())
+//                                .subscribe {
+//                                    V2RayServiceManager.startV2Ray(mActivity)
+//                                    mActivity.hideCircle()
+//                                }
                     }
                 }
             }
@@ -208,9 +220,9 @@ class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerVi
     }
 
     private  fun removeServer(guid: String,position:Int) {
-        mActivity.hiddifyMainViewModel.removeServer(guid)
+        hiddifyMainViewModel.removeServer(guid)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, mActivity.hiddifyMainViewModel.serversCache.size)
+        notifyItemRangeChanged(position, hiddifyMainViewModel.serversCache.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -223,7 +235,7 @@ class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerVi
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == mActivity.hiddifyMainViewModel.serversCache.size) {
+        return if (position == hiddifyMainViewModel.serversCache.size) {
             VIEW_TYPE_FOOTER
         } else {
             VIEW_TYPE_ITEM
@@ -247,11 +259,11 @@ class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerVi
             BaseViewHolder(itemFooterBinding.root), ItemTouchHelperViewHolder
 
     override fun onItemDismiss(position: Int) {
-        val guid = mActivity.hiddifyMainViewModel.serversCache.getOrNull(position)?.guid ?: return
+        val guid = hiddifyMainViewModel.serversCache.getOrNull(position)?.guid ?: return
         if (guid != mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER)) {
 //            mActivity.alert(R.string.del_config_comfirm) {
 //                positiveButton(android.R.string.ok) {
-            mActivity.hiddifyMainViewModel.removeServer(guid)
+            hiddifyMainViewModel.removeServer(guid)
             notifyItemRemoved(position)
 //                }
 //                show()
@@ -260,7 +272,7 @@ class HiddifyMainRecyclerAdapter(val activity: HiddifyMainActivity) : RecyclerVi
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        mActivity.hiddifyMainViewModel.swapServer(fromPosition, toPosition)
+        hiddifyMainViewModel.swapServer(fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
         // position is changed, since position is used by click callbacks, need to update range
         if (toPosition > fromPosition)

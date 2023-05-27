@@ -11,9 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:visibility="gone"
         android:textColor="@color/colorDarkGray"
         android:textSize="16sp"
-        android:fontFamily="@font/vazirmatn_regular"
+
         android:text="@string/advanced"/>
 
     <com.google.android.material.button.MaterialButton
@@ -27,11 +28,11 @@
         android:visibility="gone"
         app:icon="@drawable/ic_baseline_speed"
         app:iconGravity="start"
-        app:iconTint="@color/colorText"
+
         android:textAlignment="textStart"
         android:text="@string/speedtest"
-        android:textColor="@color/colorText"
-        android:fontFamily="@font/vazirmatn_regular"
+
+        
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:layout_marginHorizontal="16dp"
@@ -60,19 +61,19 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/vazirmatn_regular"
-        android:textSize="16sp"
         android:textColor="@color/colorText"
+        android:textSize="16sp"
+
         android:layout_weight="1"
 
         android:text="@string/proxyAppAndSites" />
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/proxymode_help"
-            android:layout_width="wrap_content"
-            app:srcCompat="@android:drawable/ic_menu_help"
-            android:background="?selectableItemBackground"
-
-            android:layout_height="match_parent"></ImageButton>
+            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            app:icon="@drawable/ic_help_outline_24"
+            style="@style/Widget.Material3.Button.TextButton"
+            />
 
     </LinearLayout>
 
@@ -92,13 +93,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:lines="1"
             android:text="@string/sites_all"
-            android:textColor="@color/btn_text_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
+
             app:cornerRadius="20dp"
-            app:strokeColor="@color/btn_stroke_color_selector" />
+            />
 
 
         <com.google.android.material.button.MaterialButton
@@ -109,13 +109,12 @@
             android:layout_weight="1"
 
             android:ellipsize="none"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:singleLine="true"
             android:text="@string/external_sites"
-            android:textColor="@color/btn_text_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
+
             app:cornerRadius="20dp"
-            app:strokeColor="@color/btn_stroke_color_selector" />
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/filteredSites"
@@ -124,13 +123,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:lines="1"
             android:text="@string/filtered_sites"
-            android:textColor="@color/btn_text_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
+
             app:cornerRadius="16dp"
-            app:strokeColor="@color/btn_stroke_color_selector" />
+            />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -145,18 +143,18 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/vazirmatn_regular"
+        
         android:textSize="16sp"
         android:textColor="@color/colorText"
         android:layout_weight="1"
         android:text="@string/fragment" />
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/fragment_help"
-            android:layout_width="wrap_content"
-            app:srcCompat="@android:drawable/ic_menu_help"
-            android:background="?selectableItemBackground"
-
-            android:layout_height="match_parent"></ImageButton>
+            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            app:icon="@drawable/ic_help_outline_24"
+            style="@style/Widget.Material3.Button.TextButton"
+            />
     </LinearLayout>
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/fragment"
@@ -174,13 +172,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:lines="1"
             android:text="@string/fragment_default"
-            android:textColor="@color/btn_text_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
+            
+            
             app:cornerRadius="20dp"
-            app:strokeColor="@color/btn_stroke_color_selector" />
+             />
 
 
         <com.google.android.material.button.MaterialButton
@@ -191,13 +189,13 @@
             android:layout_weight="1"
 
             android:ellipsize="none"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:singleLine="true"
             android:text="@string/fragment_random"
-            android:textColor="@color/btn_text_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
+            
+            
             app:cornerRadius="20dp"
-            app:strokeColor="@color/btn_stroke_color_selector" />
+             />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/fragment_sni"
@@ -206,13 +204,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:lines="1"
             android:text="@string/fragment_sni"
-            android:textColor="@color/btn_text_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
+            
+            
             app:cornerRadius="16dp"
-            app:strokeColor="@color/btn_stroke_color_selector" />
+             />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -237,18 +235,18 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/vazirmatn_regular"
+        
         android:textSize="16sp"
         android:textColor="@color/colorText"
         android:layout_weight="1"
         android:text="@string/connection_mode"/>
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/connection_mode_help"
-            android:layout_width="wrap_content"
-            app:srcCompat="@android:drawable/ic_menu_help"
-            android:background="?selectableItemBackground"
-
-            android:layout_height="match_parent"></ImageButton>
+            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            app:icon="@drawable/ic_help_outline_24"
+            style="@style/Widget.Material3.Button.TextButton"
+            />
     </LinearLayout>
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/connectToggleButton"
@@ -266,11 +264,11 @@
             android:layout_weight="1"
             android:lines="1"
             android:ellipsize="end"
-            app:strokeColor="@color/btn_stroke_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
-            android:textColor="@color/btn_text_color_selector"
+            
+            
+            
             app:cornerRadius="20dp"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:text="@string/smart" />
 
         <com.google.android.material.button.MaterialButton
@@ -282,11 +280,11 @@
             android:lines="1"
             android:ellipsize="end"
 
-            app:strokeColor="@color/btn_stroke_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
-            android:textColor="@color/btn_text_color_selector"
+            
+            
+            
             app:cornerRadius="20dp"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:text="@string/load_balance" />
 
         <com.google.android.material.button.MaterialButton
@@ -297,11 +295,11 @@
             android:layout_weight="1"
             android:lines="1"
             android:ellipsize="end"
-            app:strokeColor="@color/btn_stroke_color_selector"
-            app:backgroundTint="@color/btn_bg_color_selector"
-            android:textColor="@color/btn_text_color_selector"
+            
+            
+            
             app:cornerRadius="20dp"
-            android:fontFamily="@font/vazirmatn_regular"
+            
             android:text="@string/manual" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 

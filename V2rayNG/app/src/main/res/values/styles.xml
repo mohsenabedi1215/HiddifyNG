@@ -1,116 +1,91 @@
 <resources>
 
-    <style name="AppThemeDayNight" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
-        <item name="android:spinnerStyle">@style/MySpinnerStyle</item>
+<!--    <style name="AppThemeDayNight" parent="Theme.MaterialComponents.DayNight.DarkActionBar">-->
+<!--        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>-->
+<!--        <item name="android:spinnerStyle">@style/MySpinnerStyle</item>-->
 
 
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorMainBg">@color/colorBg</item>
-        <item name="colorMainText">@color/colorText</item>
-        <item name="android:textColor">@color/colorText</item>
-        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
-        <item name="buttonStyle">@style/RobotoButtonStyle</item>
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+<!--        <item name="colorAccent">@color/colorAccent</item>-->
+<!--        <item name="colorMainBg">@color/colorBg</item>-->
+<!--        <item name="colorMainText">@color/colorText</item>-->
+<!--        <item name="android:textColor">@color/colorText</item>-->
+<!--        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>-->
+<!--        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>-->
+<!--        <item name="buttonStyle">@style/RobotoButtonStyle</item>-->
 
-        <item name="navigationViewStyle">@style/AppNavigationViewStyle</item>
-        <item name="android:toolbarStyle">@style/CustomToolbar</item>
-    </style>
-    <style name="CustomToolbar" parent="Widget.MaterialComponents.Toolbar">
-        <item name="android:background">@color/colorPrimary</item>
-        <item name="android:backgroundTint">@color/colorPrimaryDark</item>
-    </style>
-    <style name="AppThemeDayNight.NoActionBar" parent="AppThemeDayNight">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+<!--        <item name="navigationViewStyle">@style/AppNavigationViewStyle</item>-->
+<!--        <item name="android:toolbarStyle">@style/CustomToolbar</item>-->
+<!--    </style>-->
+<!--    <style name="CustomToolbar" parent="Widget.MaterialComponents.Toolbar">-->
+<!--        <item name="android:background">@color/colorPrimary</item>-->
+<!--        <item name="android:backgroundTint">@color/colorPrimaryDark</item>-->
+<!--    </style>-->
+<!--    <style name="AppThemeDayNight.NoActionBar" parent="AppThemeDayNight">-->
+<!--        <item name="windowActionBar">false</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
+<!--    </style>-->
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+<!--    &lt;!&ndash; Base application theme. &ndash;&gt;-->
+<!--    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">-->
 
-        <!-- Customize your theme here. -->
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
-    </style>
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        &lt;!&ndash;<item name="colorPrimary">@color/colorPrimary</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;<item name="colorPrimaryDark">@color/colorPrimaryDark</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;<item name="colorAccent">@color/colorAccent</item>&ndash;&gt;-->
+<!--    </style>-->
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
+<!--    <style name="AppTheme.NoActionBar">-->
+<!--        <item name="windowActionBar">false</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--    </style>-->
 
-    <style name="AppTheme.NoActionBar.Translucent">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
+<!--    <style name="AppTheme.NoActionBar.Translucent">-->
+<!--        <item name="android:windowBackground">@android:color/transparent</item>-->
+<!--        <item name="android:colorBackgroundCacheHint">@null</item>-->
+<!--        <item name="android:windowIsTranslucent">true</item>-->
+<!--    </style>-->
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+<!--    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />-->
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
-
-
-
-    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
-        <item name="android:fontFamily">@font/vazirmatn_regular</item>
-    </style>
-
-    <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
-        <item name="android:fontFamily">@font/vazirmatn_regular</item>
-    </style>
+<!--    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />-->
 
 
 
-    <style name="AppNavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">
-        <item name="itemTextAppearance">@style/AppNavigationViewItemTextAppearance</item>
-    </style>
-    <style name="AppNavigationViewItemTextAppearance" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
-        <item name="android:fontFamily">@font/vazirmatn_regular</item>
-        <item name="fontFamily">@font/vazirmatn_regular</item>
+<!--    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">-->
+<!--        <item name="android:fontFamily">@font/vazirmatn_regular</item>-->
+<!--    </style>-->
 
-    </style>
-
-    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:textColorPrimary">@color/colorWhite</item>
-    </style>
-
-    <style name="MyAppModalStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/round_fill_bottom_sheet</item>
-    </style>
-
-    <style name="DialogCurveStyle" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/MyAppModalStyle</item>
-    </style>
+<!--    <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">-->
+<!--        <item name="android:fontFamily">@font/vazirmatn_regular</item>-->
+<!--    </style>-->
 
 
-    <style name="AppTheme_ThemeOverlay.MaterialComponents.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="materialAlertDialogTitleTextStyle">@style/AppTheme_MaterialAlertDialog.MaterialComponents.Title.Text</item>
+
+<!--    <style name="AppNavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">-->
+<!--        <item name="itemTextAppearance">@style/AppNavigationViewItemTextAppearance</item>-->
+<!--    </style>-->
+<!--    <style name="AppNavigationViewItemTextAppearance" parent="@style/TextAppearance.MaterialComponents.Subtitle2">-->
+<!--        <item name="android:fontFamily">@font/vazirmatn_regular</item>-->
+<!--        <item name="fontFamily">@font/vazirmatn_regular</item>-->
+
+<!--    </style>-->
+
+<!--    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">-->
+<!--        <item name="android:textColor">@color/colorWhite</item>-->
+<!--        <item name="android:textColorPrimary">@color/colorWhite</item>-->
+<!--    </style>-->
+
+<!--    <style name="MyAppModalStyle" parent="Widget.Design.BottomSheet.Modal">-->
+<!--        <item name="android:background">@drawable/round_fill_bottom_sheet</item>-->
+<!--    </style>-->
+
+<!--    <style name="DialogCurveStyle" parent="Theme.Design.Light.BottomSheetDialog">-->
+<!--        <item name="bottomSheetStyle">@style/MyAppModalStyle</item>-->
+<!--    </style>-->
 
 
-        <item name="materialAlertDialogBodyTextStyle">@style/AppTheme_MaterialAlertDialog.MaterialComponents.NormalText</item>
 
-    </style>
-    <style name="AppTheme_MaterialAlertDialog.MaterialComponents.Title.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
-        <item name="android:textAppearance">@style/AppTheme_TextAppearance.MaterialComponents.Subtitle1</item>
-
-
-    </style>
-    <style name="AppTheme_MaterialAlertDialog.MaterialComponents.NormalText" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
-        <item name="textAppearanceBody2">@font/vazir_light</item>
-        <item name="fontFamily">@font/vazir_light</item>
-        <item name="android:fontFamily">@font/vazir_light</item>
-
-
-    </style>
-
-    <style name="AppTheme_TextAppearance.MaterialComponents.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
-        <item name="fontFamily">@font/vazir_bold</item>
-        <item name="android:fontFamily">@font/vazir_bold</item>
-        <!--        <item name="android:textStyle">.....</item>-->
-        <item name="android:textSize">20sp</item>
-    </style>
 </resources>

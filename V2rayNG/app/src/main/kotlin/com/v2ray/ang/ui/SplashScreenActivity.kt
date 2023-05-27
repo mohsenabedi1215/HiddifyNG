@@ -15,7 +15,7 @@ class SplashScreenActivity : BaseActivity() {
         val view = binding.root
         setContentView(view)
 
-        startActivity(Intent(this, HiddifyMainActivity::class.java)) //todo: check to open main or hiddifyMain
+        startActivity(Intent(this, HomeActivity::class.java)) //todo: check to open main or hiddifyMain
         finish()
     }
 }
