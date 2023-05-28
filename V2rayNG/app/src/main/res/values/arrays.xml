@@ -212,4 +212,12 @@
         <item>⬇ Download</item>
         <item>⬇⬆ Both</item>
     </string-array>
+    <string-array name="dark_value_values">
+        <item>system</item>
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
+    <string-array name="dark_mode">    <item>System</item>
+        <item>Dark</item>
+        <item>Light</item></string-array>
 </resources>

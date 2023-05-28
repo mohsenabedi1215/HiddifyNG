@@ -213,6 +213,7 @@
     <string name="msg_enter_group_name">نام گروه را وارد کنید</string>
     <string name="updated_sub_time">بروزرسانی در %s %s پیش</string>
     <string name="title_sub_update_list">به روز رسانی لیست اشتراک ها</string>
+    <string name="no_internet">به اینترنت وصل نیست!</string>
 
     <string-array name="share_method">
         <item>QRcode</item>

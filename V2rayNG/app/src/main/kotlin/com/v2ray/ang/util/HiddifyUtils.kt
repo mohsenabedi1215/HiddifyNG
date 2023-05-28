@@ -3,11 +3,15 @@ package com.v2ray.ang.util
 import android.os.Handler
 import android.os.Looper
 import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.text.SpannableString
 import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
@@ -420,7 +424,45 @@ class HiddifyUtils {
         fun runOnUiThread(action: () -> Unit) {
             Handler(Looper.getMainLooper()).post(action)
         }
+        fun setDarkMode(){
+            AppCompatDelegate.setDefaultNightMode(when (settingsStorage?.getString(AppConfig.PREF_DARK_MODE,"")) {
+                "dark"->
+                AppCompatDelegate.MODE_NIGHT_YES
+                "light"->
+                    AppCompatDelegate.MODE_NIGHT_NO
+                else->
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            })
+        }
+        fun restartApplication(context: Context) {
+            val packageManager = context.packageManager
+            val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+            intent?.let {
+                val componentName = it.component
+                val mainIntent = Intent.makeRestartActivityTask(componentName)
+                context.startActivity(mainIntent)
+                System.exit(0)
+            }
+        }
 
+
+
+
+        fun isInternetConnected(context: Context): Boolean {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+            // Check for network connection
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val network = connectivityManager.activeNetwork
+                val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+                return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    ?: false
+            } else {
+                val networkInfo = connectivityManager.activeNetworkInfo
+                return networkInfo?.isConnected ?: false
+            }
+        }
     }
 
     enum class PerAppProxyMode{

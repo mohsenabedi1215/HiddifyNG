@@ -8,8 +8,11 @@ import androidx.activity.viewModels
 import androidx.preference.*
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
+import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.SettingsViewModel
+import java.util.*
+import kotlin.system.exitProcess
 
 class SettingsActivity : BaseActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels()
@@ -42,6 +45,8 @@ class SettingsActivity : BaseActivity() {
 //        val tgGroup: Preference by lazy { findPreference(PREF_TG_GROUP) }
 
         private val mode by lazy { findPreference<ListPreference>(AppConfig.PREF_MODE) }
+        private val lang by lazy { findPreference<ListPreference>(AppConfig.PREF_LANGUAGE) }
+        private val dark_mode by lazy { findPreference<ListPreference>(AppConfig.PREF_DARK_MODE) }
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.pref_settings)
@@ -127,6 +132,7 @@ class SettingsActivity : BaseActivity() {
             }
             mode?.dialogLayoutResource = R.layout.preference_with_help_link
             //loglevel.summary = "LogLevel"
+
         }
 
         override fun onStart() {

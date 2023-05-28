@@ -91,10 +91,10 @@ class MainRecyclerAdapter(val activity: Activity,mainViewModel: MainViewModel) :
             holder.itemMainBinding.layoutShare.visibility=View.VISIBLE
             holder.itemMainBinding.layoutEdit.visibility=View.VISIBLE
             holder.itemMainBinding.layoutRemove.visibility=View.VISIBLE
-            if (!config.subscriptionId.isNullOrEmpty()){
-                holder.itemMainBinding.layoutShare.visibility=View.GONE
-                holder.itemMainBinding.layoutRemove.visibility=View.GONE
-            }
+//            if (!config.subscriptionId.isNullOrEmpty()){
+//                holder.itemMainBinding.layoutShare.visibility=View.GONE
+//                holder.itemMainBinding.layoutRemove.visibility=View.GONE
+//            }
             var shareOptions = share_method.asList()
             when (config.configType) {
                 EConfigType.CUSTOM -> {

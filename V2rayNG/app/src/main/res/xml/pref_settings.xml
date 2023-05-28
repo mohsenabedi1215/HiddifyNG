@@ -158,6 +158,13 @@
             android:key="pref_country"
             android:summary="%s"
             android:title="@string/title_country" />
+        <ListPreference
+            android:defaultValue="system"
+            android:entries="@array/dark_mode"
+            android:entryValues="@array/dark_value_values"
+            android:key="pref_dark_mode"
+            android:summary="%s"
+            android:title="@string/title_dark_mode" />
 
     </PreferenceCategory>
 </PreferenceScreen>

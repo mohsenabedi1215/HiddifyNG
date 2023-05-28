@@ -1,73 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:text="@string/add_profile_description"
         android:textColor="@color/colorDarkGray"
-        android:textSize="16sp"
 
-        android:text="@string/add_profile_description"/>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    >
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/importFromClipBoard"
-        android:layout_width="0dp"
-        app:iconSize="100dp"
+        android:textSize="16sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="8dp"
-        android:layout_weight="1"
-        android:paddingHorizontal="16dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/import_from_clipboard"
+        android:orientation="horizontal">
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/importFromClipBoard"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="@string/import_from_clipboard"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_clipboard"
+            app:iconGravity="textTop"
+            app:iconSize="100dp" />
 
-        app:icon="@drawable/ic_clipboard"
-        android:layout_marginHorizontal="5dp"
-        app:iconGravity="textTop"
-
-        style="@style/Widget.Material3.Button.ElevatedButton"
-
-        app:cornerRadius="20dp"
-        />
-
-    <Button
-        android:id="@+id/scanQrCode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingVertical="8dp"
-
-        style="@style/Widget.Material3.Button.ElevatedButton"
-
-
-        app:iconGravity="textTop"
-        android:paddingHorizontal="16dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/scan_qr_code"
-
-
-        android:layout_marginHorizontal="5dp"
-app:iconSize="100dp"
-
-        app:icon="@drawable/ic_qr_code"
-
-
-
-
-        app:cornerRadius="20dp"
-       />
-</LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/scanQrCode"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="@string/scan_qr_code"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_qr_code"
+            app:iconGravity="textTop"
+            app:iconSize="100dp" />
+    </LinearLayout>
 </LinearLayout>

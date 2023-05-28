@@ -15,6 +15,7 @@ object AppConfig {
 
     // Preferences mapped to MMKV
     const val FIRST_SETUP_DONE = "first_setup_done"//hiddify
+    const val PREF_DARK_MODE = "pref_dark_mode"//hiddify
     const val PREF_COUNTRY="pref_country"//hiddify
     const val FRAGMENT_MODE = "fragment_mode"//
     const val PREF_MODE = "pref_mode"

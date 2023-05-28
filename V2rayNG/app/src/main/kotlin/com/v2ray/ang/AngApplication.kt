@@ -10,6 +10,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.tencent.mmkv.MMKV
+import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
 import org.conscrypt.Conscrypt
@@ -53,6 +54,7 @@ class AngApplication : MultiDexApplication() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Security.insertProviderAt(Conscrypt.newProvider(), 0)
         }
+        HiddifyUtils.setDarkMode()
 //        System.setProperty("javax.net.debug", "ssl")
 
 //        val sslContext: SSLContext = SSLContext.getInstance("TLSv1.3")

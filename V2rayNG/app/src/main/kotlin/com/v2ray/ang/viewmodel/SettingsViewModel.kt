@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.preference.PreferenceManager
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
+import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.MmkvManager
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -36,12 +37,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             AppConfig.PREF_HTTP_PORT,
             AppConfig.PREF_LOGLEVEL,
             AppConfig.PREF_LANGUAGE,
+                AppConfig.PREF_DARK_MODE,
             AppConfig.PREF_ROUTING_DOMAIN_STRATEGY,
             AppConfig.PREF_ROUTING_MODE,
             AppConfig.PREF_V2RAY_ROUTING_AGENT,
             AppConfig.PREF_V2RAY_ROUTING_BLOCKED,
             AppConfig.PREF_V2RAY_ROUTING_DIRECT, -> {
                 settingsStorage?.encode(key, sharedPreferences.getString(key, ""))
+                if(key==AppConfig.PREF_LANGUAGE||key==AppConfig.PREF_DARK_MODE)
+                    HiddifyUtils.restartApplication(getApplication<Application>().applicationContext)
             }
             AppConfig.PREF_SPEED_ENABLED,
             AppConfig.PREF_PROXY_SHARING,
