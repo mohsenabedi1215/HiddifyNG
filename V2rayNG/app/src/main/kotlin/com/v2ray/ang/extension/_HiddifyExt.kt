@@ -201,15 +201,15 @@ fun Context?.toast(s: String?, length : Int = Toast.LENGTH_SHORT) {
 //        .setTitle("Alert Title")
         .setText(s)
         .show()
-    val inflater = LayoutInflater.from(this)
-    val layout = inflater.inflate(R.layout.custom_toast, null)
-    val text = layout.findViewById<TextView>(R.id.text)
-    text.text = s
-
-    val toast = Toast(this)
-    toast.duration = length
-    toast.view = layout
-    toast.show()
+//    val inflater = LayoutInflater.from(this)
+//    val layout = inflater.inflate(R.layout.custom_toast, null)
+//    val text = layout.findViewById<TextView>(R.id.text)
+//    text.text = s
+//
+//    val toast = Toast(this)
+//    toast.duration = length
+//    toast.view = layout
+//    toast.show()
 }
 
 fun Context?.toast(i: Int?, length : Int = Toast.LENGTH_LONG) {

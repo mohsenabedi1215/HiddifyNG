@@ -2,30 +2,30 @@ package com.v2ray.ang.ui
 
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.BackgroundColorSpan
-import android.text.style.RelativeSizeSpan
+import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayoutMediator
+import com.hiddify.ang.BaseFragment
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.HiddifyHomeBinding
-import com.v2ray.ang.extension.getColorEx
-import com.v2ray.ang.extension.toPersianDigit
-import com.v2ray.ang.ui.bottomsheets.AddConfigBottomSheets
 import com.v2ray.ang.ui.bottomsheets.BottomSheetPresenter
 import com.v2ray.ang.util.SpeedtestUtil
 import com.v2ray.ang.util.Utils
@@ -33,13 +33,17 @@ import com.v2ray.ang.viewmodel.HiddifyMainViewModel
 
 
 class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var binding: HiddifyHomeBinding
     val hiddifyMainViewModel: HiddifyMainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+
         binding = HiddifyHomeBinding.inflate(layoutInflater)
         val view = binding.root
-        setContentView(view)
+       setContentView(view)
         title = ""
 //        val spannableString = SpannableString(binding.toolbar.title.toString()+" "+BuildConfig.VERSION_NAME.toPersianDigit(this))
 //
@@ -47,11 +51,12 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 ////        spannableString.setSpan(BackgroundColorSpan(getColorEx(R.color.colorAccent)),binding.toolbar.title.length+1,spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 //
 //        binding.toolbar.title=spannableString
-
+//        supportActionBar?.setLogo(null as Drawable)
         setSupportActionBar(binding.toolbar)
 //        val anim = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
 //        binding.bottomNavigationView.startAnimation(anim)
 //    binding.bottomNavigationView.actionView.startAnimation(anim)
+
         setBottomNavigation()
 
 
@@ -66,12 +71,16 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setDrawer()
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        menuInflater.inflate(R.menu.menu_home, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -120,7 +129,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //                else -> false
 //            }
 //        }
-        binding.bottomNavigationView.selectedItemId = R.id.action_home
+//        binding.bottomNavigationView.selectedItemId = R.id.action_home
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> {
@@ -143,22 +152,41 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun setDrawer() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//
+//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+//            supportActionBar?.setBackgroundDrawable(ColorDrawable(getColorEx(R.color.colorBackground)))
+//            window.statusBarColor = ContextCompat.getColor(this, R.color.colorBackground)
+//        }
+        val titleId: Int = Resources.getSystem().getIdentifier("action_bar_title", "id", "android")
+        val titleView = findViewById<TextView>(titleId)
 
+        // Set a click listener to the title view
+
+        // Set a click listener to the title view
+        binding.toolbar.setOnClickListener {
+            for (f in supportFragmentManager.fragments){
+                if (f.isResumed && f is BaseFragment)
+                    f.onTitleClick()
+            }
+
+        }
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_hiddify) // Set your desired drawer indicator icon
+            setHomeAsUpIndicator(R.drawable.ic_menu_24) // Set your desired drawer indicator icon
         }
-        val toggle = ActionBarDrawerToggle(
+        drawerToggle = ActionBarDrawerToggle(
             this,
             binding.drawerLayout,
-            binding.toolbar,
+//            supportActionBar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        binding.drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
-        binding.version.text = "v${BuildConfig.VERSION_NAME} (${SpeedtestUtil.getLibVersion()})"
+        binding.version.text = "v${BuildConfig.VERSION_NAME}\n${SpeedtestUtil.getLibVersion()}"
         binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
@@ -206,8 +234,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     internal class ViewPagerAdapter(fragmentManager: androidx.fragment.app.FragmentManager, lifecycle: androidx.lifecycle.Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle) {
-        private val arrayList: ArrayList<Fragment> = ArrayList()
-        fun addFragment(fragment: Fragment) {
+
+        private val arrayList: ArrayList<BaseFragment> = ArrayList()
+        fun addFragment(fragment: BaseFragment) {
             arrayList.add(fragment)
         }
 
@@ -215,9 +244,53 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             return arrayList.size
         }
 
-        override fun createFragment(position: Int): Fragment {
+        override fun createFragment(position: Int): BaseFragment {
+
             return arrayList[position]
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+//        HiddifyUtils.setMode(connect_mode)
+        hiddifyMainViewModel.reloadServerList()
+        hiddifyMainViewModel.reloadSubscriptionsState()
+
+        hiddifyMainViewModel.startListenBroadcast()
+    }
+
+    fun getProxyDataFromIntent(intent: Intent?):String?{
+        var shareUrl:String?=null
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                if ("text/plain" == intent.type) {
+                    intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                        shareUrl = it
+                    }
+                }
+            }
+            Intent.ACTION_VIEW -> {
+                shareUrl= intent.data.toString()
+
+            }
+        }
+        return  shareUrl
+    }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val shareUrl=getProxyDataFromIntent(intent)
+        if (!shareUrl.isNullOrEmpty()) {
+            // Extract the data from the intent
+
+            for (f in supportFragmentManager.fragments)
+                (f as BaseFragment).handleDeepLink(shareUrl)
+
+        }
+    }
+
+    fun gotoFragment(i: Int) {
+        binding.viewPager.setCurrentItem(i,true)
     }
 }
 

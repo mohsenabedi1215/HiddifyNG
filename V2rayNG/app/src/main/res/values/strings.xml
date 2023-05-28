@@ -2,7 +2,7 @@
 <resources>
     <string name="title_hiddify">Hiddify</string>
     <string name="fab_start">Start</string>
-    <string name="fab_connected">Connected</string>
+    <string name="fab_connected">Stop</string>
 
     <string name="app_name" translatable="false">Hiddify NG</string>
     <string name="app_widget_name">Switch</string>

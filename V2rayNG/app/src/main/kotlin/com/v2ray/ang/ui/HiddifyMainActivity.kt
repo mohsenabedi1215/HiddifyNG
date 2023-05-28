@@ -29,6 +29,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.gson.Gson
+import com.hiddify.ang.BaseFragment
 import com.tapadoo.alerter.Alerter
 
 import com.tbruyelle.rxpermissions.RxPermissions
@@ -53,10 +54,11 @@ import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 
 
-class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Fragment(), /*NavigationView.OnNavigationItemSelectedListener,*/
-    AddConfigBottomSheets.Callback, ProfilesBottomSheets.Callback,SettingBottomSheets.Callback {
+class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : BaseFragment(), /*NavigationView.OnNavigationItemSelectedListener,*/
+    AddConfigBottomSheets.Callback, ProfilesBottomSheets.Callback,SettingBottomSheets.Callback,HiddifyAdvancedFragment.Callback {
     private var state: String=""
     private lateinit var binding: ActivityHiddifyMainBinding
     private val subStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SUB, MMKV.MULTI_PROCESS_MODE) }
@@ -77,6 +79,8 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        val proxies=(requireActivity() as HomeActivity).getProxyDataFromIntent(requireActivity().intent)
+        handleDeepLink(proxies)
     }
     fun setTitleVersion(){
         val title=requireActivity().getString(R.string.title_hiddify)
@@ -86,7 +90,7 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
         spannableString.setSpan(RelativeSizeSpan(0.6f), title.length+1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 //        spannableString.setSpan(BackgroundColorSpan(getColorEx(R.color.colorAccent)),binding.toolbar.title.length+1,spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-        (requireActivity() as BaseActivity)?.supportActionBar?.title=spannableString
+        setTitle(spannableString)
 
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -276,8 +280,9 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
 //    }
     fun open_old_v2ray(){
     requireActivity().runOnUiThread{
-            val intent = Intent(requireActivity(), MainActivity::class.java)
-            startActivity(intent)
+//            val intent = Intent(requireActivity(), MainActivity::class.java)
+//            startActivity(intent)
+        (requireActivity() as HomeActivity).gotoFragment(1)
         }
     }
     override fun onClipBoard() {
@@ -300,13 +305,14 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
         }
         hiddifyMainViewModel.updateTestResultAction.observe(this) { setTestState(it) }
         hiddifyMainViewModel.isRunning.observe(this) { isRunning ->
+
             adapter.isRunning = isRunning
             if (isRunning) {
                 updateCircleState("connected")
                 showGooglePlayReview()
                 hiddifyMainViewModel.testCurrentServerRealPing()//hiddify
             } else {
-                updateCircleState("disconnected")
+                updateCircleState("ready")
                 hiddifyMainViewModel.subscriptionsAddedCheck()
             }
             hideCircle()
@@ -374,10 +380,12 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
                 } ?: also {
                     binding.profileBox.gone()
                 }
-                updateCircleState("ready")
+                if(this.state=="default")
+                    updateCircleState("ready")
             }
         }
-        hiddifyMainViewModel.startListenBroadcast()
+//        hiddifyMainViewModel.subscriptionsAddedCheck()
+//        hiddifyMainViewModel.startListenBroadcast()
     }
 
 
@@ -419,23 +427,21 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
         super.onResume()
 
         onSelectSub(HiddifyUtils.getSelectedSubId(),false)
-//        HiddifyUtils.setMode(connect_mode)
-        hiddifyMainViewModel.reloadServerList()
-        hiddifyMainViewModel.reloadSubscriptionsState()
         if (V2RayServiceManager.v2rayPoint.isRunning) {
             hiddifyMainViewModel.isRunning.value=true
             updateCircleState("connected")
             hiddifyMainViewModel.testCurrentServerRealPing()
         }
 
-        hiddifyMainViewModel.startListenBroadcast()
+
 
 
 
         setTitleVersion()
-        if(hiddifyMainViewModel.serverList.isEmpty())
-            bottomSheetPresenter.show(parentFragmentManager,AddConfigBottomSheets())
+//        if(hiddifyMainViewModel.serverList.isEmpty())
+//            bottomSheetPresenter.show(parentFragmentManager,AddConfigBottomSheets())
     }
+
 
     public override fun onPause() {
         super.onPause()
@@ -1075,24 +1081,51 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
         }else{
             restartV2Ray()
         }
+        Alerter.create(requireActivity())
+            .setTitle(R.string.toast_success)
+            .setIcon(R.drawable.ic_fab_check)
+            .setBackgroundResource(R.drawable.bg_h_green)
+            .show()
     }
 
     override fun onPerAppProxyModeChange(mode: HiddifyUtils.PerAppProxyMode) {
         HiddifyUtils.setPerAppProxyMode(mode)
         restartV2Ray()
+        Alerter.create(requireActivity())
+            .setTitle(R.string.toast_success)
+            .setIcon(R.drawable.ic_fab_check)
+            .setBackgroundResource(R.drawable.bg_h_green)
+            .show()
     }
 
     override fun onFragmentModeChange(mode: HiddifyUtils.FragmentMode) {
         HiddifyUtils.setFragmentMode(mode)
         restartV2Ray()
+        Alerter.create(requireActivity())
+            .setTitle(R.string.toast_success)
+            .setIcon(R.drawable.ic_fab_check)
+            .setBackgroundResource(R.drawable.bg_h_green)
+            .show()
     }
 
     @SuppressLint("ResourceAsColor")
     fun showAlarmIfnotSublink(content1: String) {
         if (content1.isNullOrEmpty()){
-            context.toast(R.string.title_sub_update_failed)
+//            context.toast(R.string.title_sub_update_failed)
+            Alerter.create(requireActivity())
+                .setTitle(R.string.nothing_in_clipboard)
+                .setText(content1)
+                .setIcon(com.google.android.material.R.drawable.mtrl_ic_error)
+                .show()
             return
         }
+        Alerter.create(requireActivity())
+            .setTitle(R.string.import_from_link)
+            .setText(content1.substring(0, min(100,content1.length)))
+            .enableProgress(true)
+            .show()
+
+
         var content=if(content1.startsWith("hiddify"))Uri.parse(content1.trim()).getQueryParameter("url")?:"" else content1.trim()
         if (content.startsWith("http")){
             var subid=MmkvManager.importUrlAsSubscription(content)
@@ -1177,4 +1210,11 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Frag
 
 
         }
+
+    override fun handleDeepLink(shareUrl: String?) {
+        if(!shareUrl.isNullOrEmpty())
+            showAlarmIfnotSublink(shareUrl)
+        super.handleDeepLink(shareUrl)
+    }
+
 }

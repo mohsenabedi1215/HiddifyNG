@@ -22,6 +22,7 @@ import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.extension.toSpeedString
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.ui.HiddifyMainActivity
+import com.v2ray.ang.ui.HomeActivity
 import com.v2ray.ang.ui.MainActivity
 import com.v2ray.ang.util.*
 import go.Seq
@@ -267,7 +268,7 @@ object V2RayServiceManager {
     fun showNotification(service:Service? = serviceControl?.get()?.getService()) {
          if (service==null) return
         //todo @hiddify1
-        val startMainIntent = Intent(service, HiddifyMainActivity::class.java) //todo: check to open main or hiddifyMain
+        val startMainIntent = Intent(service, HomeActivity::class.java) //todo: check to open main or hiddifyMain
         val contentPendingIntent = PendingIntent.getActivity(service,
                 NOTIFICATION_PENDING_INTENT_CONTENT, startMainIntent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

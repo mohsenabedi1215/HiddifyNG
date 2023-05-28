@@ -118,13 +118,13 @@ object MmkvManager {
     fun getDefaultSubscription(): SubscriptionItem {
         val subscriptions = decodeSubscriptions()
         subscriptions.forEach {
-            if (it.first== "default") {
+            if (it.first== "") {
                 return it.second
             }
         }
         val subItem = SubscriptionItem()
-        subItem.remarks = "Default"
-        subStorage?.encode("default", Gson().toJson(subItem))
+        subItem.remarks = "Default2"
+        subStorage?.encode("", Gson().toJson(subItem))
         return subItem
     }
     fun importUrlAsSubscription(url: String): String {
@@ -146,22 +146,24 @@ object MmkvManager {
         var subscriptions = mutableListOf<Pair<String, SubscriptionItem>>()
         subStorage?.allKeys()?.forEach { key ->
             val json = subStorage?.decodeString(key)
-            if (!json.isNullOrBlank()) {
+            if (json!=null) {
                 subscriptions.add(Pair(key, Gson().fromJson(json, SubscriptionItem::class.java)))
             }
         }
-        return subscriptions.sortedBy { (guid, value) -> if (guid=="default") Long.MIN_VALUE else -value.addedTime }
+        return subscriptions.sortedBy { (guid, value) ->
+            if (guid=="default"||guid=="") Long.MIN_VALUE else -value.addedTime }
 
     }
 
 
     fun removeSubscription(subid: String) {
 
-        if (subid==HiddifyUtils.getSelectedSubId()){
-            HiddifyUtils.setSelectedSub("default")
-        }
-        if(subid!="default")
+        if(subid!="")
             subStorage?.remove(subid)
+
+        if (subid==HiddifyUtils.getSelectedSubId()){
+            HiddifyUtils.setSelectedSub(subStorage.allKeys()?.firstOrNull() ?:"")
+        }
         removeServerViaSubid(subid)
     }
 

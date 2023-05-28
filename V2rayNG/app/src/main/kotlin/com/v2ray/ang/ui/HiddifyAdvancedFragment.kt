@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 //import androidx.fragment.app.dialogFragment
 import androidx.fragment.app.Fragment
+import com.hiddify.ang.BaseFragment
 
 import com.hiddify.ang.speedtest.SpeedTestActivity
 import com.v2ray.ang.R
@@ -17,7 +18,7 @@ import com.v2ray.ang.util.CallbackUtil
 import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.Utils
 
-class HiddifyAdvancedFragment() : Fragment() {
+class HiddifyAdvancedFragment() : BaseFragment() {
     public lateinit var binding: BottomsheetSettingBinding
 
     interface Callback {

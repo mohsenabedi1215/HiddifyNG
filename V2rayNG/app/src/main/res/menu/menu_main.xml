@@ -71,6 +71,8 @@
         android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/title_export_all"
         app:showAsAction="never" />
+    <group
+        android:id="@+id/group_main">
     <item
         android:id="@+id/service_restart"
         android:title="@string/title_service_restart"
@@ -92,7 +94,7 @@
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/title_del_invalid_config"
         app:showAsAction="never" />
-
+    </group>
     <item
         android:id="@+id/sub_update"
         android:title="@string/title_sub_update"

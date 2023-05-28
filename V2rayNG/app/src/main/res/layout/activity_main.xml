@@ -47,7 +47,8 @@
                     android:layout_weight="1"
                     android:nextFocusRight="@+id/fab"
                     android:paddingHorizontal="8dp"
-                    android:paddingTop="16dp" />
+                    android:paddingTop="8dp"
+                    />
 
                 <LinearLayout
                     android:id="@+id/layout_test"

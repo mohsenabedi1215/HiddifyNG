@@ -17,6 +17,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.v2ray.ang.R
 
 import com.v2ray.ang.ui.HiddifyMainActivity
+import com.v2ray.ang.ui.HomeActivity
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -121,7 +122,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      */
     private fun sendNotification(messageBody: String) {
         val requestCode = 0
-        val intent = Intent(this, HiddifyMainActivity::class.java)
+        val intent = Intent(this, HomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
             this,

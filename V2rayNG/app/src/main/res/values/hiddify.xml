@@ -27,6 +27,7 @@
     <!-- hiddify -->
 
     <string name="import_from_clipboard">Clipboard</string>
+    <string name="import_from_link">Importing from Link</string>
 
 
 
@@ -63,5 +64,8 @@
     <string name="configs">Configs</string>
     <string name="paste_failed">Import Config Failed</string>
     <string name="import_success">Configs are Successfully Imported</string>
+    <string name="nothing_in_clipboard">The Input is Empty</string>
+    <string name="all_configs">All Configs</string>
+
 
 </resources>

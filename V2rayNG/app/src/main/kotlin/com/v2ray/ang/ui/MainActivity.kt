@@ -24,6 +24,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.hiddify.ang.BaseFragment
 import com.tapadoo.alerter.Alerter
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
@@ -45,7 +46,7 @@ import com.v2ray.ang.viewmodel.MainViewModel
 import kotlinx.coroutines.*
 import me.drakeet.support.toast.ToastCompat
 
-class MainActivity(val mainViewModel: HiddifyMainViewModel) : Fragment(){
+class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
     private lateinit var binding: ActivityMainBinding
     private val bottomSheetPresenter = BottomSheetPresenter()
 //    private var subAdapter by lazy {  }//hiddify
@@ -168,7 +169,7 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : Fragment(){
             }
             hideCircle()
         }
-        mainViewModel.startListenBroadcast()
+//        mainViewModel.startListenBroadcast()
     }
 
 
@@ -201,9 +202,9 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : Fragment(){
 //        mainViewModel.reloadServerList()
 
         onSelectSub(HiddifyUtils.getSelectedSubId(),false)
-        if (V2RayServiceManager.v2rayPoint.isRunning) {
-            mainViewModel.testCurrentServerRealPing()
-        }
+//        if (V2RayServiceManager.v2rayPoint.isRunning) {
+//            mainViewModel.testCurrentServerRealPing()
+//        }
     }
 
     public override fun onPause() {
@@ -691,11 +692,12 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : Fragment(){
         if(isResumed)
             (requireActivity() as BaseActivity).supportActionBar?.title=(HiddifyUtils.getSelectedSub()?.second?.remarks)
 
-        mainViewModel.reloadServerList()
-        val selected=HiddifyUtils.getSelectedSub()
-        if (selected?.second?.needUpdate() == true){
-            importConfigViaSub(selected.first)
-        }else if (do_ping){
+//        mainViewModel.reloadServerList()
+//        val selected=HiddifyUtils.getSelectedSub()
+//        if (selected?.second?.needUpdate() == true){
+//            importConfigViaSub(selected.first)
+//        }else
+            if (do_ping){
                 mainViewModel.testAllRealPing()
         }
 
@@ -723,4 +725,7 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : Fragment(){
 //    override fun onUpdateSubList() {
 //
 //    }
+    override fun onTitleClick(){
+    bottomSheetPresenter.show(parentFragmentManager,ProfilesBottomSheets.newInstance())
+    }
 }

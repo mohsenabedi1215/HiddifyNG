@@ -1,54 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
->
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+     >
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        >
 
-            app:layout_constraintTop_toTopOf="parent">
+        <com.google.android.material.appbar.MaterialToolbar
 
-        <com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/toolbar"
+
+
+            android:outlineAmbientShadowColor="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/title_hiddify"
 
 
+
             />
 
-        </com.google.android.material.appbar.AppBarLayout>
+        <View
+            android:id="@+id/toolbar_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/toolbar_dropshadow" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+<androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:fitsSystemWindows="true"
+>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
 
-            app:layout_constraintVertical_weight="1"
-            app:layout_constraintTop_toBottomOf="@id/appBar"
-            app:layout_constraintBottom_toTopOf="@id/tabLayout" />
+            android:layout_weight="1"
+
+             />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
+            android:backgroundTint="@color/colorBackground"
             style="@style/Widget.MaterialComponents.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabIndicatorAnimationMode="elastic"
             android:elevation="10dp"
 
-            app:layout_constraintBottom_toTopOf="@id/bottomNavigationView">
+            >
 
             <com.google.android.material.tabs.TabItem
 
@@ -80,32 +102,39 @@
 
         </com.google.android.material.tabs.TabLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:visibility="gone"
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            app:itemHorizontalTranslationEnabled="true"
-            app:labelVisibilityMode="selected"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/bottom_navigation_menu" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--            android:visibility="gone"-->
+<!--            android:id="@+id/bottomNavigationView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            app:itemHorizontalTranslationEnabled="true"-->
+<!--            app:labelVisibilityMode="selected"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:menu="@menu/bottom_navigation_menu" />-->
+    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"
+
         app:menu="@menu/menu_drawer" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:orientation="vertical"
             android:padding="2dp">
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:gravity="center" android:layout_gravity="center"
 
+                android:src="@drawable/hiddify_logo"
+                ></ImageView>
             <TextView
                 android:id="@+id/version"
                 android:layout_width="match_parent"
@@ -114,5 +143,5 @@
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>
 
-
 </androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>

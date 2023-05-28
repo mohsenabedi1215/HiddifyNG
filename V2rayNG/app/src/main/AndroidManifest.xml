@@ -31,7 +31,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppTheme.ActionBar"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <provider
@@ -52,17 +52,13 @@
         <activity
             android:name=".ui.SplashScreenActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.hiddify.ang.speedtest.SpeedTestActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme">
+            >
 
 
         </activity>
@@ -72,13 +68,38 @@
             android:name=".ui.HomeActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme">
+            android:theme="@style/Theme.App.Starting">
 
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+
+                    <action android:name="android.intent.action.MAIN" />
+
+                    <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="v2rayng" />
+                <data android:scheme="hiddify" />
+                <data android:scheme="vmess" />
+                <data android:scheme="ss" />
+                <data android:scheme="vless" />
+                <data android:scheme="trojan" />
             </intent-filter>
         </activity>
         <activity
@@ -126,26 +147,7 @@
         <activity
             android:name=".ui.UrlSchemeActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="v2rayng" />
-                <data android:scheme="hiddify" />
-                <data android:scheme="vmess" />
-                <data android:scheme="ss" />
-                <data android:scheme="vless" />
-                <data android:scheme="trojan" />
-            </intent-filter>
         </activity>
         <service
             android:name="com.hiddify.ang.MyFirebaseMessagingService"

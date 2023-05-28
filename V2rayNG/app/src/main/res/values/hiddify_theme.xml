@@ -1,33 +1,76 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="BaseAppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="AppTheme.ActionBar" parent="AppTheme">
+<!--        <item name="windowActionBar">true</item>-->
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
 
+    </style>
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+
+    </style>
+    <style name="BaseAppTheme" parent="Theme.Material3.DayNight">
         <item name="materialAlertDialogTheme">@style/AppTheme_ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
         <item name="android:textViewStyle">@style/MyTextViewStyle</item>
         <item name="android:buttonStyle">@style/MyButtonStyle</item>
         <item name="buttonStyle">@style/MyButtonStyle</item>
 
-        <item name="navigationViewStyle">@style/MyAppNavigationViewStyle</item>
+<!--        <item name="navigationViewStyle">@style/MyAppNavigationViewStyle</item>-->
         <item name="windowActionModeOverlay">true</item>
-        <item name="tabStyle">@style/MyTabLayout</item>
-        <item name="android:tabWidgetStyle">@style/MyTabLayout</item>
+<!--        <item name="tabStyle">@style/MyTabLayout</item>-->
+<!--        <item name="android:tabWidgetStyle">@style/MyTabLayout</item>-->
 
         <item name="android:statusBarColor">@color/colorBackground</item>
         <item name="android:fontFamily">@font/shabnam_regular</item>
+<!--        <item name="colorPrimary">@color/colorBackground</item>-->
+<!--        <item name="colorOnPrimary">@color/colorOnBackground</item>-->
+<!--        <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>-->
+<!--        <item name="colorOnPrimaryContainer">@color/colorOnPrimaryContainer</item>-->
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+<!--        <item name="colorOnPrimary">@color/colorOnPrimary</item>-->
+<!--        <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>-->
+<!--        <item name="colorOnPrimaryContainer">@color/colorOnPrimaryContainer</item>-->
+<!--        <item name="colorSecondary">@color/colorSecondary</item>-->
+<!--        <item name="colorOnSecondary">@color/colorOnSecondary</item>-->
+<!--        <item name="colorSecondaryContainer">@color/colorSecondaryContainer</item>-->
+<!--        <item name="colorOnSecondaryContainer">@color/colorOnSecondaryContainer</item>-->
+<!--        <item name="colorTertiary">@color/colorTertiary</item>-->
+<!--        <item name="colorOnTertiary">@color/colorOnTertiary</item>-->
+<!--        <item name="colorTertiaryContainer">@color/colorTertiaryContainer</item>-->
+<!--        <item name="colorOnTertiaryContainer">@color/colorOnTertiaryContainer</item>-->
+<!--        <item name="colorError">@color/colorError</item>-->
+<!--        <item name="colorErrorContainer">@color/colorErrorContainer</item>-->
+<!--        <item name="colorOnError">@color/colorOnError</item>-->
+<!--        <item name="colorOnErrorContainer">@color/colorOnErrorContainer</item>-->
+<!--        <item name="android:colorBackground">@color/colorBackground</item>-->
+<!--        <item name="colorOnBackground">@color/colorOnBackground</item>-->
+<!--        <item name="colorSurface">@color/colorSurface</item>-->
+<!--        <item name="colorOnSurface">@color/colorOnSurface</item>-->
+<!--        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>-->
+<!--        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariant</item>-->
+<!--        <item name="colorOutline">@color/colorOutline</item>-->
+<!--        <item name="colorOnSurfaceInverse">@color/colorOnSurfaceInverse</item>-->
+<!--        <item name="colorSurfaceInverse">@color/colorSurfaceInverse</item>-->
+<!--        <item name="colorPrimaryInverse">@color/colorPrimaryInverse</item>-->
+        <item name="android:navigationBarColor">@color/colorBackground</item>
+
 
     </style>
 
 
 
-    <style name="MyTabLayout" parent="Widget.Material3.TabLayout">
-        <item name="tabTextAppearance">@style/MyTabItem</item>
-    </style>
-    <style name="MyTabItem" parent="TextAppearance.Design.Tab">
-        <item name="android:fontFamily">@font/shabnam_regular</item>
-        <item name="fontFamily">@font/shabnam_regular</item>
+<!--    <style name="MyTabLayout" parent="Widget.Material3.TabLayout">-->
+<!--        <item name="tabTextAppearance">@style/MyTabItem</item>-->
+<!--    </style>-->
+<!--    <style name="MyTabItem" parent="TextAppearance.Design.Tab">-->
+<!--        <item name="android:fontFamily">@font/shabnam_regular</item>-->
+<!--        <item name="fontFamily">@font/shabnam_regular</item>-->
 
-        <!-- Other tab item style attributes -->
-    </style>
+<!--        &lt;!&ndash; Other tab item style attributes &ndash;&gt;-->
+<!--    </style>-->
 
 
 
@@ -43,19 +86,20 @@
 
 
 
-    <style name="MyAppNavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">
-        <item name="itemTextAppearance">@style/MyAppNavigationViewItemTextAppearance</item>
-    </style>
-    <style name="MyAppNavigationViewItemTextAppearance" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
-        <item name="android:fontFamily">@font/shabnam_regular</item>
-        <item name="fontFamily">@font/shabnam_regular</item>
+<!--    <style name="MyAppNavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">-->
+<!--        <item name="itemTextAppearance">@style/MyAppNavigationViewItemTextAppearance</item>-->
+<!--        -->
+<!--    </style>-->
+<!--    <style name="MyAppNavigationViewItemTextAppearance" parent="@style/TextAppearance.MaterialComponents.Subtitle2">-->
+<!--        <item name="android:fontFamily">@font/shabnam_regular</item>-->
+<!--        <item name="fontFamily">@font/shabnam_regular</item>-->
 
-    </style>
+<!--    </style>-->
 
-    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:textColorPrimary">@color/colorWhite</item>
-    </style>
+<!--    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">-->
+<!--        <item name="android:textColor">@color/colorWhite</item>-->
+<!--        <item name="android:textColorPrimary">@color/colorWhite</item>-->
+<!--    </style>-->
 
 
 
@@ -84,5 +128,36 @@
         <item name="android:fontFamily">@font/shabnam_bold</item>
         <!--        <item name="android:textStyle">.....</item>-->
         <item name="android:textSize">20sp</item>
+
+
+
+
+
+
+
+
+
+
+    </style>
+
+
+
+
+
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen background, animated icon, and animation duration. -->
+        <item name="windowSplashScreenBackground">@color/colorBackground</item>
+
+        <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
+             animated drawable. One of these is required. -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_hiddify_splash</item>
+
+        <!-- Required for animated icons -->
+        <item name="windowSplashScreenAnimationDuration">200</item>
+
+        <!-- Set the theme of the Activity that directly follows your splash screen. -->
+        <!-- Required -->
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>

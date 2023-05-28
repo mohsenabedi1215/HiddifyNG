@@ -34,7 +34,7 @@ class HiddifyMainSubAdapter(val context: Context, val callback: (Int,Boolean) ->
         (holder as SubViewHolder).apply {
             val subItem = subscriptions[position].second
 
-            profileName.text = subItem.remarks
+            profileName.text = if(subscriptions[position].first=="") context.getString(R.string.all_configs) else subItem.remarks
 
             time.text =
                 HiddifyUtils.timeToRelativeDate(subItem.expire, subItem.total, subItem.used, context)

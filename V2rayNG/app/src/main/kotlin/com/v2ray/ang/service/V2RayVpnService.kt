@@ -19,6 +19,7 @@ import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.ERoutingMode
 import com.v2ray.ang.ui.HiddifyMainActivity
+import com.v2ray.ang.ui.HomeActivity
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.MyContextWrapper
 import com.v2ray.ang.util.Utils
@@ -98,7 +99,7 @@ class V2RayVpnService : VpnService(), ServiceControl {
 
     }
     fun quickNotification(){
-        val startMainIntent = Intent(this, HiddifyMainActivity::class.java) //todo: check to open main or hiddifyMain
+        val startMainIntent = Intent(this, HomeActivity::class.java) //todo: check to open main or hiddifyMain
         val contentPendingIntent = PendingIntent.getActivity(this,
             0, startMainIntent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

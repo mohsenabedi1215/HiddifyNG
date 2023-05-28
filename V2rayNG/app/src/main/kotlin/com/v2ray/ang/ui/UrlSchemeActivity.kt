@@ -47,6 +47,7 @@ class UrlSchemeActivity : BaseActivity() {
             }
             toast(shareUrl)
             val subid=if (shareUrl.startsWith("http"))"" else "default"
+
             val count = AngConfigManager.importBatchConfig(shareUrl, subid, subid=="default", selectSub = true)
             if (count > 0) {
 //                toast(R.string.toast_success)
@@ -58,7 +59,7 @@ class UrlSchemeActivity : BaseActivity() {
                 toast(R.string.toast_failure)
             }
             //todo @hiddify1
-            startActivity(Intent(this, HiddifyMainActivity::class.java))  //todo: check to open main or hiddifyMain
+            startActivity(Intent(this, HomeActivity::class.java))  //todo: check to open main or hiddifyMain
             finish()
         } catch (e: Exception) {
             e.printStackTrace()
