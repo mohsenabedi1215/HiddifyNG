@@ -1047,10 +1047,18 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Base
         hiddifyMainViewModel.reloadSubscriptionsState()
 
         val enableSubscription = hiddifyMainViewModel.currentSubscription()
-        if (enableSubscription?.second?.needUpdate() == true){
-            importConfigViaSub(HiddifyUtils.getSelectedSubId())
-        }else if (do_ping){
-            hiddifyMainViewModel.testAllRealPing()
+        if(HiddifyUtils.isInternetConnected(requireContext())) {
+            if (enableSubscription?.second?.needUpdate() == true) {
+                importConfigViaSub(HiddifyUtils.getSelectedSubId())
+            } else if (do_ping) {
+                hiddifyMainViewModel.testAllRealPing()
+            }
+        }else{
+            Alerter.create(requireActivity())
+                .setIcon(com.google.android.material.R.drawable.mtrl_ic_error)
+                .setBackgroundResource(R.drawable.bg_h_red)
+                .enableSwipeToDismiss()
+                .setText(R.string.no_internet).show()
         }
 
     }

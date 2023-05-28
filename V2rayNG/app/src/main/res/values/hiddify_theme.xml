@@ -20,8 +20,8 @@
 
 <!--        <item name="navigationViewStyle">@style/MyAppNavigationViewStyle</item>-->
         <item name="windowActionModeOverlay">true</item>
-<!--        <item name="tabStyle">@style/MyTabLayout</item>-->
-<!--        <item name="android:tabWidgetStyle">@style/MyTabLayout</item>-->
+        <item name="tabStyle">@style/MyTabLayout</item>
+        <item name="android:tabWidgetStyle">@style/MyTabLayout</item>
 
         <item name="android:statusBarColor">@color/colorBackground</item>
         <item name="android:fontFamily">@font/shabnam_regular</item>
@@ -61,16 +61,21 @@
     </style>
 
 
+    <style name="customTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/MyTabItem</item>
+    </style>
 
-<!--    <style name="MyTabLayout" parent="Widget.Material3.TabLayout">-->
-<!--        <item name="tabTextAppearance">@style/MyTabItem</item>-->
-<!--    </style>-->
-<!--    <style name="MyTabItem" parent="TextAppearance.Design.Tab">-->
-<!--        <item name="android:fontFamily">@font/shabnam_regular</item>-->
-<!--        <item name="fontFamily">@font/shabnam_regular</item>-->
 
-<!--        &lt;!&ndash; Other tab item style attributes &ndash;&gt;-->
-<!--    </style>-->
+    <style name="MyTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/MyTabItem</item>
+    </style>
+    <style name="MyTabItem"  parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:fontFamily">@font/shabnam_regular</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+
+        <item name="fontFamily">@font/shabnam_regular</item>
+    </style>
 
 
 

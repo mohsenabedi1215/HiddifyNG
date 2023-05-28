@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -22,23 +23,29 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hiddify.ang.BaseFragment
 import com.tbruyelle.rxpermissions.RxPermissions
+import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.HiddifyHomeBinding
 import com.v2ray.ang.ui.bottomsheets.BottomSheetPresenter
+import com.v2ray.ang.util.HiddifyUtils
+import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.SpeedtestUtil
 import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.HiddifyMainViewModel
 
 
 class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
+
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var binding: HiddifyHomeBinding
     val hiddifyMainViewModel: HiddifyMainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
 
 
         binding = HiddifyHomeBinding.inflate(layoutInflater)

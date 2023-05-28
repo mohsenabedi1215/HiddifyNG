@@ -60,12 +60,13 @@
 
 
 
-    <string name="home">Connection</string>
+    <string name="home">Home</string>
     <string name="configs">Configs</string>
     <string name="paste_failed">Import Config Failed</string>
     <string name="import_success">Configs are Successfully Imported</string>
     <string name="nothing_in_clipboard">The Input is Empty</string>
     <string name="all_configs">All Configs</string>
+    <string name="title_dark_mode">Dark Mode</string>
 
 
 </resources>
