@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_widget_name">Kết nối ngay</string>
-    <string name="app_tile_name">Hiddify NG</string>
+    <string name="app_tile_name">HiddifyNG</string>
     <string name="app_tile_first_use">Vui lòng thêm một cấu hình vào HiddifyNG để sử dụng!</string>
     <string name="navigation_drawer_open">Mở Menu ứng dụng</string>
     <string name="navigation_drawer_close">Đóng Menu ứng dụng</string>

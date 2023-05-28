@@ -188,28 +188,31 @@ fun SpannableString.colorlessTextPart(
 fun Context?.toast(s: String?, length : Int = Toast.LENGTH_SHORT) {
     if(this==null)
         return
-    if (this is Activity) {
-        if ((this.isFinishing || this.isDestroyed)) {
-            return
-        }
-    }
 
     if (s == null || s.isBlank()) {
         return
     }
-    Alerter.create(this as Activity)
+    if (this is Activity) {
+        if ((this.isFinishing || this.isDestroyed)) {
+            return
+        }
+
+        Alerter.create(this as Activity)
 //        .setTitle("Alert Title")
-        .setText(s)
-        .show()
-//    val inflater = LayoutInflater.from(this)
-//    val layout = inflater.inflate(R.layout.custom_toast, null)
-//    val text = layout.findViewById<TextView>(R.id.text)
-//    text.text = s
-//
-//    val toast = Toast(this)
-//    toast.duration = length
-//    toast.view = layout
-//    toast.show()
+            .setText(s)
+            .show()
+        return
+    }
+
+    val inflater = LayoutInflater.from(this)
+    val layout = inflater.inflate(R.layout.custom_toast, null)
+    val text = layout.findViewById<TextView>(R.id.text)
+    text.text = s
+
+    val toast = Toast(this)
+    toast.duration = length
+    toast.view = layout
+    toast.show()
 }
 
 fun Context?.toast(i: Int?, length : Int = Toast.LENGTH_LONG) {

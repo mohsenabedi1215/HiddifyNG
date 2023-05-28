@@ -11,19 +11,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
-import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.DialogConfigFilterBinding
 import com.v2ray.ang.dto.*
 import com.v2ray.ang.extension.toast
+import com.v2ray.ang.ui.BaseActivity
+import com.v2ray.ang.ui.HomeActivity
 import com.v2ray.ang.util.*
 import com.v2ray.ang.util.MmkvManager.KEY_ANG_CONFIGS
 import kotlinx.coroutines.*
 import java.util.*
 
 open class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    lateinit var activity: HomeActivity
     private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
     private val serverRawStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SERVER_RAW, MMKV.MULTI_PROCESS_MODE) }
     private var lastPing=0L;
@@ -42,12 +45,12 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun startListenBroadcast() {
         isRunning.value = false
-        getApplication<AngApplication>().registerReceiver(mMsgReceiver, IntentFilter(AppConfig.BROADCAST_ACTION_ACTIVITY))
+        activity.registerReceiver(mMsgReceiver, IntentFilter(AppConfig.BROADCAST_ACTION_ACTIVITY))
         MessageUtil.sendMsg2Service(getApplication(), AppConfig.MSG_REGISTER_CLIENT, "")
     }
 
     override fun onCleared() {
-        getApplication<AngApplication>().unregisterReceiver(mMsgReceiver)
+        activity.unregisterReceiver(mMsgReceiver)
         tcpingTestScope.coroutineContext[Job]?.cancelChildren()
         SpeedtestUtil.closeAllTcpSockets()
         Log.i(ANG_PACKAGE, "Main ViewModel is cleared")
@@ -116,7 +119,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         MmkvManager.clearAllTestDelayResults()
         updateListAction.value = -1 // update all
 
-        getApplication<AngApplication>().toast(R.string.connection_test_testing)
+        activity.toast(R.string.connection_test_testing)
         for (item in serversCache) {
             item.config.getProxyOutbound()?.let { outbound ->
                 val serverAddress = outbound.getServerAddress()
@@ -140,7 +143,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         MmkvManager.clearAllTestDelayResults()
         updateListAction.value = -1 // update all
 
-//        getApplication<AngApplication>().toast(R.string.connection_test_testing)
+//        activity.toast(R.string.connection_test_testing)
         viewModelScope.launch(Dispatchers.Default) { // without Dispatchers.Default viewModelScope will launch in main thread
             for (item in ArrayList(serversCache)) {
                 if (!subscriptionId.value.isNullOrEmpty() && item.config.subscriptionId!=subscriptionId.value)
@@ -237,7 +240,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
             MmkvManager.removeServer(it)
         }
         reloadServerList()
-        getApplication<AngApplication>().toast(getApplication<AngApplication>().getString(R.string.title_del_duplicate_config_count, deleteServer.count()))
+        activity.toast(activity.getString(R.string.title_del_duplicate_config_count, deleteServer.count()))
     }
 
     private val mMsgReceiver = object : BroadcastReceiver() {
@@ -250,15 +253,15 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
                     isRunning.value = false
                 }
                 AppConfig.MSG_STATE_START_SUCCESS -> {
-//                    getApplication<AngApplication>().toast(R.string.toast_services_success)
+//                    activity.toast(R.string.toast_services_success)
                     isRunning.value = true
                 }
                 AppConfig.MSG_STATE_START_FAILURE -> {
-                    getApplication<AngApplication>().toast(R.string.toast_services_failure)
+                    activity.toast(R.string.toast_services_failure)
                     isRunning.value = false
                 }
                 AppConfig.MSG_STATE_START_FAILURE_CONFIG_ERROR -> {
-                    getApplication<AngApplication>().toast(R.string.toast_services_failure_config_error)
+                    activity.toast(R.string.toast_services_failure_config_error)
                     isRunning.value = false
                 }
                 AppConfig.MSG_STATE_STOP_SUCCESS -> {

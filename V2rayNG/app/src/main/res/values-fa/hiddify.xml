@@ -60,5 +60,6 @@
     <string name="nothing_in_clipboard">ورودی خالی هست</string>
     <string name="all_configs">همه کانفیگ‌ها</string>
     <string name="title_dark_mode">حالت شب</string>
+    <string name="infinit">نامحدود</string>
 
 </resources>

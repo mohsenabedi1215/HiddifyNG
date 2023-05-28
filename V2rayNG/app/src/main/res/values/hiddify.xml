@@ -67,6 +67,7 @@
     <string name="nothing_in_clipboard">The Input is Empty</string>
     <string name="all_configs">All Configs</string>
     <string name="title_dark_mode">Dark Mode</string>
+    <string name="infinit">Infinite</string>
 
 
 </resources>

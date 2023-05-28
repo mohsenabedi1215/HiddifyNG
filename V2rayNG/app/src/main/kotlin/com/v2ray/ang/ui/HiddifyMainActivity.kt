@@ -331,7 +331,7 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Base
                         subscription.second.expire, subscription.second.total,
                         subscription.second.used, requireActivity()
                     )
-                    binding.time.showGone(subscription.second.expire > (0).toLong() && (subscription.second.expire-System.currentTimeMillis()<1000L*60*60*24*1000))
+                    binding.time.showGone(subscription.second.expire > (0).toLong() )
 
                     binding.consumerTrafficValue.text = HiddifyUtils.toTotalUsedGig(
                         subscription.second.total,

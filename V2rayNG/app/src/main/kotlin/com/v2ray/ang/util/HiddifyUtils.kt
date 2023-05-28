@@ -79,7 +79,7 @@ class HiddifyUtils {
             val total = totalInBytes.toDouble() / 1073741824
             val used = usedInBytes.toDouble() / 1073741824
             if(total>10000){
-                return String.format("%.0f G / ♾️", used).toPersianDigit(context)
+                return String.format("%.0f G / ∞", used).toPersianDigit(context)
             }
             return String.format("%.0f / %.0f G", used, total).toPersianDigit()
 //            return if (getLocale(context) == Locale("fa"))
@@ -104,7 +104,10 @@ class HiddifyUtils {
 
             if (totalInBytes>0 && totalInBytes <= usedInBytes)
                 return context.getString(R.string.full_usage) .bold("")
-
+            if(time-System.currentTimeMillis()>1000L*60*60*24*1000)
+                return ("∞\n"+context.getString(R.string.infinit)).colorlessTextPart(
+                    context.getString(R.string.infinit),
+                    context.getColorEx(R.color.colorBorder))
 
 
             return if (getLocale(context).toString().startsWith("fa")) {
