@@ -85,7 +85,7 @@ object Utils {
     fun getClipboard(context: Context): String {
         if(isTestDevice()){
             context.toast("As a test device, we use a test link for you.")
-            return "https://141.145.215.95.sslip.io/GoZXG3E8K17Gwf8R/6ebd2ea8-4d41-48b7-8fc2-7d6570da30a9/#Google"
+            return "https://1.1.1.1/#Google"
         }
         return try {
             val cmb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

@@ -34,8 +34,8 @@ android {
         minSdkVersion 21
         targetSdkVersion Integer.parseInt("$targetSdkVer")
         multiDexEnabled true
-        versionCode 5100601 //hiddify when comes to version 5 change it
-        versionName "6.0.1" //hiddify
+        versionCode 5100603 //hiddify when comes to version 5 change it
+        versionName "6.0.3" //hiddify
     }
 
     signingConfigs {
