@@ -86,12 +86,12 @@
     "tag": "direct"
   },
     {
-      "tag": "fragment", // this tag name is used to pass to the dialerProxy above
+      "tag": "fragment",
       "protocol": "freedom",
       "settings": {
         "fragment": {
-          "length": "10-30",
-          "interval": "50-250",
+          "length": "100-900",
+          "interval": "10-90",
           "packets": "1-3"
         }
       },
@@ -102,12 +102,12 @@
       }
     },
     {
-      "tag": "fragment_random", // this tag name is used to pass to the dialerProxy above
+      "tag": "fragment_random",
       "protocol": "freedom",
       "settings": {
         "fragment": {
-          "length": "10-100",
-          "interval": "50-250",
+          "length": "100-900",
+          "interval": "10-90",
           "packets": "1-3"
         }
       },
@@ -118,12 +118,12 @@
       }
     },
     {
-      "tag": "fragment_sni", // this tag name is used to pass to the dialerProxy above
+      "tag": "fragment_sni",
       "protocol": "freedom",
       "settings": {
         "fragment": {
-          "length": "5-30",
-          "interval": "50-100",
+          "length": "100-900",
+          "interval": "10-90",
           "packets": "1-3"
         }
       },
