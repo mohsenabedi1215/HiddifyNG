@@ -103,11 +103,7 @@
         android:icon="@drawable/ic_refresh"
 
         app:showAsAction="always" />
-    <item
-        android:id="@+id/export_all"
-        android:icon="@drawable/ic_share_24dp"
-        android:title="@string/title_export_all"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/ping_all"
         android:title="@string/title_ping_all_server"
