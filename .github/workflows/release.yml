@@ -7,59 +7,86 @@ on:
 permissions:
   contents: write
 jobs:
-  BuildRelease:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
-      - name: Checkout submodules
-        run: git submodule update --init --recursive --remote
+    - name: Setup Golang
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.4'
 
-      - name: Download latest lists
-        run: |
-          rm ./V2rayNG/app/src/main/assets/*.dat
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_ir https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/direct_ir
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_ir https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/proxy_ir
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_cn https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/direct_cn
-          curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_cn https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/proxy_cn
-          curl -L -o ./V2rayNG/app/src/main/assets/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
-          curl -L -o ./V2rayNG/app/src/main/assets/geosite.dat https://github.com/hiddify/domain-list-community/releases/latest/download/hiddify-geosite.dat
-          curl -L -o ./V2rayNG/app/libs/libv2ray.aar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray.aar
-          curl -L -o ./V2rayNG/app/libs/libv2ray-sources.jar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray-sources.jar
-          ls -lah ./V2rayNG/app/src/main/assets/
+    - name: Install gomobile
+      run: |
+        go install golang.org/x/mobile/cmd/gomobile@latest
+        echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: "zulu"
-          java-version: 11
 
-      - name: Signing properties
-        env:
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-        run: |
-          cd V2rayNG
-          touch signing.properties
-          echo $SIGNING_KEY | base64 -d > release.keystore
-          echo "keystore.path=release.keystore" > release.properties
-          echo keystore.password="$SIGNING_STORE_PASSWORD" >> release.properties
-          echo key.alias="$SIGNING_KEY_ALIAS" >> release.properties
-          echo key.password="$SIGNING_KEY_PASSWORD" >> release.properties
+    - name: Setup Android environment
+      uses: android-actions/setup-android@v2
 
-          cp  release.* app/ 
-          cat release.properties
-          cd ..
+    - name: Download latest lists
+      run: |
+        rm ./V2rayNG/app/src/main/assets/*.dat
+        curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_ir https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/direct_ir
+        curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_ir https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/proxy_ir
+        curl -L -o ./V2rayNG/app/src/main/assets/applications_direct_cn https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/direct_cn
+        curl -L -o ./V2rayNG/app/src/main/assets/applications_proxy_cn https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/proxy_cn
+        curl -L -o ./V2rayNG/app/src/main/assets/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+        curl -L -o ./V2rayNG/app/src/main/assets/geosite.dat https://github.com/hiddify/domain-list-community/releases/latest/download/hiddify-geosite.dat
+        # curl -L -o ./V2rayNG/app/libs/libv2ray.aar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray.aar
+        # curl -L -o ./V2rayNG/app/libs/libv2ray-sources.jar https://github.com/hiddify/AndroidLibXrayLite/releases/latest/download/libv2ray-sources.jar
+        ls -lah ./V2rayNG/app/src/main/assets/
+  
 
-      - name: release Build
-        if: success()
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --no-daemon app:assembleRelease
-          build-root-directory: V2rayNG
+    - name: Build dependencies
+      run: |
+        mkdir ${{ github.workspace }}/build
+        cd ${{ github.workspace }}/build
+        git clone --depth=1 -b main https://github.com/2dust/AndroidLibXrayLite.git
+        cd AndroidLibXrayLite
+        go get github.com/xtls/xray-core@${{ github.event.inputs.XRAY_CORE_VERSION }} || true
+        gomobile init
+        go mod tidy -v
+        gomobile bind -v -androidapi 19 -ldflags='-s -w' ./
+        cp *.aar ${{ github.workspace }}/V2rayNG/app/libs/
+    - name: Signing properties
+      env:
+        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      run: |
+        cd V2rayNG
+        touch signing.properties
+        echo $SIGNING_KEY | base64 -d > release.keystore
+        echo "keystore.path=release.keystore" > release.properties
+        echo keystore.password="$SIGNING_STORE_PASSWORD" >> release.properties
+        echo key.alias="$SIGNING_KEY_ALIAS" >> release.properties
+        echo key.password="$SIGNING_KEY_PASSWORD" >> release.properties
+
+        cp  release.* app/ 
+        cat release.properties
+        cd ..
+
+
+    - name: Build APK
+      run: |
+        cd ${{ github.workspace }}/V2rayNG
+        chmod 777 *
+        sed -i 's/org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8/org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8/' ${{ github.workspace }}/V2rayNG/gradle.properties
+        ./gradlew --no-daemon app:assembleRelease
+
+      
 
       #       - uses: Tlaster/android-sign@v1
       #         name: Sign app APK
@@ -72,31 +99,31 @@ jobs:
       #           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
       #           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Upload Release
-        uses: softprops/action-gh-release@v1
-        if: ${{  success() }}
-        with:
-          # tag: ${{ github.ref_name }}
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          files: ./V2rayNG/app/build/outputs/apk/release/*.apk
-          prerelease: true
-          generate_release_notes: true
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      if: ${{  success() }}
+      with:
+        # tag: ${{ github.ref_name }}
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        files: ./V2rayNG/app/build/outputs/apk/release/*.apk
+        prerelease: true
+        generate_release_notes: true
 
-      - name: Assemble Release Bundle
-        run: |
-          cd V2rayNG
-          ./gradlew bundleRelease
-          cd ..
+    - name: Assemble Release Bundle
+      run: |
+        cd V2rayNG
+        ./gradlew bundleRelease
+        cd ..
 
-      - name: Create service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+    - name: Create service_account.json
+      run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
-      - name: Deploy to Internal Testers
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJson: service_account.json
-          packageName: ang.hiddify.com
-          releaseName: ${{ github.ref }}
-          releaseFiles: ./V2rayNG/app/build/outputs/bundle/release/app-release.aab
-          track: internal
+    - name: Deploy to Internal Testers
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJson: service_account.json
+        packageName: ang.hiddify.com
+        releaseName: ${{ github.ref }}
+        releaseFiles: ./V2rayNG/app/build/outputs/bundle/release/app-release.aab
+        track: internal
