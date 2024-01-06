@@ -191,7 +191,7 @@ class HiddifyUtils {
                 val json = subStorage?.decodeString(subid)
                 if (!json.isNullOrBlank()) {
                     var sub = Gson().fromJson(json, SubscriptionItem::class.java)
-                    sub.lastUpdateTime=System.currentTimeMillis()
+                    sub.lastUpdated=System.currentTimeMillis()
                     var userinfo = response.headers["Subscription-Userinfo"]?.firstOrNull()
                     var dns = response.headers["DNS"]?.firstOrNull()
                     if(!dns.isNullOrEmpty()) {

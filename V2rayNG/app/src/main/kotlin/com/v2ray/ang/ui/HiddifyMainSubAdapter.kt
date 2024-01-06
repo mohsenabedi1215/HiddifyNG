@@ -41,8 +41,8 @@ class HiddifyMainSubAdapter(val context: Context, val callback: (Int,Boolean) ->
             time.showGone(subItem.expire > (0).toLong() && ((subItem.expire-System.currentTimeMillis())<1000L*60*60*24*1000))
 
             //todo: if lastUpdateTime have value u comment it
-            //lastUpdate.text = HiddifyUtils.timeToRelativeTime(subItem.lastUpdateTime, context)
-            //lastUpdate.showGone(subItem.lastUpdateTime > (0).toLong())
+            //lastUpdate.text = HiddifyUtils.timeToRelativeTime(subItem.lastUpdated, context)
+            //lastUpdate.showGone(subItem.lastUpdated > (0).toLong())
 
             consumerTrafficValue.text = HiddifyUtils.toTotalUsedGig(
                 subItem.total,
