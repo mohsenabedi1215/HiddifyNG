@@ -5,7 +5,7 @@ package com.v2ray.ang
  * App Config Const
  */
 object AppConfig {
-    const val ANG_PACKAGE = "ang.hiddify.com"
+    const val ANG_PACKAGE = BuildConfig.APPLICATION_ID
     const val DIR_ASSETS = "assets"
 
     // legacy
@@ -47,6 +47,10 @@ object AppConfig {
     const val PREF_BYPASS_APPS = "pref_bypass_apps"
     const val PREF_CONFIRM_REMOVE = "pref_confirm_remove"
     const val PREF_START_SCAN_IMMEDIATE = "pref_start_scan_immediate"
+    const val PREF_MUX_ENABLED = "pref_mux_enabled"
+    const val PREF_MUX_CONCURRENCY = "pref_mux_concurency"
+    const val PREF_MUX_XUDP_CONCURRENCY = "pref_mux_xudp_concurency"
+    const val PREF_MUX_XUDP_QUIC = "pref_mux_xudp_quic"
 
     const val PREF_REVIEW_TIME = "pref_review_time"
     const val PREF_UPDATE_TIME = "pref_update_time"
@@ -71,11 +75,11 @@ object AppConfig {
     const val TAG_BLOCKED = "block"
     const val TAG_FRAGMENT = "fragment"
 
-
     const val androidpackagenamelistUrl = "https://raw.githubusercontent.com/hiddify/androidpackagenamelist/master/"
     const val v2rayCustomRoutingListUrl = "https://raw.githubusercontent.com/hiddify/v2rayCustomRoutingList/master/"
     const val v2rayNGIssues = "https://github.com/hiddify/HiddifyNG/issues"
     const val v2rayNGWikiMode = "https://github.com/hiddify/HiddifyNG/wiki/Mode"
+    const val v2rayNGPrivacyPolicy = "https://hiddify.com/privacy-policy/"
     const val promotionUrl = "dGc6Ly9yZXNvbHZlP2RvbWFpbj1oaWRkaWZ5"
     const val geoUrl = "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/";
 
@@ -105,4 +109,10 @@ object AppConfig {
 
     const val MSG_HIDDIFY_DO_TEST_PING = 1001
     const val MSG_STATE_START_FAILURE_CONFIG_ERROR = 1002
+    // subscription settings
+    const val SUBSCRIPTION_AUTO_UPDATE = "pref_auto_update_subscription"
+    const val SUBSCRIPTION_AUTO_UPDATE_INTERVAL = "pref_auto_update_interval"
+    const val SUBSCRIPTION_DEFAULT_UPDATE_INTERVAL = "1440" // 24 hours
+    const val SUBSCRIPTION_UPDATE_TASK_NAME = "subscription_updater"
+
 }

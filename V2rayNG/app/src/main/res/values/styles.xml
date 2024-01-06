@@ -27,6 +27,7 @@
 <!--        <item name="windowNoTitle">true</item>-->
 <!--    </style>-->
 
+
 <!--    &lt;!&ndash; Base application theme. &ndash;&gt;-->
 <!--    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">-->
 
@@ -87,5 +88,12 @@
 <!--    </style>-->
 
 
+
+
+    <style name="AppTheme.NoActionBar.Translucent">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 
 </resources>

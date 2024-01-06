@@ -16,6 +16,7 @@ import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
 
 class UrlSchemeActivity : BaseActivity() {
     private lateinit var binding: ActivityLogcatBinding
@@ -29,12 +30,19 @@ class UrlSchemeActivity : BaseActivity() {
         var shareUrl: String = ""
         var name=""
         try {
-            intent?.apply {
-                when (action) {
-                    Intent.ACTION_SEND -> {
-                        if ("text/plain" == type) {
-                            intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                                shareUrl = it
+            intent.apply {
+                if (action == Intent.ACTION_SEND) {
+                    if ("text/plain" == type) {
+                        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                            val uri = Uri.parse(it)
+                            if (uri.scheme?.startsWith(AppConfig.HTTPS_PROTOCOL) == true || uri.scheme?.startsWith(
+                                    AppConfig.HTTP_PROTOCOL
+                                ) == true
+                            ) {
+                                val name = uri.getQueryParameter("name") ?: "Subscription"
+                                importSubscription(it, name)
+                            } else {
+                                importConfig(it)
                             }
                         }
                     }
@@ -44,6 +52,7 @@ class UrlSchemeActivity : BaseActivity() {
                         name=uri?.fragment?:""
                     }
                 }
+
             }
             toast(shareUrl)
             val subid=if (shareUrl.startsWith("http"))"" else "default"

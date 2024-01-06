@@ -77,8 +77,11 @@
 
     <string-array name="streamsecurity_alpn" translatable="false">
         <item></item>
+        <item>h3</item>
         <item>h2</item>
         <item>http/1.1</item>
+        <item>h3,h2,http/1.1</item>
+        <item>h3,h2</item>
         <item>h2,http/1.1</item>
     </string-array>
     <string-array name="fragment" translatable="false">
@@ -175,6 +178,7 @@
         <item>🇹🇼 中文繁體</item>
         <item>🇻🇮 Tiếng Việt</item>
         <item>🇷🇺 Русский</item>
+        <item>عربي</item>
     </string-array>
 
 
@@ -186,7 +190,13 @@
         <item>zh-rTW</item>
         <item>vi</item>
         <item>ru</item>
+        <item>ar</item>
+    </string-array>
 
+    <string-array name="mux_xudp_quic_value" translatable="false">
+        <item>reject</item>
+        <item>allow</item>
+        <item>skip</item>
     </string-array>
 
     <string-array name="country_select" translatable="false">

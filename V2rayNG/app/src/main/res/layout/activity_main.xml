@@ -33,7 +33,7 @@
             android:id="@+id/main_content"
 
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,6 +61,7 @@
                     android:nextFocusLeft="@+id/recycler_view"
                     android:nextFocusRight="@+id/fab">
 
+
                     <TextView
                         android:id="@+id/tv_test_state"
                         android:layout_width="wrap_content"
@@ -80,7 +81,7 @@
                 android:layout_width="120dp"
                 android:layout_height="40dp"
                 android:backgroundTint="@color/colorBtnBg"
-
+                
                 android:textColor="@color/colorBtnText"
                 android:layout_gravity="end|bottom"
 app:cornerRadius="0dp"
@@ -94,6 +95,16 @@ app:cornerRadius="0dp"
                 android:text="@string/fab_start"
                 app:backgroundTint="?attr/colorAccent"
                 app:icon="@drawable/ic_hiddify" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
+        app:itemIconTint="@color/colorAccent"
+        app:menu="@menu/menu_drawer" >
+
 
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

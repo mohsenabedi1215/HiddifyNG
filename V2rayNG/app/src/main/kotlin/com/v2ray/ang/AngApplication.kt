@@ -9,6 +9,9 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import androidx.multidex.MultiDexApplication
+import androidx.preference.PreferenceManager
+import androidx.work.Configuration
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.MmkvManager
@@ -21,12 +24,18 @@ import java.security.Security
 
 
 
-class AngApplication : MultiDexApplication() {
+class AngApplication : MultiDexApplication(), Configuration.Provider {
     companion object {
         const val PREF_LAST_VERSION = "pref_last_version"
         lateinit var appContext: Context
                 private set
 
+        lateinit var application: AngApplication
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        application = this
     }
 
 //    var update = false
@@ -84,5 +93,11 @@ class AngApplication : MultiDexApplication() {
                 Log.e(AppConfig.ANG_PACKAGE, "asset copy failed", e)
             }
 
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            .setDefaultProcessName("${BuildConfig.APPLICATION_ID}:bg")
+            .build()
     }
 }

@@ -21,7 +21,8 @@
             android:clickable="true"
             android:focusable="true"
             android:nextFocusRight="@+id/layout_share"
-
+            android:background="@color/colorPrimary"
+            android:foreground="?android:attr/selectableItemBackground"
             android:layout_width="match_parent"
             android:layout_height="@dimen/server_height"
             android:layout_gravity="center"
@@ -30,7 +31,7 @@
 
             <LinearLayout
                 android:id="@+id/layout_indicator"
-                android:layout_width="10dp"
+                android:layout_width="6dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:orientation="vertical" />
@@ -40,9 +41,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:paddingStart="5dp">
+                android:paddingStart="9dp">
 
-                <TextView
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
                         android:id="@+id/tv_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -52,19 +58,18 @@
 
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
 
                     <TextView
                         android:id="@+id/tv_statistics"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:lines="1"
-
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textSize="12sp"/>
 
                 </LinearLayout>
 
@@ -90,7 +95,7 @@
                             android:layout_weight="1"
                             android:lines="1"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                            android:textColor="@color/colorSubscription"
+                            android:textColor="@color/color_secondary"
                             android:textSize="10sp"
                             android:visibility="gone"
                             tools:text="Sub" />
@@ -132,8 +137,8 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="@dimen/png_height"
-                            android:src="@drawable/ic_share_black_24dp"
-                               />
+                            android:src="@drawable/ic_share_24dp"
+                                app:tint="?attr/colorMainText" />
 
                     </LinearLayout>
 
@@ -151,8 +156,8 @@
                         <ImageView
                             android:layout_width="@dimen/png_height"
                             android:layout_height="@dimen/png_height"
-                            android:src="@drawable/ic_edit_black_24dp"
-                            app:tint="@color/colorText" />
+                            android:src="@drawable/ic_edit_24dp"
+                                app:tint="?attr/colorMainText" />
 
                     </LinearLayout>
 
@@ -171,8 +176,8 @@
                         <ImageView
                             android:layout_width="@dimen/png_height"
                             android:layout_height="@dimen/png_height"
-                            android:src="@drawable/ic_delete_black_24dp"
-                                 />
+                            android:src="@drawable/ic_delete_24dp"
+                                app:tint="?attr/colorMainText" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -190,7 +195,7 @@
                         android:layout_height="wrap_content"
                         android:lines="1"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="@color/fab_orange_dark"
+                        android:textColor="@color/color_fab_orange"
                         android:textSize="10sp" />
                 </LinearLayout>
 

@@ -122,6 +122,12 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
         mItemTouchHelper?.attachToRecyclerView(binding.recyclerView)
 
 
+        val toggle = ActionBarDrawerToggle(
+                this, binding.drawerLayout, binding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        binding.navView.setNavigationItemSelectedListener(this)
+        "v${BuildConfig.VERSION_NAME} (${SpeedtestUtil.getLibVersion()})".also { binding.version.text = it }
 
         setupViewModel()
 //        copyAssets()
@@ -155,14 +161,20 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
         mainViewModel.isRunning.observe(this) { isRunning ->
             adapter.isRunning = isRunning
             if (isRunning) {
-                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.colorSelected))
+                if (!Utils.getDarkModeStatus(this)) {
+                    binding.fab.setImageResource(R.drawable.ic_stat_name)
+                }
+                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_orange))
                 setTestState(getString(R.string.connection_connected))
                 binding.layoutTest.isFocusable = true
                 binding.fab.text=getString(R.string.fab_connected) //hiddify
                 setTestState(getString(R.string.connection_test_testing)) //hiddify
                 mainViewModel.testCurrentServerRealPing()//hiddify
             } else {
-                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.colorBtnBg))
+                if (!Utils.getDarkModeStatus(this)) {
+                    binding.fab.setImageResource(R.drawable.ic_stat_name)
+                }
+                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_grey))
                 setTestState(getString(R.string.connection_not_connected))
                 binding.layoutTest.isFocusable = false
                 binding.fab.text=getString(R.string.fab_start)//hiddify
@@ -247,6 +259,10 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
         }
         R.id.import_manually_trojan -> {
             importManually(EConfigType.TROJAN.value)
+            true
+        }
+        R.id.import_manually_wireguard -> {
+            importManually(EConfigType.WIREGUARD.value)
             true
         }
         R.id.import_config_custom_clipboard -> {
@@ -636,14 +652,14 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
 //        }
 //    }
 
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-////            moveTaskToBack(false)
-//            finish()
-//            return true
-//        }
-//        return super.onKeyDown(keyCode, event)
-//    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_BUTTON_B) {
+            moveTaskToBack(false)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
 
     fun showCircle() {
 //        binding.fabProgressCircle.show()//hiddify commented
@@ -704,6 +720,7 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
 
     }
 
+
 //    override fun onAddProfile() {
 //        importClipboard()
 //        importConfigViaSub(HiddifyUtils.getSelectedSubId())
@@ -727,5 +744,35 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
 //    }
     override fun onTitleClick(){
     bottomSheetPresenter.show(parentFragmentManager,ProfilesBottomSheets.newInstance())
+    }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here.
+        when (item.itemId) {
+            //R.id.server_profile -> activityClass = MainActivity::class.java
+            R.id.sub_setting -> {
+                startActivity(Intent(this, SubSettingActivity::class.java))
+            }
+            R.id.settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java)
+                        .putExtra("isRunning", mainViewModel.isRunning.value == true))
+            }
+            R.id.user_asset_setting -> {
+                startActivity(Intent(this, UserAssetActivity::class.java))
+            }
+            R.id.feedback -> {
+                Utils.openUri(this, AppConfig.v2rayNGIssues)
+            }
+            R.id.promotion -> {
+                Utils.openUri(this, "${Utils.decode(AppConfig.promotionUrl)}?t=${System.currentTimeMillis()}")
+            }
+            R.id.logcat -> {
+                startActivity(Intent(this, LogcatActivity::class.java))
+            }
+            R.id.privacy_policy-> {
+                Utils.openUri(this, AppConfig.v2rayNGPrivacyPolicy)
+            }
+        }
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 }

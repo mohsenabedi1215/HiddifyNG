@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
 <!--    <style name="AppThemeDayNight" parent="Theme.MaterialComponents.DayNight.DarkActionBar">-->
 
 <!--        <item name="colorPrimary">@color/colorPrimary</item>-->
@@ -10,6 +11,9 @@
 <!--        <item name="colorMainText">@color/colorText</item>-->
 <!--        <item name="android:statusBarColor">@color/colorPrimary</item>-->
 <!--        <item name="android:navigationBarColor">@color/colorPrimary</item>-->
+<!--        <item name="colorControlNormal">@color/colorAccent</item>-->
+<!--        <item name="android:windowBackground">@color/colorBg</item>-->
 <!--    </style>-->
+
 
 </resources>

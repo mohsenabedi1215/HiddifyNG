@@ -2,6 +2,7 @@ package com.v2ray.ang.viewmodel
 
 import android.app.Application
 import android.content.*
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
@@ -45,7 +46,18 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun startListenBroadcast() {
         isRunning.value = false
-        activity.registerReceiver(mMsgReceiver, IntentFilter(AppConfig.BROADCAST_ACTION_ACTIVITY))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getApplication<AngApplication>().registerReceiver(
+                mMsgReceiver,
+                IntentFilter(AppConfig.BROADCAST_ACTION_ACTIVITY),
+                Context.RECEIVER_EXPORTED
+            )
+        } else {
+            getApplication<AngApplication>().registerReceiver(
+                mMsgReceiver,
+                IntentFilter(AppConfig.BROADCAST_ACTION_ACTIVITY)
+            )
+        }
         MessageUtil.sendMsg2Service(getApplication(), AppConfig.MSG_REGISTER_CLIENT, "")
     }
 
@@ -143,9 +155,11 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
         MmkvManager.clearAllTestDelayResults()
         updateListAction.value = -1 // update all
 
-//        activity.toast(R.string.connection_test_testing)
+        val serversCopy = serversCache.toList() // Create a copy of the list
+
+        getApplication<AngApplication>().toast(R.string.connection_test_testing)
         viewModelScope.launch(Dispatchers.Default) { // without Dispatchers.Default viewModelScope will launch in main thread
-            for (item in ArrayList(serversCache)) {
+            for (item in serversCopy) {
                 if (!subscriptionId.value.isNullOrEmpty() && item.config.subscriptionId!=subscriptionId.value)
                     continue
                 val config = V2rayConfigUtil.getV2rayConfig(getApplication(), item.guid)
