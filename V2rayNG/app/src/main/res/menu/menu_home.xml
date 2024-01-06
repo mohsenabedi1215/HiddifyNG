@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_add_profile"
-        android:icon="@drawable/ic_add_white_24dp"
+        android:icon="@drawable/ic_add_24dp"
         android:title="@string/menu_item_add_config"
         android:iconTint="@color/colorText"
         app:showAsAction="always">

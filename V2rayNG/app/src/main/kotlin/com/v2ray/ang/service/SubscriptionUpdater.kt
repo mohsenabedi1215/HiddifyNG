@@ -10,11 +10,16 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.tapadoo.alerter.Alerter
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
+import com.v2ray.ang.extension.toast
 import com.v2ray.ang.util.AngConfigManager
+import com.v2ray.ang.util.HiddifyUtils
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object SubscriptionUpdater {
 
@@ -57,21 +62,43 @@ object SubscriptionUpdater {
                     AppConfig.ANG_PACKAGE,
                     "subscription automatic update: ---${subscription.remarks}"
                 )
-                val configs = Utils.getUrlContentWithCustomUserAgent(subscription.url)
-                importBatchConfig(configs, i.first)
+                val configText = try {
+                    Utils.getUrlContentWithCustomUserAgent(subscription.url)
+                } catch (e: Exception) {
+                        notification.setContentText("Updating Failed ${subscription.remarks}")
+                        Log.e(AppConfig.ANG_PACKAGE,e.toString(),e)
+                    return Result.failure()
+                }
+
+                    importBatchConfig(configText, i.first,false)
+
+
                 notification.setContentText("Updating ${subscription.remarks}")
             }
             notificationManager.cancel(3)
             return Result.success()
         }
     }
-
-    fun importBatchConfig(server: String?, subid: String = "") {
-        val append = subid.isEmpty()
-
-        val count = AngConfigManager.importBatchConfig(server, subid, append)
-        if (count <= 0) {
-            AngConfigManager.importBatchConfig(Utils.decode(server!!), subid, append)
+    private fun importBatchConfig(
+        response: Utils.Response?,
+        subid: String = "",
+        selectSub: Boolean,
+        append: Boolean = false
+    ) {
+        var server=response?.content
+        val subid2 = if(subid.isNullOrEmpty()){
+            if (server?.startsWith("http") == true)"" else "default"
+        }else{
+            subid
         }
+        HiddifyUtils.extract_package_info_from_response(response,subid)
+
+        val append = append||subid.isNullOrEmpty() || subid=="default"
+        var count = AngConfigManager.importBatchConfig(server, subid2, append, selectSub = selectSub)
+        if (count <= 0) {
+            count = AngConfigManager.importBatchConfig(Utils.decode(server!!), subid2, append, selectSub = selectSub)
+        }
+
     }
+
 }

@@ -136,6 +136,10 @@ class ServerActivity : BaseActivity() {
             EConfigType.VLESS -> setContentView(R.layout.activity_server_vless)
             EConfigType.TROJAN -> setContentView(R.layout.activity_server_trojan)
             EConfigType.WIREGUARD -> setContentView(R.layout.activity_server_wireguard)
+            EConfigType.LowestPing -> return
+            EConfigType.LoadBalance -> return
+            EConfigType.Usage ->return
+
         }
         sp_network?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

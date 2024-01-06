@@ -676,7 +676,7 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Base
                 HiddifyUtils.setMode(connect_mode)
                 onSelectSub(subid)
             }
-            hiddifyMainViewModel.testAllRealPing()
+//            hiddifyMainViewModel.testAllRealPing()
             Alerter.create(requireActivity())
                 .setIcon(com.google.android.material.R.drawable.mtrl_ic_check_mark)
                 .setBackgroundResource(R.drawable.bg_h_green)
@@ -807,14 +807,14 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Base
                     }
                     launch(Dispatchers.Main) {
                         importBatchConfig(configText, it.first,false)
-                        hiddifyMainViewModel.testAllRealPing()
+//                        hiddifyMainViewModel.testAllRealPing()
                     }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
             context.toast(R.string.title_sub_update_failed)
-            hiddifyMainViewModel. testAllRealPing()
+//            hiddifyMainViewModel. testAllRealPing()
             return false
         }
         return true
@@ -1051,7 +1051,7 @@ class HiddifyMainActivity(val hiddifyMainViewModel: HiddifyMainViewModel) : Base
             if (enableSubscription?.second?.needUpdate() == true) {
                 importConfigViaSub(HiddifyUtils.getSelectedSubId())
             } else if (do_ping) {
-                hiddifyMainViewModel.testAllRealPing()
+//                hiddifyMainViewModel.testAllRealPing()
             }
         }else{
             Alerter.create(requireActivity())

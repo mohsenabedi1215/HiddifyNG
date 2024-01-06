@@ -46,7 +46,7 @@
                 android:background="?selectableItemBackground"
                 android:layout_gravity="end"
                 android:layout_marginHorizontal="4dp"
-                app:srcCompat="@drawable/ic_delete_black_24dp"/>
+                app:srcCompat="@drawable/ic_delete_24dp"/>
         </LinearLayout>
             <TextView
                 android:id="@+id/lastUpdate"

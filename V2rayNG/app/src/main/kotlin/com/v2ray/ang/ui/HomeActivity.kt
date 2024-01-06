@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -226,8 +227,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.logcat -> {
                 startActivity(Intent(this, LogcatActivity::class.java))
             }
+            R.id.privacy_policy-> {
+                Utils.openUri(this, AppConfig.v2rayNGPrivacyPolicy)
+            }
         }
-
         return true
     }
 
@@ -299,6 +302,16 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun gotoFragment(i: Int) {
         binding.viewPager.setCurrentItem(i,true)
+    }
+
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_BUTTON_B) {
+            moveTaskToBack(false)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }
 

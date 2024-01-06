@@ -21,14 +21,13 @@
             android:clickable="true"
             android:focusable="true"
             android:nextFocusRight="@+id/layout_share"
-            android:background="@color/colorPrimary"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:background="@color/colorSurfaceVariant"
             android:layout_width="match_parent"
             android:layout_height="@dimen/server_height"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="horizontal">
-
+            <!--            android:foreground="?android:attr/selectableItemBackground"-->
             <LinearLayout
                 android:id="@+id/layout_indicator"
                 android:layout_width="6dp"
@@ -138,8 +137,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="@dimen/png_height"
                             android:src="@drawable/ic_share_24dp"
-                                app:tint="?attr/colorMainText" />
-
+                                 />
+<!--                        app:tint="?attr/colorMainText"-->
                     </LinearLayout>
 
                     <LinearLayout

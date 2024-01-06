@@ -8,7 +8,7 @@ data class SubscriptionItem(
     var addedTime: Long = System.currentTimeMillis(),
     var lastUpdated: Long = -1,
     var autoUpdate: Boolean = false,
-    val updateInterval: Int? = null,
+    var updateInterval: Int? = null,
 
     var used: Long = -1,
     var total: Long = -1,
@@ -20,10 +20,10 @@ data class SubscriptionItem(
 
 
     fun needUpdate(): Boolean {
-        if (url?.startsWith("http") != true) return false
-        if (update_interval < 0) return false
+        if (!url.startsWith("http")) return false
+        if (updateInterval==null ||  updateInterval!! < 0) return false
         var hours = (System.currentTimeMillis() - lastUpdated) / (1000 * 60 * 60)
-        return (hours >= update_interval)
+        return (hours >= updateInterval!!)
 
 
     }

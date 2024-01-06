@@ -206,7 +206,7 @@ object AngConfigManager {
         str: String?,
         subid: String,
         removedSelectedServer: ServerConfig?,
-        selectSub:Boolean
+        selectSub: Boolean
     ): Int {
         try {
             if (str == null || TextUtils.isEmpty(str)) {
@@ -215,8 +215,11 @@ object AngConfigManager {
 
             //maybe sub
 
-            if (TextUtils.isEmpty(subid) && (str.startsWith(HTTP_PROTOCOL) || str.startsWith(HTTPS_PROTOCOL))) {
-                val sub_uuid=MmkvManager.importUrlAsSubscription(str)
+            if (TextUtils.isEmpty(subid) && (str.startsWith(HTTP_PROTOCOL) || str.startsWith(
+                    HTTPS_PROTOCOL
+                ))
+            ) {
+                val sub_uuid = MmkvManager.importUrlAsSubscription(str)
                 if (selectSub)
                     HiddifyUtils.setSelectedSub(sub_uuid)
 
@@ -250,7 +253,10 @@ object AngConfigManager {
                         ) {
                             return R.string.toast_incorrect_protocol
                         }
-                        addFragmentOutbound(config.outboundBean?.streamSettings,vmessQRCode.fragment)
+                        addFragmentOutbound(
+                            config.outboundBean?.streamSettings,
+                            vmessQRCode.fragment
+                        )
                         config.remarks = vmessQRCode.ps
                         config.outboundBean?.settings?.vnext?.get(0)?.let { vnext ->
                             vnext.address = vmessQRCode.add
@@ -363,14 +369,14 @@ object AngConfigManager {
                 val uri = URI(Utils.fixIllegalUrl(str))
                 config = ServerConfig.create(EConfigType.TROJAN)
                 config.remarks = Utils.urlDecode(uri.fragment ?: "")
-                
+
                 var flow = ""
                 var fingerprint = config.outboundBean?.streamSettings?.tlsSettings?.fingerprint
                 if (uri.rawQuery != null) {
                     val queryParam = uri.rawQuery.split("&")
                         .associate { it.split("=").let { (k, v) -> k to Utils.urlDecode(v) } }
-                    addFragmentOutbound(config.outboundBean?.streamSettings,queryParam["fragment"])
-                    var allowInsecure=(queryParam["allowInsecure"]?:"")=="true"
+                    addFragmentOutbound(config.outboundBean?.streamSettings, queryParam["fragment"])
+                    var allowInsecure = (queryParam["allowInsecure"] ?: "") == "true"
 
                     val sni = config.outboundBean?.streamSettings?.populateTransportSettings(
                         queryParam["type"] ?: "tcp",
@@ -420,8 +426,8 @@ object AngConfigManager {
                     vnext.users[0].encryption = queryParam["encryption"] ?: "none"
                     vnext.users[0].flow = queryParam["flow"] ?: ""
                 }
-                var allowInsecure=(queryParam["allowInsecure"]?:"")=="true"
-                
+                var allowInsecure = (queryParam["allowInsecure"] ?: "") == "true"
+
 
                 val sni = streamSetting.populateTransportSettings(
                     queryParam["type"] ?: "tcp",
@@ -455,7 +461,7 @@ object AngConfigManager {
                     ?.getServerAddress() &&
                 config.getProxyOutbound()
                     ?.getServerPort() == removedSelectedServer.getProxyOutbound()?.getServerPort()
-                    && config.remarks==removedSelectedServer.remarks
+                && config.remarks == removedSelectedServer.remarks
             ) {
                 mainStorage?.encode(KEY_SELECTED_SERVER, guid)
             }
@@ -465,12 +471,17 @@ object AngConfigManager {
         }
         return 0
     }
-    private fun addFragmentOutbound(streamSettingsBean: V2rayConfig.OutboundBean.StreamSettingsBean?,mode:String?){
-        if(mode.isNullOrEmpty()||streamSettingsBean==null)
+
+    private fun addFragmentOutbound(
+        streamSettingsBean: V2rayConfig.OutboundBean.StreamSettingsBean?,
+        mode: String?
+    ) {
+        if (mode.isNullOrEmpty() || streamSettingsBean == null)
             return
-        if(!arrayListOf("sni","random").contains("mode"))
+        if (!arrayListOf("sni", "random").contains("mode"))
             return
-        streamSettingsBean.sockopt=V2rayConfig.Sockopt(dialer_proxy = "fragment_$mode")
+        streamSettingsBean.sockopt = V2rayConfig.Sockopt(dialer_proxy = "fragment_$mode")
+    }
 
     private fun tryParseNewVmess(
         uriString: String,
@@ -487,7 +498,7 @@ object AngConfigManager {
             val tls = tlsStr.isNotBlank()
             val queryParam = uri.rawQuery.split("&")
                 .associate { it.split("=").let { (k, v) -> k to Utils.urlDecode(v) } }
-            addFragmentOutbound(config.outboundBean?.streamSettings,queryParam["fragment"])
+            addFragmentOutbound(config.outboundBean?.streamSettings, queryParam["fragment"])
             val streamSetting = config.outboundBean?.streamSettings ?: return false
             config.remarks = Utils.urlDecode(uri.fragment ?: "")
             config.outboundBean.settings?.vnext?.get(0)?.let { vnext ->
@@ -499,8 +510,8 @@ object AngConfigManager {
             }
             var fingerprint = streamSetting.tlsSettings?.fingerprint
 
-            var allowInsecure2=allowInsecure_ ||(queryParam["allowInsecure"]?:"")=="true"
-         
+            var allowInsecure2 = allowInsecure_ || (queryParam["allowInsecure"] ?: "") == "true"
+
             val sni = streamSetting.populateTransportSettings(protocol,
                 queryParam["type"],
                 queryParam["host"]?.split("|")?.get(0) ?: "",
@@ -613,12 +624,13 @@ object AngConfigManager {
                         Utils.removeWhiteSpace(streamSetting.tlsSettings?.alpn?.joinToString())
                             .orEmpty()
                     vmessQRCode.fp = streamSetting.tlsSettings?.fingerprint.orEmpty()
-                    vmessQRCode.fragment=streamSetting.sockopt?.dialer_proxy?.substringAfter("_")?:""
+                    vmessQRCode.fragment =
+                        streamSetting.sockopt?.dialer_proxy?.substringAfter("_") ?: ""
                     outbound.getTransportSettingDetails()?.let { transportDetails ->
                         vmessQRCode.type = transportDetails[0]
                         vmessQRCode.host = transportDetails[1]
                         vmessQRCode.path = transportDetails[2]
-                        if (transportDetails.count()>3)
+                        if (transportDetails.count() > 3)
                             vmessQRCode.fragment_v1 = transportDetails[3]
                     }
                     val json = Gson().toJson(vmessQRCode)
@@ -626,7 +638,7 @@ object AngConfigManager {
                 }
 
                 EConfigType.CUSTOM, EConfigType.WIREGUARD -> ""
-                EConfigType.LowestPing, EConfigType.LoadBalance,EConfigType.Usage -> ""
+                EConfigType.LowestPing, EConfigType.LoadBalance, EConfigType.Usage -> ""
                 EConfigType.SHADOWSOCKS -> {
                     val remark = "#" + Utils.urlEncode(config.remarks)
                     val pw =
@@ -674,7 +686,8 @@ object AngConfigManager {
                             }
                         }
                     }
-                    dicQuery["fragment"] =streamSetting.sockopt?.dialer_proxy?.substringAfter("_")?:""
+                    dicQuery["fragment"] =
+                        streamSetting.sockopt?.dialer_proxy?.substringAfter("_") ?: ""
                     dicQuery["security"] = streamSetting.security.ifEmpty { "none" }
                     (streamSetting.tlsSettings
                         ?: streamSetting.realitySettings)?.let { tlsSetting ->
@@ -724,7 +737,10 @@ object AngConfigManager {
                                 if (!TextUtils.isEmpty(transportDetails[2])) {
                                     dicQuery["path"] = Utils.urlEncode(transportDetails[2])
                                 }
-                                if (transportDetails.count()>3 && !TextUtils.isEmpty(transportDetails[3])) {
+                                if (transportDetails.count() > 3 && !TextUtils.isEmpty(
+                                        transportDetails[3]
+                                    )
+                                ) {
                                     dicQuery["fragment_v1"] = transportDetails[3]
                                 }
                             }
@@ -885,30 +901,49 @@ object AngConfigManager {
         }
     }
 
-    fun importBatchConfig(servers: String?, subid: String, append: Boolean,selectSub:Boolean): Int {
+    fun importBatchConfig(
+        servers: String?,
+        subid: String,
+        append: Boolean,
+        selectSub: Boolean
+    ): Int {
         try {
             if (servers == null) {
                 return 0
             }
-            if (!subid.isNullOrEmpty()&&selectSub)
+            if (!subid.isNullOrEmpty() && selectSub)
                 HiddifyUtils.setSelectedSub(subid)
-            var selected_server_guid=HiddifyUtils.getSelectedServerId() ?: ""
-            var removedSelectedServer=
-                    if (!TextUtils.isEmpty(subid) && !append) {
-                        MmkvManager.decodeServerConfig(selected_server_guid)?.let {
-                            if (it.subscriptionId == subid) {
-                                return@let it
-                            }
-                            return@let null
+            var selected_server_guid = HiddifyUtils.getSelectedServerId() ?: ""
+            var removedSelectedServer =
+                if (!TextUtils.isEmpty(subid) && !append) {
+                    MmkvManager.decodeServerConfig(selected_server_guid)?.let {
+                        if (it.subscriptionId == subid) {
+                            return@let it
                         }
-                    } else {
-                        null
+                        return@let null
                     }
-            if(!append) {
+                } else {
+                    null
+                }
+            if (!append) {
                 MmkvManager.removeServerViaSubid(subid)
             }
-            MmkvManager.encodeServerConfig(subid+2, ServerConfig(configType = EConfigType.LoadBalance, remarks = "LoadBalance", subscriptionId = subid))
-            MmkvManager.encodeServerConfig(subid+1, ServerConfig(configType = EConfigType.LowestPing, remarks = "LowestPing", subscriptionId = subid))
+            MmkvManager.encodeServerConfig(
+                subid + 2,
+                ServerConfig(
+                    configType = EConfigType.LoadBalance,
+                    remarks = "LoadBalance",
+                    subscriptionId = subid
+                )
+            )
+            MmkvManager.encodeServerConfig(
+                subid + 1,
+                ServerConfig(
+                    configType = EConfigType.LowestPing,
+                    remarks = "LowestPing",
+                    subscriptionId = subid
+                )
+            )
 //            var servers = server
 //            if (server.indexOf("vmess") >= 0 && server.indexOf("vmess") == server.lastIndexOf("vmess")) {
 //                servers = server.replace("\n", "")
@@ -916,29 +951,29 @@ object AngConfigManager {
 
             var count = 0
             servers.lines()
-                    .reversed()
-                    .forEach {
-                        val resId = importConfig(it, subid, removedSelectedServer,selectSub)
-                        if (resId == 0) {
-                            count++
-                        }
+                .reversed()
+                .forEach {
+                    val resId = importConfig(it, subid, removedSelectedServer, selectSub)
+                    if (resId == 0) {
+                        count++
                     }
-            if (selected_server_guid==subid+"1"|| selected_server_guid==subid+"2"){
+                }
+            if (selected_server_guid == subid + "1" || selected_server_guid == subid + "2") {
                 mainStorage?.encode(KEY_SELECTED_SERVER, selected_server_guid)
             }
-            if(selectSub){
-                mainStorage?.encode(KEY_SELECTED_SERVER, subid+"2")
+            if (selectSub) {
+                mainStorage?.encode(KEY_SELECTED_SERVER, subid + "2")
             }
-            if (count==0 && subid!="default"){
-                MmkvManager.removeServer(subid+"1")
-                MmkvManager.removeServer(subid+"2")
+            if (count == 0 && subid != "default") {
+                MmkvManager.removeServer(subid + "1")
+                MmkvManager.removeServer(subid + "2")
             }
             return count
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        MmkvManager.removeServer(subid+"1")
-        MmkvManager.removeServer(subid+"2")
+        MmkvManager.removeServer(subid + "1")
+        MmkvManager.removeServer(subid + "2")
         return 0
     }
 

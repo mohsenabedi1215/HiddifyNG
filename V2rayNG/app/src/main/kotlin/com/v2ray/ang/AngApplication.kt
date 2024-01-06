@@ -9,8 +9,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import androidx.multidex.MultiDexApplication
-import androidx.preference.PreferenceManager
+
 import androidx.work.Configuration
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.util.HiddifyUtils
@@ -45,10 +44,10 @@ class AngApplication : MultiDexApplication(), Configuration.Provider {
         super.onCreate()
         appContext = applicationContext
 //        LeakCanary.install(this)
-        FirebaseApp.initializeApp(this);
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+//        FirebaseApp.initializeApp(this);
+//        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
 //        Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler(this))
-        Firebase.messaging.subscribeToTopic("all")
+//        Firebase.messaging.subscribeToTopic("all")
 
         val defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val update = defaultSharedPreferences.getInt(PREF_LAST_VERSION, 0) != BuildConfig.VERSION_CODE

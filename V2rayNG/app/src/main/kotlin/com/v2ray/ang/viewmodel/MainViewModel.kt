@@ -12,12 +12,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
+import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.DialogConfigFilterBinding
 import com.v2ray.ang.dto.*
 import com.v2ray.ang.extension.toast
+import com.v2ray.ang.service.V2RayServiceManager
 import com.v2ray.ang.ui.BaseActivity
 import com.v2ray.ang.ui.HomeActivity
 import com.v2ray.ang.util.*
@@ -62,7 +64,13 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     override fun onCleared() {
-        activity.unregisterReceiver(mMsgReceiver)
+
+        try {
+
+            activity.unregisterReceiver(mMsgReceiver)
+        } catch (e: Exception) {
+            Log.d(ANG_PACKAGE, e.toString())
+        }
         tcpingTestScope.coroutineContext[Job]?.cancelChildren()
         SpeedtestUtil.closeAllTcpSockets()
         Log.i(ANG_PACKAGE, "Main ViewModel is cleared")
@@ -150,6 +158,7 @@ open class MainViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun testAllRealPing() {
+
         lastPing=System.currentTimeMillis()
         MessageUtil.sendMsg2TestService(getApplication(), AppConfig.MSG_MEASURE_CONFIG_CANCEL, "")
         MmkvManager.clearAllTestDelayResults()

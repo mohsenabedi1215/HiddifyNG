@@ -208,9 +208,9 @@ class HiddifyUtils {
                     var content_disposition = response.headers["Content-Disposition"]?.firstOrNull()
                     var profile_title = response.headers["Profile-Title"]?.firstOrNull()
                     var profile_update_interval = response.headers["Profile-Update-Interval"]?.firstOrNull()
-                    if (!profile_update_interval.isNullOrEmpty()) {
-                        sub.update_interval = profile_update_interval.toInt();
-                    }
+//                    if (!profile_update_interval.isNullOrEmpty()) {
+                    sub.updateInterval = profile_update_interval?.toInt();
+//                    }
                     if (!supportLink.isNullOrEmpty()) {
                         sub.support_link = supportLink
                     }

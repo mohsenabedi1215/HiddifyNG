@@ -18,8 +18,6 @@ import com.v2ray.ang.viewmodel.SettingsViewModel
 import java.util.*
 import kotlin.system.exitProcess
 import com.v2ray.ang.service.SubscriptionUpdater
-import com.v2ray.ang.util.Utils
-import com.v2ray.ang.viewmodel.SettingsViewModel
 import java.util.concurrent.TimeUnit
 
 class SettingsActivity : BaseActivity() {

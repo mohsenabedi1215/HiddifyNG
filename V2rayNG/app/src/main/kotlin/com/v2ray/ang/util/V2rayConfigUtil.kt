@@ -600,4 +600,33 @@ object V2rayConfigUtil {
         return true
     }
 
+    private fun httpRequestObject(outbound: V2rayConfig.OutboundBean): Boolean {
+        try {
+            if (outbound.streamSettings?.network == DEFAULT_NETWORK
+                && outbound.streamSettings?.tcpSettings?.header?.type == HTTP) {
+                val path = outbound.streamSettings?.tcpSettings?.header?.request?.path
+                val host = outbound.streamSettings?.tcpSettings?.header?.request?.headers?.Host
+
+                val requestString: String by lazy {
+                    """{"version":"1.1","method":"GET","headers":{"User-Agent":["Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36","Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"],"Accept-Encoding":["gzip, deflate"],"Connection":["keep-alive"],"Pragma":"no-cache"}}"""
+                }
+                outbound.streamSettings?.tcpSettings?.header?.request = Gson().fromJson(
+                    requestString,
+                    V2rayConfig.OutboundBean.StreamSettingsBean.TcpSettingsBean.HeaderBean.RequestBean::class.java
+                )
+                outbound.streamSettings?.tcpSettings?.header?.request?.path =
+                    if (path.isNullOrEmpty()) {
+                        listOf("/")
+                    } else {
+                        path
+                    }
+                outbound.streamSettings?.tcpSettings?.header?.request?.headers?.Host = host!!
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+        return true
+    }
 }
