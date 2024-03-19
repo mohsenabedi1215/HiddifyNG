@@ -8,28 +8,53 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.v2ray.ang"
+            applicationId "ang.hiddify.com"//hiddify
         minSdk = 21
         targetSdk = 34
-        versionCode = 550
-        versionName = "1.8.18"
+        versionCode = 550800
+        versionName = "8.0.0"
         multiDexEnabled = true
     }
+signingConfigs {
+        release {
+            def properties = new Properties()
+            properties.load(new FileInputStream(rootProject.file('release.properties')))
 
+            keyAlias properties['key.alias']
+            keyPassword properties['key.password']
+            storeFile file(properties['keystore.path'])
+            storePassword properties['keystore.password']
+//            storeFile file("signing.keystore")
+//            def properties = new Properties()
+//            properties.load(new FileInputStream(rootProject.file('signing.properties')))
+//            storePassword System.getenv("SIGNING_STORE_PASSWORD")
+//            keyAlias System.getenv("SIGNING_KEY_ALIAS")
+//            keyPassword System.getenv("SIGNING_KEY_PASSWORD")
+        }
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            ndk.abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            isMinifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            ndk.abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+//            applicationIdSuffix '.debug'
+//            android.defaultConfig.applicationId "ang.hiddify.com.debug"
+            versionNameSuffix 'd'
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-
-        }
-        debug {
-            isMinifyEnabled = false
-
-        }
-    }
+    
 
     sourceSets {
         getByName("main") {
@@ -41,10 +66,23 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
-    splits {
+     splits {
+        language {
+            enable = false
+        }
         abi {
-            isEnable = true
-            isUniversalApk = true
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a' //select ABIs to build APKs for
+            universalApk true //generate an additional APK that contains all the ABIs
+        }
+    }
+    bundle {
+        language {
+            enableSplit = false
+        }
+        abi {
+            enableSplit = true
         }
     }
 
@@ -61,15 +99,11 @@ android {
                 else
                     "all"
 
-                output.outputFileName = "v2rayNG_${variant.versionName}_${abi}.apk"
-                if(versionCodes.containsKey(abi))
-                {
-                    output.versionCodeOverride = (1000000 * versionCodes[abi]!!).plus(variant.versionCode)
-                }
+                if(output.getFilter(com.android.build.OutputFile.ABI)==null)
+                    output.outputFileName = "HiddifyNG.apk"
                 else
-                {
-                    return@forEach
-                }
+                    output.outputFileName = "HiddifyNG_" + output.getFilter(com.android.build.OutputFile.ABI) + ".apk"
+        
             }
     }
 
@@ -82,6 +116,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar","*.jar"))))
     testImplementation("junit:junit:4.13.2")
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
 
     // Androidx
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -121,4 +156,84 @@ dependencies {
 
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.work:work-multiprocess:2.8.1")
+    //Hiddify
+    implementation fileTree(dir: 'jniLibs', include: ['*.so'], exclude: [ ])
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:31.5.0')
+
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-inappmessaging-display-ktx'
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'androidx.work:work-runtime:2.8.1'
+    implementation 'com.google.android.play:core-ktx:1.8.1'
+//    implementation 'com.google.android.play:app-update-ktx:2.0.1'
+//    implementation 'fr.bmartel:jspeedtest:1.32.1'
+//    implementation 'com.github.hiddify:Super-Gauge-View:14314adde9'
+//     https://mvnrepository.com/artifact/org.achartengine/achartengine
+//    implementation("org.achartengine:achartengine:1.2.0")
+    implementation files('libs/achartengine-1.2.0.jar')
+
+    implementation 'org.conscrypt:conscrypt-android:2.5.2'
+//    implementation("com.squareup.okhttp3:okhttp:5.0.+")
+//    implementation platform("org.http4k:http4k-bom:4.44.0.0"){
+//        exclude(group: 'group.name', module: 'META-INF/DEPENDENCIES')
+//
+//    }
+//
+//
+//    // Java (for development only):
+//    implementation("org.http4k:http4k-core")
+//
+//    // Apache v5 (Sync):
+//    implementation("org.http4k:http4k-client-apache")
+//
+//
+////    // Apache v4 (Sync):
+////    implementation("org.http4k:http4k-client-apache4"){
+////        exclude group: 'mozilla', module: 'public-suffix-list'
+////    }
+//
+//    // Apache v5 (Async):
+////    implementation("org.http4k:http4k-client-apache-async")
+//
+//    // Apache v4 (Async):
+////    implementation("org.http4k:http4k-client-apache4-async")
+//
+//    // Fuel (Sync + Async):
+//    implementation("org.http4k:http4k-client-fuel")
+//
+//    // OkHttp (Sync + Async):
+//    implementation("org.http4k:http4k-client-okhttp")
+
+//    // Websocket:
+//    implementation("org.http4k:http4k-client-websocket")
+
+
+
+
+
+
+//    implementation("com.github.jkcclemens:khttp:0.1.0")
+
+//    implementation("org.symphonyoss.symphony:jcurl:0.9.18")
+
+    implementation 'com.github.tapadoo:alerter:7.2.4'
+//    implementation 'com.github.Yalantis:Context-Menu.Android:1.1.4'
+//    implementation 'com.github.dmytrodanylyk:circular-progress-button:1.3'
+//    compile 'com.github.dmytrodanylyk:android-morphing-button:1.0'
+    implementation 'com.github.anastr:speedviewlib:1.6.0'
+    implementation("com.mikepenz:materialdrawer:9.0.1")
+    implementation 'androidx.core:core-splashscreen:1.0.0+'
+
+
+
+
+
 }
+apply plugin: 'com.google.gms.google-services'
+
+
