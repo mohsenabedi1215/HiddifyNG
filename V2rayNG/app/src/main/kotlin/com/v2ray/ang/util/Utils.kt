@@ -230,7 +230,7 @@ object Utils {
     }
 
     fun isPureIpAddress(value: String): Boolean {
-        return (isIpv4Address(value) || isIpv6Address(value))
+        return isIpv4Address(value) || isIpv6Address(value)
     }
 
     fun isIpv4Address(value: String): Boolean {
@@ -310,7 +310,7 @@ object Utils {
 
     fun urlDecode(url: String): String {
         return try {
-            URLDecoder.decode(URLDecoder.decode(url), "utf-8")
+            URLDecoder.decode(url, "UTF-8")
         } catch (e: Exception) {
             e.printStackTrace()
             url

@@ -7,11 +7,19 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
+import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_CONFIG
-import com.v2ray.ang.AppConfig.HTTPS_PROTOCOL
-import com.v2ray.ang.AppConfig.HTTP_PROTOCOL
+import com.v2ray.ang.AppConfig.PROTOCOL_HTTPS
+import com.v2ray.ang.AppConfig.PROTOCOL_HTTP
+import com.v2ray.ang.AppConfig.WIREGUARD_LOCAL_ADDRESS_V4
+import com.v2ray.ang.AppConfig.WIREGUARD_LOCAL_MTU
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.*
 import com.v2ray.ang.dto.V2rayConfig.Companion.DEFAULT_SECURITY
@@ -19,8 +27,9 @@ import com.v2ray.ang.dto.V2rayConfig.Companion.TLS
 import com.v2ray.ang.util.MmkvManager.KEY_SELECTED_SERVER
 import java.net.URI
 import java.util.*
+import java.lang.reflect.Type
 import com.v2ray.ang.extension.idnHost
-import com.v2ray.ang.extension.toast
+import com.v2ray.ang.extension.removeWhiteSpace
 
 object AngConfigManager {
     private val mainStorage by lazy {
@@ -168,6 +177,7 @@ object AngConfigManager {
                         vmessBean.path,
                         vmessBean.headerType,
                         vmessBean.path,
+                        vmessBean.requestHost,
                         vmessBean.fragment
                     )
                     val allowInsecure = if (vmessBean.allowInsecure.isBlank()) {
@@ -214,9 +224,8 @@ object AngConfigManager {
             }
 
             //maybe sub
-
-            if (TextUtils.isEmpty(subid) && (str.startsWith(HTTP_PROTOCOL) || str.startsWith(
-                    HTTPS_PROTOCOL
+            if (TextUtils.isEmpty(subid) && (str.startsWith(PROTOCOL_HTTP) || str.startsWith(
+                    PROTOCOL_HTTPS
                 ))
             ) {
                 val sub_uuid = MmkvManager.importUrlAsSubscription(str)
@@ -277,6 +286,7 @@ object AngConfigManager {
                             vmessQRCode.path,
                             vmessQRCode.type,
                             vmessQRCode.path,
+                            vmessQRCode.host,
                             vmessQRCode.fragment_v1
                         )
 
@@ -388,6 +398,7 @@ object AngConfigManager {
                         queryParam["key"],
                         queryParam["mode"],
                         queryParam["serviceName"],
+                        queryParam["authority"],
                         queryParam["fragment_v1"]
                     )
                     fingerprint = queryParam["fp"] ?: ""
@@ -439,16 +450,41 @@ object AngConfigManager {
                     queryParam["key"],
                     queryParam["mode"],
                     queryParam["serviceName"],
+                    queryParam["authority"],
                     queryParam["fragment_v1"]
                 )
-                fingerprint = queryParam["fp"] ?: ""
-                val pbk = queryParam["pbk"] ?: ""
-                val sid = queryParam["sid"] ?: ""
-                val spx = Utils.urlDecode(queryParam["spx"] ?: "")
                 streamSetting.populateTlsSettings(
-                    queryParam["security"] ?: "", allowInsecure,
-                    queryParam["sni"] ?: sni, fingerprint, queryParam["alpn"], pbk, sid, spx
+                    queryParam["security"] ?: "",
+                    allowInsecure,
+                    queryParam["sni"] ?: sni,
+                    queryParam["fp"] ?: "",
+                    queryParam["alpn"],
+                    queryParam["pbk"] ?: "",
+                    queryParam["sid"] ?: "",
+                    queryParam["spx"] ?: ""
                 )
+            } else if (str.startsWith(EConfigType.WIREGUARD.protocolScheme)) {
+                val uri = URI(Utils.fixIllegalUrl(str))
+                config = ServerConfig.create(EConfigType.WIREGUARD)
+                config.remarks = Utils.urlDecode(uri.fragment ?: "")
+
+                if (uri.rawQuery != null) {
+                    val queryParam = uri.rawQuery.split("&")
+                        .associate { it.split("=").let { (k, v) -> k to Utils.urlDecode(v) } }
+
+                    config.outboundBean?.settings?.let { wireguard ->
+                        wireguard.secretKey = uri.userInfo
+                        wireguard.address =
+                            (queryParam["address"] ?: WIREGUARD_LOCAL_ADDRESS_V4).removeWhiteSpace()
+                                .split(",")
+                        wireguard.peers?.get(0)?.publicKey = queryParam["publickey"] ?: ""
+                        wireguard.peers?.get(0)?.endpoint = "${uri.idnHost}:${uri.port}"
+                        wireguard.mtu = Utils.parseInt(queryParam["mtu"] ?: WIREGUARD_LOCAL_MTU)
+                        wireguard.reserved =
+                            (queryParam["reserved"] ?: "0,0,0").removeWhiteSpace().split(",")
+                                .map { it.toInt() }
+                    }
+                }
             }
             if (config == null) {
                 return R.string.toast_incorrect_protocol
@@ -489,7 +525,7 @@ object AngConfigManager {
         allowInsecure_: Boolean
     ): Boolean {
         return runCatching {
-            val uri = URI(uriString)
+            val uri = URI(Utils.fixIllegalUrl(uriString))
             check(uri.scheme == "vmess")
             val (_, protocol, tlsStr, uuid, alterId) =
                 Regex("(tcp|http|ws|kcp|quic|grpc)(\\+tls)?:([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})")
@@ -521,6 +557,7 @@ object AngConfigManager {
                 queryParam["key"],
                 queryParam["mode"],
                 queryParam["serviceName"],
+                queryParam["authority"],
                 queryParam["fragment_v1"])
             streamSetting.populateTlsSettings(
                 if (tls) TLS else "", allowInsecure2, sni, fingerprint, null,
@@ -584,6 +621,42 @@ object AngConfigManager {
                 password = base64Decode.substringAfter(":")
             }
 
+            val query = Utils.urlDecode(uri.query ?: "")
+            if (query != "") {
+                val queryPairs = HashMap<String, String>()
+                val pairs = query.split(";")
+                Log.d(AppConfig.ANG_PACKAGE, pairs.toString())
+                for (pair in pairs) {
+                    val idx = pair.indexOf("=")
+                    if (idx == -1) {
+                        queryPairs[Utils.urlDecode(pair)] = "";
+                    } else {
+                        queryPairs[Utils.urlDecode(pair.substring(0, idx))] = Utils.urlDecode(pair.substring(idx + 1))
+                    }
+                }
+                Log.d(AppConfig.ANG_PACKAGE, queryPairs.toString())
+                var sni: String? = ""
+                if (queryPairs["plugin"] == "obfs-local" && queryPairs["obfs"] == "http") {
+                    sni = config.outboundBean?.streamSettings?.populateTransportSettings(
+                        "tcp", "http", queryPairs["obfs-host"], queryPairs["path"], null, null, null, null, null, null
+                    )
+                } else if (queryPairs["plugin"] == "v2ray-plugin") {
+                    var network = "ws";
+                    if (queryPairs["mode"] == "quic") {
+                        network = "quic";
+                    }
+                    sni = config.outboundBean?.streamSettings?.populateTransportSettings(
+                        network, null, queryPairs["host"], queryPairs["path"], null, null, null, null, null, null
+                    )
+                }
+                if ("tls" in queryPairs) {
+                    config.outboundBean?.streamSettings?.populateTlsSettings(
+                        "tls", false, sni ?: "", null, null, null, null, null
+                    )
+                }
+                
+            }
+            
             config.outboundBean?.settings?.servers?.get(0)?.let { server ->
                 server.address = uri.idnHost
                 server.port = uri.port
@@ -604,7 +677,11 @@ object AngConfigManager {
         try {
             val config = MmkvManager.decodeServerConfig(guid) ?: return ""
             val outbound = config.getProxyOutbound() ?: return ""
-            val streamSetting = outbound.streamSettings ?: return ""
+            val streamSetting =
+                outbound.streamSettings ?: V2rayConfig.OutboundBean.StreamSettingsBean()
+            if (config.configType != EConfigType.WIREGUARD) {
+                if (outbound.streamSettings == null) return ""
+            }
             return config.configType.protocolScheme + when (config.configType) {
                 EConfigType.VMESS -> {
                     val vmessQRCode = VmessQRCode()
@@ -637,7 +714,7 @@ object AngConfigManager {
                     Utils.encode(json)
                 }
 
-                EConfigType.CUSTOM, EConfigType.WIREGUARD -> ""
+                EConfigType.CUSTOM-> ""
                 EConfigType.LowestPing, EConfigType.LoadBalance, EConfigType.Usage -> ""
                 EConfigType.SHADOWSOCKS -> {
                     val remark = "#" + Utils.urlEncode(config.remarks)
@@ -655,10 +732,13 @@ object AngConfigManager {
                 EConfigType.SOCKS -> {
                     val remark = "#" + Utils.urlEncode(config.remarks)
                     val pw =
-                        Utils.encode("${outbound.settings?.servers?.get(0)?.users?.get(0)?.user}:${outbound.getPassword()}")
+                        if (outbound.settings?.servers?.get(0)?.users?.get(0)?.user != null)
+                            "${outbound.settings?.servers?.get(0)?.users?.get(0)?.user}:${outbound.getPassword()}"
+                        else
+                            ":"
                     val url = String.format(
                         "%s@%s:%s",
-                        pw,
+                        Utils.encode(pw),
                         Utils.getIpv6Address(outbound.getServerAddress()!!),
                         outbound.getServerPort()
                     )
@@ -712,7 +792,8 @@ object AngConfigManager {
                             dicQuery["spx"] = Utils.urlEncode(tlsSetting.spiderX!!)
                         }
                     }
-                    dicQuery["type"] = streamSetting.network.ifEmpty { V2rayConfig.DEFAULT_NETWORK }
+                    dicQuery["type"] =
+                        streamSetting.network.ifEmpty { V2rayConfig.DEFAULT_NETWORK }
 
                     outbound.getTransportSettingDetails()?.let { transportDetails ->
                         when (streamSetting.network) {
@@ -730,7 +811,7 @@ object AngConfigManager {
                                 }
                             }
 
-                            "ws" -> {
+                            "ws", "httpupgrade" -> {
                                 if (!TextUtils.isEmpty(transportDetails[1])) {
                                     dicQuery["host"] = Utils.urlEncode(transportDetails[1])
                                 }
@@ -763,7 +844,8 @@ object AngConfigManager {
 
                             "grpc" -> {
                                 dicQuery["mode"] = transportDetails[0]
-                                dicQuery["serviceName"] = transportDetails[2]
+                                dicQuery["authority"] = Utils.urlEncode(transportDetails[1])
+                                dicQuery["serviceName"] = Utils.urlEncode(transportDetails[2])
                             }
                         }
                     }
@@ -774,6 +856,38 @@ object AngConfigManager {
                     val url = String.format(
                         "%s@%s:%s",
                         outbound.getPassword(),
+                        Utils.getIpv6Address(outbound.getServerAddress()!!),
+                        outbound.getServerPort()
+                    )
+                    url + query + remark
+                }
+
+                EConfigType.WIREGUARD -> {
+                    val remark = "#" + Utils.urlEncode(config.remarks)
+
+                    val dicQuery = HashMap<String, String>()
+                    dicQuery["publickey"] =
+                        Utils.urlEncode(outbound.settings?.peers?.get(0)?.publicKey.toString())
+                    if (outbound.settings?.reserved != null) {
+                        dicQuery["reserved"] = Utils.urlEncode(
+                            Utils.removeWhiteSpace(outbound.settings?.reserved?.joinToString())
+                                .toString()
+                        )
+                    }
+                    dicQuery["address"] = Utils.urlEncode(
+                        Utils.removeWhiteSpace((outbound.settings?.address as List<*>).joinToString())
+                            .toString()
+                    )
+                    if (outbound.settings?.mtu != null) {
+                        dicQuery["mtu"] = outbound.settings?.mtu.toString()
+                    }
+                    val query = "?" + dicQuery.toList().joinToString(
+                        separator = "&",
+                        transform = { it.first + "=" + it.second })
+
+                    val url = String.format(
+                        "%s@%s:%s",
+                        Utils.urlEncode(outbound.getPassword().toString()),
                         Utils.getIpv6Address(outbound.getServerAddress()!!),
                         outbound.getServerPort()
                     )
@@ -992,5 +1106,58 @@ object AngConfigManager {
         subStorage?.encode(subId, Gson().toJson(subItem))
 
         return true
+    }
+
+    fun appendCustomConfigServer(server: String?, subid: String): Int {
+        if (server == null) {
+            return 0
+        }
+        if (server.contains("inbounds")
+            && server.contains("outbounds")
+            && server.contains("routing")
+        ) {
+            try {
+                //val gson = GsonBuilder().setPrettyPrinting().create()
+                val gson = GsonBuilder()
+                            .setPrettyPrinting()
+                            .disableHtmlEscaping()
+                            .registerTypeAdapter( // custom serialiser is needed here since JSON by default parse number as Double, core will fail to start
+                                    object : TypeToken<Double>() {}.type,
+                                    JsonSerializer { src: Double?, _: Type?, _: JsonSerializationContext? -> JsonPrimitive(src?.toInt()) }
+                            )
+                            .create()
+                val serverList: Array<V2rayConfig> =
+                Gson().fromJson(server, Array<V2rayConfig>::class.java)
+
+                if (serverList.isNotEmpty()) {
+                    var count = 0
+                    for (srv in serverList) {
+                        val config = ServerConfig.create(EConfigType.CUSTOM)
+                        config.remarks = srv.remarks
+                            ?: ("%04d-".format(count + 1) + System.currentTimeMillis()
+                                .toString())
+                        config.subscriptionId = subid
+                        config.fullConfig = srv
+                        val key = MmkvManager.encodeServerConfig("", config)
+                        serverRawStorage?.encode(key, gson.toJson(srv))
+                        count += 1
+                    }
+                    return count
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            // For compatibility
+            val config = ServerConfig.create(EConfigType.CUSTOM)
+            config.subscriptionId = subid
+            config.fullConfig = Gson().fromJson(server, V2rayConfig::class.java)
+            config.remarks = config.fullConfig?.remarks ?: System.currentTimeMillis().toString()
+            val key = MmkvManager.encodeServerConfig("", config)
+            serverRawStorage?.encode(key, server)
+            return 1
+        } else {
+            return 0
+        }
     }
 }

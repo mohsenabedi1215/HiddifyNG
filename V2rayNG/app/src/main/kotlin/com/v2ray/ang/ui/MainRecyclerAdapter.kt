@@ -74,7 +74,7 @@ class MainRecyclerAdapter(val activity: Activity,mainViewModel: MainViewModel) :
             holder.itemMainBinding.tvName.text = config.remarks
             holder.itemMainBinding.root.setBackgroundResource(R.color.colorBackground)
             holder.itemMainBinding.tvTestResult.text = aff?.getTestDelayString() ?: ""
-            if ((aff?.testDelayMillis ?: 0L) < 0L) {
+            if (aff?.testDelayMillis ?: 0L < 0L) {
                 holder.itemMainBinding.tvTestResult.setTextColor(ContextCompat.getColor(mActivity, R.color.colorPingRed))
                 if (config.configType==EConfigType.LoadBalance||config.configType==EConfigType.LowestPing)
                     holder.itemMainBinding.tvTestResult.text=""

@@ -439,6 +439,9 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
         if (count <= 0) {
             count = AngConfigManager.importBatchConfig(Utils.decode(server!!), subid2, append, selectSub = selectSub)
         }
+        if (count <= 0) {
+            count = AngConfigManager.appendCustomConfigServer(server, subid2)
+        }
         if (count > 0) {
 //            requireActivity().toast(R.string.toast_success)
             mainViewModel.reloadServerList()

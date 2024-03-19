@@ -2,10 +2,12 @@ package com.v2ray.ang.util
 
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
+import com.v2ray.ang.dto.AssetUrlItem
 import com.v2ray.ang.dto.ServerAffiliationInfo
 import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.dto.ServersCache
 import com.v2ray.ang.dto.SubscriptionItem
+import java.net.URI
 
 object MmkvManager {
     const val ID_MAIN = "MAIN"
@@ -13,6 +15,7 @@ object MmkvManager {
     const val ID_SERVER_RAW = "SERVER_RAW"
     const val ID_SERVER_AFF = "SERVER_AFF"
     const val ID_SUB = "SUB"
+    const val ID_ASSET = "ASSET"
     const val ID_SETTING = "SETTING"
     const val KEY_SELECTED_SERVER = "SELECTED_SERVER"
     const val KEY_SELECTED_SUB = "SELECTED_SUB"
@@ -22,6 +25,7 @@ object MmkvManager {
     private val serverStorage by lazy { MMKV.mmkvWithID(ID_SERVER_CONFIG, MMKV.MULTI_PROCESS_MODE) }
     private val serverAffStorage by lazy { MMKV.mmkvWithID(ID_SERVER_AFF, MMKV.MULTI_PROCESS_MODE) }
     private val subStorage by lazy { MMKV.mmkvWithID(ID_SUB, MMKV.MULTI_PROCESS_MODE) }
+    private val assetStorage by lazy { MMKV.mmkvWithID(ID_ASSET, MMKV.MULTI_PROCESS_MODE) }
 
     fun decodeServerList(): MutableList<String> {
         val json = mainStorage?.decodeString(KEY_ANG_CONFIGS)
@@ -134,8 +138,9 @@ object MmkvManager {
                 return it.first
             }
         }
+        val uri = URI(Utils.fixIllegalUrl(url))
         val subItem = SubscriptionItem()
-        subItem.remarks = "import sub"
+        subItem.remarks = Utils.urlDecode(uri.fragment ?: "import sub")
         subItem.url = url
         var uuid = Utils.getUuid()
         subStorage?.encode(uuid, Gson().toJson(subItem))
@@ -165,6 +170,22 @@ object MmkvManager {
             HiddifyUtils.setSelectedSub(subStorage.allKeys()?.firstOrNull() ?:"")
         }
         removeServerViaSubid(subid)
+    }
+
+    fun decodeAssetUrls(): List<Pair<String, AssetUrlItem>> {
+        val assetUrlItems = mutableListOf<Pair<String, AssetUrlItem>>()
+        assetStorage?.allKeys()?.forEach { key ->
+            val json = assetStorage?.decodeString(key)
+            if (!json.isNullOrBlank()) {
+                assetUrlItems.add(Pair(key, Gson().fromJson(json, AssetUrlItem::class.java)))
+            }
+        }
+        assetUrlItems.sortedBy { (_, value) -> value.addedTime }
+        return assetUrlItems
+    }
+
+    fun removeAssetUrl(assetid: String) {
+        assetStorage?.remove(assetid)
     }
 
     fun removeAllServer() {

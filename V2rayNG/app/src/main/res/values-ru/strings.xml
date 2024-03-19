@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HiddifyNG</string>
-    <string name="app_widget_name">Переключить</string>
-    <string name="app_tile_name">Переключить</string>
+    
     <string name="app_tile_first_use">Первое использование этой функции, пожалуйста, используйте приложение, чтобы добавить сервер</string>
     <string name="navigation_drawer_open">Открыть панель навигации</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -23,15 +22,15 @@
     <string name="menu_item_add_config">Добавить профиль</string>
     <string name="menu_item_save_config">Сохранить профиль</string>
     <string name="menu_item_del_config">Удалить профиль</string>
-    <string name="menu_item_import_config_qrcode">Импорт профиля из QR-кода</string>
-    <string name="menu_item_import_config_clipboard">Импорт профиля из буфера обмена</string>
-    <string name="menu_item_import_config_manually_vmess">Ручной ввод профиля Vmess</string>
-    <string name="menu_item_import_config_manually_vless">Ручной ввод профиля VLESS</string>
-    <string name="menu_item_import_config_manually_ss">Ручной ввод профиля Shadowsocks</string>
-    <string name="menu_item_import_config_manually_socks">Ручной ввод профиля Socks</string>
-    <string name="menu_item_import_config_manually_trojan">Ручной ввод профиля Trojan</string>
-    <string name="menu_item_import_config_manually_wireguard">Ручной ввод профиля Wireguard</string>
-    <string name="menu_item_import_config_custom">Пользовательский профиль</string>
+    <string name="menu_item_import_config_qrcode">Импорт из QR-кода</string>
+    <string name="menu_item_import_config_clipboard">Импорт из буфера обмена</string>
+    <string name="menu_item_import_config_manually_vmess">Ручной ввод Vmess</string>
+    <string name="menu_item_import_config_manually_vless">Ручной ввод VLESS</string>
+    <string name="menu_item_import_config_manually_ss">Ручной ввод Shadowsocks</string>
+    <string name="menu_item_import_config_manually_socks">Ручной ввод Socks</string>
+    <string name="menu_item_import_config_manually_trojan">Ручной ввод Trojan</string>
+    <string name="menu_item_import_config_manually_wireguard">Ручной ввод Wireguard</string>
+    <string name="menu_item_import_config_custom">Другой профиль</string>
     <string name="menu_item_import_config_custom_clipboard">Импорт из буфера обмена</string>
     <string name="menu_item_import_config_custom_local">Импорт из файла</string>
     <string name="menu_item_import_config_custom_url">Импорт из URL</string>
@@ -47,11 +46,9 @@
     <string name="server_lab_more_function">Другие параметры</string>
     <string name="server_lab_head_type">Тип заголовка</string>
     <string name="server_lab_mode_type">Режим gRPC</string>
-    <string name="server_lab_request_host">Запрос узла (WS/H2) / Шифрование QUIC</string>
+    <string name="server_lab_request_host">Запрос узла (WS/H2) / Шифрование QUIC/gRPC Authority</string>
     <string name="server_lab_path">Путь (WS/H2) / Ключ QUIC / Сид KCP / Сервис gRPC</string>
     <string name="server_lab_stream_security">TLS</string>
-    <string name="server_lab_stream_fingerprint" translatable="false">Fingerprint</string>
-    <string name="server_lab_stream_alpn" translatable="false">Alpn</string>
     <string name="server_lab_allow_insecure">Разрешать небезопасные</string>
     <string name="server_lab_sni">SNI</string>
     <string name="server_lab_address3">Адрес</string>
@@ -62,12 +59,9 @@
     <string name="server_lab_security4">Пользователь (необязательно)</string>
     <string name="server_lab_encryption">Шифрование</string>
     <string name="server_lab_flow">Поток</string>
-    <string name="server_lab_public_key" translatable="false">PublicKey</string>
-    <string name="server_lab_short_id" translatable="false">ShortId</string>
-    <string name="server_lab_spider_x" translatable="false">SpiderX</string>
     <string name="server_lab_reserved">Reserved (необязательно)</string>
-    <string name="server_lab_local_v4_address">локальный адрес IPv4(необязательно)</string>
-    <string name="server_lab_local_v6_address">локальный адрес IPv6(необязательно, используется только в том случае если предпочитаете IPv6)</string>
+    <string name="server_lab_local_address">Локальный адрес (необязательно, IPv4/IPv6 через запятую)</string>
+    <string name="server_lab_local_mtu">MTU (необязательно, по умолчанию 1420)</string>
     <string name="toast_success">Успешно</string>
     <string name="toast_failure">Ошибка</string>
     <string name="toast_none_data">Ничего нет</string>
@@ -84,8 +78,13 @@
     <string name="toast_malformed_josn">Профиль повреждён</string>
     <string name="server_lab_request_host6">Узел (SNI) (необязательно)</string>
     <string name="toast_asset_copy_failed">Невозможно скопировать файл, используйте файловый менеджер</string>
+    <string name="menu_item_add_asset">Добавить ресурс</string>
     <string name="menu_item_add_file">Добавить файлы</string>
+    <string name="menu_item_add_url">Добавить URL</string>
     <string name="menu_item_download_file">Загрузить файлы</string>
+    <string name="title_user_asset_add_url">Добавить URL ресурса</string>
+    <string name="msg_file_not_found">Файл не найден</string>
+    <string name="msg_remark_is_duplicate">Описание уже существует</string>
 
     <!-- PerAppProxyActivity -->
     <string name="msg_dialog_progress">Загрузка…</string>
@@ -104,8 +103,9 @@
     <string name="title_advanced">Расширенные настройки</string>
     <string name="title_vpn_settings">Настройки VPN</string>
     <string name="title_pref_per_app_proxy">Прокси для выбранных приложений</string>
-    <string name="summary_pref_per_app_proxy">Основной: выделенное приложение соединяется через прокси, не выделенное — напрямую; \n\nРежим обхода: выделенное приложение соединяется напрямую, не выделенное — через прокси.\n\nЕсть возможность автоматического выбора проксируемых приложений в меню.</string>
+    <string name="summary_pref_per_app_proxy">Основной: выделенное приложение соединяется через прокси, не выделенное — напрямую;\n\nРежим обхода: выделенное приложение соединяется напрямую, не выделенное — через прокси.\n\nЕсть возможность автоматического выбора проксируемых приложений в меню.</string>
 
+    <string name="title_mux_settings">Настройки мультиплексирования</string>
     <string name="title_pref_mux_enabled">Использовать мультиплексирование</string>
     <string name="summary_pref_mux_enabled">Быстрее, но это может привести к нестабильному соединению.\nНиже можно настроить обработку TCP, UDP и QUIC.</string>
     <string name="title_pref_mux_concurency">TCP-соединения (диапазон от -1 до 1024)</string>
@@ -146,7 +146,7 @@
     <string name="summary_pref_domestic_dns">DNS</string>
 
     <string name="title_pref_proxy_sharing_enabled">Разрешать подключения из LAN</string>
-    <string name="summary_pref_proxy_sharing_enabled">Другие устройства могут подключаться к прокси по вашему IP-адресу через протокол SOCKS/HTTP. Используйте только в надёжной сети, чтобы избежать несанкционированного подключения.</string>
+    <string name="summary_pref_proxy_sharing_enabled">Другие устройства могут подключаться, используя ваш IP-адрес, чтобы использовать прокси по протоколам SOCKS/HTTP. Используйте только в доверенной сети, чтобы избежать несанкционированного подключения.</string>
     <string name="toast_warning_pref_proxysharing_short">Доступ из LAN разрешён, убедитесь, что вы находитесь в надёжной сети</string>
 
     <string name="title_pref_allow_insecure">Разрешать небезопасные</string>
@@ -178,7 +178,7 @@
 
     <string name="title_pref_auto_update_subscription">Автоматическое обновление подписок</string>
     <string name="summary_pref_auto_update_subscription">Автоматическое обновление подписок в фоновом режиме с указанным интервалом. В зависимости от устройства эта функция может работать не всегда.</string>
-    <string name="title_pref_auto_update_interval">Интервал автообновления (мин., не менее 15)</string>
+    <string name="title_pref_auto_update_interval">Интервал автообновления (минут, не менее 15)</string>
 
     <string name="title_core_loglevel">Подробность ведения журнала</string>
     <string name="title_mode">Режим</string>
@@ -186,7 +186,7 @@
     <string name="title_language">Язык</string>
     <string name="title_ui_settings">Настройки интерфейса</string>
 
-    <string name="title_logcat">Системный журнал</string>
+    <string name="title_logcat">Журнал</string>
     <string name="logcat_copy">Копировать</string>
     <string name="logcat_clear">Очистить</string>
     <string name="title_service_restart">Перезапуск службы</string>
@@ -195,7 +195,7 @@
     <string name="title_del_invalid_config">Удалить нерабочие профили (после проверки)</string>
     <string name="title_export_all">Экспорт всех профилей в буфер обмена</string>
     <string name="title_sub_setting">Группы</string>
-    <string name="sub_setting_remarks">примечания</string>
+    <string name="sub_setting_remarks">Название</string>
     <string name="sub_setting_url">URL (необязательно)</string>
     <string name="sub_setting_enable">Использовать обновление</string>
     <string name="sub_auto_update">Использовать автоматическое обновление</string>
@@ -204,7 +204,7 @@
     <string name="title_real_ping_all_server">Время отклика профилей</string>
     <string name="title_user_asset_setting">Файлы георесурсов</string>
     <string name="title_sort_by_test_results">Сортировка по результатам теста</string>
-    <string name="title_filter_config">Фильтр профилей</string>
+    <string name="title_filter_config">Фильтр групп</string>
     <string name="filter_config_all">Все группы</string>
     <string name="title_del_duplicate_config_count">Удалено дубликатов профилей: %d</string>
 
@@ -221,7 +221,7 @@
 
     <string name="connection_test_pending">Проверить подключение</string>
     <string name="connection_test_testing">Проверка…</string>
-    <string name="connection_test_available">Успешно: рукопожатие HTTP заняло %d мс</string>
+    <string name="connection_test_available">Успешно: HTTP-соединение заняло %d мс</string>
     <string name="connection_test_error">Сбой проверки интернет-соединения: %s</string>
     <string name="connection_test_fail">Интернет недоступен</string>
     <string name="connection_test_error_status_code">Код ошибки: #%d</string>
@@ -230,11 +230,16 @@
 
     <string name="import_subscription_success">Подписка импортирована</string>
     <string name="import_subscription_failure">Невозможно импортировать подписку</string>
+    <string name="title_fragment_settings">Настройки фрагментирования</string>
+    <string name="title_pref_fragment_packets">Фрагментирование пакетов</string>
+    <string name="title_pref_fragment_length">Длина фрагмента (от - до)</string>
+    <string name="title_pref_fragment_interval">Интервал фрагментов (от - до)</string>
+    <string name="title_pref_fragment_enabled">Использовать фрагментирование</string>
 
     <string-array name="share_method">
         <item>QR-код</item>
         <item>Экспорт в буфер обмена</item>
-        <item>Экспорт всего профиля в буфер обмена</item>
+        <item>Экспорт всей конфигурации в буфер обмена</item>
     </string-array>
 
     <string-array name="share_sub_method">

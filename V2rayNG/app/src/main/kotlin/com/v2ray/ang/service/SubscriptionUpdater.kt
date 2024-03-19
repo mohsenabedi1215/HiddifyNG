@@ -99,6 +99,9 @@ object SubscriptionUpdater {
             count = AngConfigManager.importBatchConfig(Utils.decode(server!!), subid2, append, selectSub = selectSub)
         }
 
+        if (count <= 0) {
+            AngConfigManager.appendCustomConfigServer(server, subid)
+        }
     }
 
 }

@@ -46,8 +46,8 @@
     <string name="server_lab_more_function">底层传输方式(transport)</string>
     <string name="server_lab_head_type">伪装类型(type)</string>
     <string name="server_lab_mode_type">gRPC 传输模式(mode)</string>
-    <string name="server_lab_request_host">伪装域名(host)(host/ws host/h2 host)/QUIC 加密方式</string>
-    <string name="server_lab_path">path(ws path/h2 path)/QUIC 加密密钥/kcp seed/gRPC serviceName</string>
+    <string name="server_lab_request_host">伪装域名(host)(host/ws host/httpupgrade host/h2 host)/QUIC 加密方式/gRPC Authority</string>
+    <string name="server_lab_path">path(ws path/httpupgrade path/h2 path)/QUIC 加密密钥/kcp seed/gRPC serviceName</string>
     <string name="server_lab_stream_security">传输层安全(TLS)</string>
     <string name="server_lab_allow_insecure">跳过证书验证(allowInsecure)</string>
     <string name="server_lab_sni">SNI</string>
@@ -60,8 +60,8 @@
     <string name="server_lab_encryption">加密方式(encryption)</string>
     <string name="server_lab_flow">流控(flow)</string>
     <string name="server_lab_reserved">Reserved(可选)</string>
-    <string name="server_lab_local_v4_address">本地 IPv4 地址(可选)</string>
-    <string name="server_lab_local_v6_address">本地 IPv6 地址(可选, 仅 IPv6 优先时使用)</string>
+    <string name="server_lab_local_address">本地地址(可选IPv4/IPv6，逗号隔开)</string>
+    <string name="server_lab_local_mtu">Mtu(可选, 默认1420)</string>
     <string name="toast_success">成功</string>
     <string name="toast_failure">失败</string>
     <string name="toast_none_data">没有数据</string>
@@ -83,6 +83,9 @@
 
 
     <!-- PerAppProxyActivity -->
+    <string name="title_user_asset_add_url">添加资产网址</string>
+    <string name="msg_file_not_found">文件未找到</string>
+    <string name="msg_remark_is_duplicate">备注已经存在</string>
     <string name="msg_dialog_progress">正在加载</string>
     <string name="menu_item_search">搜索</string>
     <string name="menu_item_select_all">全选</string>
@@ -100,6 +103,7 @@
     <string name="title_pref_per_app_proxy">分应用代理</string>
     <string name="summary_pref_per_app_proxy">常规:勾选的App被代理,未勾选的直连;\n绕行模式:勾选的App直连,未勾选的被代理.\n不明白者在菜单中选择自动选中需代理应用</string>
 
+    <string name="title_mux_settings">Mux 多路复用 设置</string>
     <string name="title_pref_mux_enabled">启用 Mux 多路复用</string>
     <string name="summary_pref_mux_enabled">减低延时，但可能会断流，建议不要启用。\nTCP，UDP 及 QUIC 流量处理方式下方可选。</string>
     <string name="title_pref_mux_concurency">TCP 复用子链接数（可填 -1 至 1024）</string>
@@ -222,6 +226,16 @@
     <string name="connection_connected">"已连接，点击测试连接"</string>
     <string name="connection_not_connected">"未连接"</string>
 
+    <string name="import_subscription_success">订阅导入成功</string>
+    <string name="import_subscription_failure">导入订阅失败</string>
+    <string name="menu_item_add_asset">添加</string>
+    <string name="menu_item_add_url">添加链接</string>
+    <string name="title_fragment_settings">分片（Fragment） 设置</string>
+    <string name="title_pref_fragment_packets">分片方式</string>
+    <string name="title_pref_fragment_length">分片包长（最小-最大）</string>
+    <string name="title_pref_fragment_interval">分片间隔（最小-最大）</string>
+    <string name="title_pref_fragment_enabled">启用分片（Fragment）</string>
+
     <string-array name="share_method">
         <item>二维码</item>
         <item>导出至剪贴板</item>
@@ -250,8 +264,6 @@
         <item>VPN</item>
         <item>仅代理</item>
     </string-array>
-    <string name="import_subscription_success">订阅导入成功</string>
-    <string name="import_subscription_failure">导入订阅失败</string>
 
     <!-- hiddify -->
     <string name="default_layout_description">برای استفاده از برنامه نیاز است که حتما

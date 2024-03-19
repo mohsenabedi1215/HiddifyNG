@@ -51,12 +51,19 @@ object AppConfig {
     const val PREF_MUX_CONCURRENCY = "pref_mux_concurency"
     const val PREF_MUX_XUDP_CONCURRENCY = "pref_mux_xudp_concurency"
     const val PREF_MUX_XUDP_QUIC = "pref_mux_xudp_quic"
+    const val PREF_FRAGMENT_ENABLED = "pref_fragment_enabled"
+    const val PREF_FRAGMENT_PACKETS = "pref_fragment_packets"
+    const val PREF_FRAGMENT_LENGTH = "pref_fragment_length"
+    const val PREF_FRAGMENT_INTERVAL = "pref_fragment_interval"
+
 
     const val PREF_REVIEW_TIME = "pref_review_time"
     const val PREF_UPDATE_TIME = "pref_update_time"
 
-    const val HTTP_PROTOCOL: String = "http://"
-    const val HTTPS_PROTOCOL: String = "https://"
+    const val PROTOCOL_HTTP: String = "http://"
+    const val PROTOCOL_HTTPS: String = "https://"
+    const val PROTOCOL_FREEDOM: String = "freedom"
+
 
     const val BROADCAST_ACTION_UPDATE_UI =BuildConfig.APPLICATION_ID+".UPDATE_UI_ACTION"
     const val BROADCAST_ACTION_PING_TEST =BuildConfig.APPLICATION_ID+".PING_TEST_ACTION"
@@ -89,6 +96,9 @@ object AppConfig {
     const val PORT_LOCAL_DNS = "10853"
     const val PORT_SOCKS = "10808"
     const val PORT_HTTP = "10809"
+    const val WIREGUARD_LOCAL_ADDRESS_V4 = "172.16.0.2/32"
+    const val WIREGUARD_LOCAL_ADDRESS_V6 = "2606:4700:110:8f81:d551:a0:532e:a2b3/128"
+    const val WIREGUARD_LOCAL_MTU = "1420"
 
     const val MSG_REGISTER_CLIENT = 1
     const val MSG_STATE_RUNNING = 11
@@ -115,4 +125,6 @@ object AppConfig {
     const val SUBSCRIPTION_DEFAULT_UPDATE_INTERVAL = "1440" // 24 hours
     const val SUBSCRIPTION_UPDATE_TASK_NAME = "subscription_updater"
 
+    const val CACHE_SUBSCRIPTION_ID = "cache_subscription_id"
+    const val CACHE_KEYWORD_FILTER = "cache_keyword_filter"
 }
